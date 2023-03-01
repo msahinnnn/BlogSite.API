@@ -1,6 +1,7 @@
 using BlogSite.API.Mapping;
 using BlogSite.API.Services.Abstract;
 using BlogSite.API.Services.Concrete;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,12 @@ builder.Services.AddAutoMapper(typeof(PostProfile));
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddSingleton<IPostService, PostService>();
 builder.Services.AddSingleton<ICommentService, CommentService>();
+
+builder.Services.AddFluentValidation(conf =>
+{
+    conf.RegisterValidatorsFromAssembly(typeof(Program).Assembly);
+    conf.AutomaticValidationEnabled = false;
+});
 
 var app = builder.Build();
 

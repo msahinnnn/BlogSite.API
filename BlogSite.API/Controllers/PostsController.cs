@@ -1,8 +1,10 @@
 ﻿using BlogSite.API.Models;
 using BlogSite.API.Services.Abstract;
 using BlogSite.API.Services.Concrete;
+using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +15,12 @@ namespace BlogSite.API.Controllers
     public class PostsController : ControllerBase
     {
         private IPostService _postService;
+        private readonly IValidator<CreatePostVM> _validator;
 
-        public PostsController(IPostService postService)
+        public PostsController(IPostService postService, IValidator<CreatePostVM> validator)
         {
             _postService = postService;
+            _validator = validator;
         }
 
         [HttpGet]
@@ -29,8 +33,13 @@ namespace BlogSite.API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]CreatePostVM createPostVM, [FromQuery] Guid userId)
         {
-            _postService.CreatePost(createPostVM, userId);
-            return Ok();
+            var validation = _validator.Validate(createPostVM);
+            if (validation.IsValid)
+            {
+                _postService.CreatePost(createPostVM, userId);
+                return Ok();
+            }
+            return BadRequest(validation.Errors);
         }
     }
 }
