@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogSite.DataAccsess.Concrete
+namespace BlogSite.Business.Concrete
 {
-    internal class UserRepository
+    public class CommentService
     {
     }
 }

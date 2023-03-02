@@ -18,10 +18,10 @@ namespace BlogSite.DataAccsess.Abstract
         Comment GetCommentById(Guid commentId);
         Task<Comment> GetCommentByIdAsync(Guid commentId);
 
-        bool CreateComment(CreateCommentVM createCommentVM);
-        Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM);
-        bool UpdateComment(UpdateCommentVM updateCommentVM);
-        Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM);
+        bool CreateComment(Comment comment);
+        Task<bool> CreateCommentAsync(Comment comment);
+        bool UpdateComment(UpdateCommentVM updateCommentVM, Guid commentId);
+        Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId);
         bool DeleteComment(Guid commentId);
         Task<bool> DeleteCommentAsync(Guid commentId);
 
