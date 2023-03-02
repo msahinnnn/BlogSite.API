@@ -15,12 +15,12 @@ namespace BlogSite.API.Controllers
     public class PostsController : ControllerBase
     {
         private IPostService _postService;
-        private readonly IValidator<CreatePostVM> _validator;
+        //private readonly IValidator<CreatePostVM> _validator;
 
-        public PostsController(IPostService postService, IValidator<CreatePostVM> validator)
+        public PostsController(IPostService postService/*, IValidator<CreatePostVM> validator*/)
         {
             _postService = postService;
-            _validator = validator;
+            //_validator = validator;
         }
 
         [HttpGet]
@@ -33,13 +33,13 @@ namespace BlogSite.API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]CreatePostVM createPostVM, [FromQuery] Guid userId)
         {
-            var validation = _validator.Validate(createPostVM);
-            if (validation.IsValid)
-            {
+            //var validation = _validator.Validate(createPostVM);
+            //if (validation.IsValid)
+            //{
                 _postService.CreatePost(createPostVM, userId);
                 return Ok();
-            }
-            return BadRequest(validation.Errors);
+            //}
+            //return BadRequest(validation.Errors);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
 using BlogSite.API.ViewModels.CommentVMs;
-using BlogSite.API.ViewModels.PostVMs;
+using BlogSite.Entities.ViewModels.CommentVMs;
 
 namespace BlogSite.API.Mapping
 {
@@ -11,6 +11,9 @@ namespace BlogSite.API.Mapping
         {
             CreateMap<Comment, CreateCommentVM>();
             CreateMap<CreateCommentVM, Comment>();
+
+            CreateMap<Comment, UpdateCommentVM>();
+            CreateMap<UpdateCommentVM, Comment>();
         }
     }
 }

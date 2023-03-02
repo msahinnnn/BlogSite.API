@@ -2,6 +2,8 @@
 using BlogSite.API.Services.Concrete;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
+using BlogSite.DataAccsess.Abstract;
+using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +14,14 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
+        private ICommentRepository _commentRepository;
         private ICommentService _commentService;
-        private readonly IValidator<CreateCommentVM> _validator;
+        
 
-        public CommentsController(ICommentService commentService, IValidator<CreateCommentVM> validator)
+        public CommentsController(ICommentService commentService,  ICommentRepository commentRepository)
         {
             _commentService = commentService;
-            _validator = validator;
+            _commentRepository = commentRepository;
         }
 
         [HttpGet]
@@ -28,16 +31,38 @@ namespace BlogSite.API.Controllers
             return Ok(comments);
         }
 
+        [HttpGet("{postId}")]
+        public IActionResult GetCommentsByPostId(Guid postId)
+        {
+            var comments = _commentRepository.GetCommentsByPostId(postId);
+            return Ok(comments);
+        }
+
+        [HttpGet("[action]/{commentId}")]
+        public IActionResult GetCommentById(Guid commentId)
+        {
+            var comments = _commentRepository.GetCommentById(commentId);
+            return Ok(comments);
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] CreateCommentVM createCommentVM, [FromQuery] Guid postId)
         {
-            var validation = _validator.Validate(createCommentVM);
-            if (validation.IsValid)
-            {
-                _commentService.CreateComment(createCommentVM, postId);
-                return Ok();
-            }
-            return BadRequest(validation.Errors);
+            return Ok();
+        }
+
+        [HttpDelete]
+        public IActionResult Delete([FromQuery] Guid commentId)
+        {
+            var res = _commentRepository.DeleteComment(commentId);
+            return Ok(res);
+        }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
+        {
+            var res = _commentRepository.UpdateComment(updateCommentVM, commentId);
+            return Ok(res);
         }
     }
 }

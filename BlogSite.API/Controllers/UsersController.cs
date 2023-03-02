@@ -12,13 +12,13 @@ namespace BlogSite.API.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
-        private readonly IValidator<CreateUserVM> _validator;
+        //private readonly IValidator<CreateUserVM> _validator;
 
 
-        public UsersController(IUserService userService, IValidator<CreateUserVM> validator)
+        public UsersController(IUserService userService/*, IValidator<CreateUserVM> validator*/)
         {
             _userService = userService;
-            _validator = validator;
+            //_validator = validator;
         }
 
         [HttpGet]
@@ -31,13 +31,13 @@ namespace BlogSite.API.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] CreateUserVM createUserVM)
         {
-            var validation = _validator.Validate(createUserVM);
-            if (validation.IsValid)
-            {
+            //var validation = _validator.Validate(createUserVM);
+            //if (validation.IsValid)
+            //{
                 _userService.CreateUser(createUserVM);
                 return Ok();
-            }
-            return BadRequest(validation.Errors);
+            //}
+            //return BadRequest(validation.Errors);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
 using BlogSite.API.ViewModels.PostVMs;
+using BlogSite.Entities.ViewModels.PostVMs;
 
 namespace BlogSite.API.Mapping
 {
@@ -11,6 +12,9 @@ namespace BlogSite.API.Mapping
 
             CreateMap<Post, CreatePostVM>();
             CreateMap<CreatePostVM, Post>();
+
+            CreateMap<Post, UpdatePostVM>();
+            CreateMap<UpdatePostVM, Post>();
         }
 
     }
