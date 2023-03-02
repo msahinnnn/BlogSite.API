@@ -1,9 +1,9 @@
 ﻿using BlogSite.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogSite.API.ApplicationContext
+namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
 {
-    public class BlogSiteDbContext:DbContext
+    public class BlogSiteDbContext : DbContext
     {
         //public DbSet<User> Users { get; set; }
         //public DbSet<Post> Posts { get; set; }
