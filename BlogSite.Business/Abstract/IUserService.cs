@@ -18,8 +18,8 @@ namespace BlogSite.Business.Abstract
 
         bool CreateUser(CreateUserVM createUserVM);
         Task<bool> CreateUserAsync(CreateUserVM createUserVM);
-        bool UpdateUser(UpdateUserVM updateUserVM);
-        Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM);
+        bool UpdateUser(UpdateUserVM updateUserVM, Guid userId);
+        Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId);
         bool DeleteUser(Guid userId);
         Task<bool> DeleteUserAsync(Guid userId);
 

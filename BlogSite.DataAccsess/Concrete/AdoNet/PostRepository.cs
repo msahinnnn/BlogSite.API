@@ -144,13 +144,13 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             throw new NotImplementedException();
         }
 
-        public bool UpdatePost(UpdatePostVM updatePostVM, Guid postId)
+        public bool UpdatePost(Post post)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Update Posts Set Title=@Title, Content=@Content where Id=@Id", con);
-            cmd.Parameters.AddWithValue("@Id", postId);
-            cmd.Parameters.AddWithValue("@Title", updatePostVM.Title);
-            cmd.Parameters.AddWithValue("@Content", updatePostVM.Content);
+            cmd.Parameters.AddWithValue("@Id", post.Id);
+            cmd.Parameters.AddWithValue("@Title", post.Title);
+            cmd.Parameters.AddWithValue("@Content", post.Content);
             con.Open();
             cmd.ExecuteNonQuery();
             con.Close();
@@ -158,7 +158,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId)
+        public Task<bool> UpdatePostAsync(Post post)
         {
             throw new NotImplementedException();
         }

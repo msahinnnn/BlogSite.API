@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
     <ProjectReference Include="..\BlogSite.Entities\BlogSite.Entities.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,4 @@
 ﻿using BlogSite.API.Models;
-using BlogSite.API.Services.Abstract;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;

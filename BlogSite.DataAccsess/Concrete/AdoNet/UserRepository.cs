@@ -145,14 +145,14 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         }
 
 
-        public bool UpdateUser(UpdateUserVM updateUserVM, Guid userId)
+        public bool UpdateUser(User user)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Update User Set Name=@Name, Surname=@Surname, Email=@Email where Id=@Id", con);
-            cmd.Parameters.AddWithValue("@Id", userId);
-            cmd.Parameters.AddWithValue("@Name", updateUserVM.Name);
-            cmd.Parameters.AddWithValue("@Surname", updateUserVM.Surname);
-            cmd.Parameters.AddWithValue("@Email", updateUserVM.Email);
+            cmd.Parameters.AddWithValue("@Id", user.Id);
+            cmd.Parameters.AddWithValue("@Name",  user.Name);
+            cmd.Parameters.AddWithValue("@Surname", user.Surname);
+            cmd.Parameters.AddWithValue("@Email", user.Email);
             con.Open();
             cmd.ExecuteNonQuery();
             con.Close();
@@ -160,7 +160,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId)
+        public Task<bool> UpdateUserAsync(User user)
         {
             throw new NotImplementedException();
         }

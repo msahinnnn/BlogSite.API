@@ -1,6 +1,4 @@
 ﻿using BlogSite.API.Models;
-using BlogSite.API.Services.Abstract;
-using BlogSite.API.Services.Concrete;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
@@ -14,32 +12,32 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private IPostService _postService;
-        //private readonly IValidator<CreatePostVM> _validator;
+        //private IPostService _postService;
+        ////private readonly IValidator<CreatePostVM> _validator;
 
-        public PostsController(IPostService postService/*, IValidator<CreatePostVM> validator*/)
-        {
-            _postService = postService;
-            //_validator = validator;
-        }
+        //public PostsController(IPostService postService/*, IValidator<CreatePostVM> validator*/)
+        //{
+        //    _postService = postService;
+        //    //_validator = validator;
+        //}
 
-        [HttpGet]
-        public IActionResult Get([FromQuery]Pagination pagination)
-        {
-            var posts = _postService.GetPosts().Skip((pagination.Page - 1) * pagination.Size).Take(pagination.Size).ToList();
-            return Ok(posts);
-        }
+        //[HttpGet]
+        //public IActionResult Get([FromQuery]Pagination pagination)
+        //{
+        //    var posts = _postService.GetPosts().Skip((pagination.Page - 1) * pagination.Size).Take(pagination.Size).ToList();
+        //    return Ok(posts);
+        //}
 
-        [HttpPost]
-        public IActionResult Post([FromBody]CreatePostVM createPostVM, [FromQuery] Guid userId)
-        {
-            //var validation = _validator.Validate(createPostVM);
-            //if (validation.IsValid)
-            //{
-                _postService.CreatePost(createPostVM, userId);
-                return Ok();
-            //}
-            //return BadRequest(validation.Errors);
-        }
+        //[HttpPost]
+        //public IActionResult Post([FromBody]CreatePostVM createPostVM, [FromQuery] Guid userId)
+        //{
+        //    //var validation = _validator.Validate(createPostVM);
+        //    //if (validation.IsValid)
+        //    //{
+        //        _postService.CreatePost(createPostVM, userId);
+        //        return Ok();
+        //    //}
+        //    //return BadRequest(validation.Errors);
+        //}
     }
 }

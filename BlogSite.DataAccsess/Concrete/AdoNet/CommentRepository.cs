@@ -99,11 +99,11 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             throw new NotImplementedException();
         }
 
-        public bool CreateComment(Comment comment, Guid postId)
+        public bool CreateComment(Comment comment)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)");
-            cmd.Parameters.AddWithValue("@Id", comment.Id));
+            cmd.Parameters.AddWithValue("@Id", comment.Id);
             cmd.Parameters.AddWithValue("@Content", comment.Content);
             cmd.Parameters.AddWithValue("@CreateTime", comment.CreateTime);
             cmd.Parameters.AddWithValue("@PostId", comment.PostId);
@@ -114,7 +114,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> CreateCommentAsync(Comment comment, Guid postId)
+        public Task<bool> CreateCommentAsync(Comment comment)
         {
             throw new NotImplementedException();
         }
@@ -138,12 +138,12 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         
 
-        public bool UpdateComment(UpdateCommentVM updateCommentVM, Guid commentId)
+        public bool UpdateComment(Comment comment)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Update Comments Set Content=@Content where Id=@Id", con);
-            cmd.Parameters.AddWithValue("@Content", updateCommentVM.Content);
-            cmd.Parameters.AddWithValue("@Id", commentId);
+            cmd.Parameters.AddWithValue("@Content", comment.Content);
+            cmd.Parameters.AddWithValue("@Id", comment.Id);
             con.Open();
             cmd.ExecuteNonQuery();
             con.Close();
@@ -151,7 +151,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId)
+        public Task<bool> UpdateCommentAsync(Comment comment)
         {
             throw new NotImplementedException();
         }

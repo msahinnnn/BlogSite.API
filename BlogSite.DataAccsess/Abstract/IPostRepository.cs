@@ -22,8 +22,8 @@ namespace BlogSite.DataAccsess.Abstract
 
         bool CreatePost(Post post);
         Task<bool> CreatePostAsync(Post post);
-        bool UpdatePost(UpdatePostVM updatePostVM, Guid postId);
-        Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId);
+        bool UpdatePost(Post post);
+        Task<bool> UpdatePostAsync(Post post);
         bool DeletePost(Guid postId);
         Task<bool> DeletePostAsync(Guid postId);
 

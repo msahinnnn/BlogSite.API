@@ -20,8 +20,8 @@ namespace BlogSite.DataAccsess.Abstract
 
         bool CreateUser(User user);
         Task<bool> CreateUserAsync(User user);
-        bool UpdateUser(UpdateUserVM updateUserVM, Guid userId);
-        Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId);
+        bool UpdateUser(User user);
+        Task<bool> UpdateUserAsync(User user);
         bool DeleteUser(Guid userId);
         Task<bool> DeleteUserAsync(Guid userId);
 

@@ -1,6 +1,6 @@
 using BlogSite.API.Mapping;
-using BlogSite.API.Services.Abstract;
-using BlogSite.API.Services.Concrete;
+using BlogSite.Business.Abstract;
+using BlogSite.Business.Concrete;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using FluentValidation.AspNetCore;

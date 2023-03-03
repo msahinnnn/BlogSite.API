@@ -20,8 +20,8 @@ namespace BlogSite.Business.Abstract
 
         bool CreatePost(CreatePostVM createPostVM);
         Task<bool> CreatePostAsync(CreatePostVM createPostVM);
-        bool UpdatePost(UpdatePostVM updatePostVM);
-        Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM);
+        bool UpdatePost(UpdatePostVM updatePostVM, Guid postId);
+        Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId);
         bool DeletePost(Guid postId);
         Task<bool> DeletePostAsync(Guid postId);
 

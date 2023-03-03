@@ -8,6 +8,7 @@ namespace BlogSite.Entities.ViewModels.PostVMs
 {
     public class UpdatePostVM
     {
+        public Guid UserId { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
     }
