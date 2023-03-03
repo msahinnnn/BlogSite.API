@@ -24,14 +24,14 @@ namespace BlogSite.API.Controllers
             _commentRepository = commentRepository;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         public IActionResult Get()
         {
             var comments = _commentService.GetComments();
             return Ok(comments);
         }
 
-        [HttpGet("{postId}")]
+        [HttpGet("[action]/{postId}")]
         public IActionResult GetCommentsByPostId(Guid postId)
         {
             var comments = _commentRepository.GetCommentsByPostId(postId);
@@ -45,20 +45,20 @@ namespace BlogSite.API.Controllers
             return Ok(comments);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IActionResult Post([FromBody] CreateCommentVM createCommentVM, [FromQuery] Guid postId)
         {
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("[action]")]
         public IActionResult Delete([FromQuery] Guid commentId)
         {
             var res = _commentRepository.DeleteComment(commentId);
             return Ok(res);
         }
 
-        [HttpPut]
+        [HttpPut("[action]")]
         public IActionResult Update([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
         {
             var res = _commentRepository.UpdateComment(updateCommentVM, commentId);

@@ -27,8 +27,6 @@ namespace BlogSite.DataAccsess.Abstract
         bool DeletePost(Guid postId);
         Task<bool> DeletePostAsync(Guid postId);
 
-        bool CheckPostTitleExists(string title);
-        Task<bool> CheckPostTitleExistsAsync(string title);
 
     }
 }

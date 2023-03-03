@@ -101,14 +101,14 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public bool CreateComment(Comment comment, Guid postId)
         {
-            //Comment comment = _mapper.Map<Comment>(createCommentVM);
-            //comment.Id = Guid.NewGuid();
-            //comment.CreateTime = DateTime.UtcNow;
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
-            SqlDataAdapter da = new SqlDataAdapter();
+            SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)");
+            cmd.Parameters.AddWithValue("@Id", comment.Id));
+            cmd.Parameters.AddWithValue("@Content", comment.Content);
+            cmd.Parameters.AddWithValue("@CreateTime", comment.CreateTime);
+            cmd.Parameters.AddWithValue("@PostId", comment.PostId);
             con.Open();
-            da.InsertCommand = new SqlCommand("Insert into Comments values ('" + comment.Id + "' , '" + comment.Content + "' , '" + comment.CreateTime + "' , '" + postId + "')", con);
-            da.InsertCommand.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();
             con.Close();
             con.Dispose();
             return true;
