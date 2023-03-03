@@ -1,6 +1,6 @@
-﻿
-using BlogSite.API.ViewModels.CommentVMs;
+﻿using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
+using BlogSite.Business.Abstract;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
@@ -13,55 +13,77 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class CommentsController : ControllerBase
     {
-        //private ICommentRepository _commentRepository;
-        //private ICommentService _commentService;
-        
+        private ICommentService _commentService;
 
-        //public CommentsController(ICommentService commentService,  ICommentRepository commentRepository)
-        //{
-        //    _commentService = commentService;
-        //    _commentRepository = commentRepository;
-        //}
+        public CommentsController(ICommentService commentService)
+        {
+            _commentService = commentService;
+        }
 
-        //[HttpGet("[action]")]
-        //public IActionResult Get()
-        //{
-        //    var comments = _commentService.GetComments();
-        //    return Ok(comments);
-        //}
+        [HttpGet("[action]")]
+        public IActionResult Get()
+        {
+            var res = _commentService.GetAllComments();
+            if(res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
 
-        //[HttpGet("[action]/{postId}")]
-        //public IActionResult GetCommentsByPostId(Guid postId)
-        //{
-        //    var comments = _commentRepository.GetCommentsByPostId(postId);
-        //    return Ok(comments);
-        //}
+        [HttpGet("[action]")]
+        public IActionResult GetCommentById([FromQuery] Guid commentId)
+        {
+            var res = _commentService.GetCommentById(commentId);
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
 
-        //[HttpGet("[action]/{commentId}")]
-        //public IActionResult GetCommentById(Guid commentId)
-        //{
-        //    var comments = _commentRepository.GetCommentById(commentId);
-        //    return Ok(comments);
-        //}
+        [HttpGet("[action]")]
+        public IActionResult GetAllCommentByPostId([FromQuery] Guid postId)
+        {
+            var res = _commentService.GetCommentsByPostId(postId);
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
 
-        //[HttpPost("[action]")]
-        //public IActionResult Post([FromBody] CreateCommentVM createCommentVM, [FromQuery] Guid postId)
-        //{
-        //    return Ok();
-        //}
+        [HttpPost("[action]")]
+        public IActionResult Create([FromBody] CreateCommentVM createCommentVM)
+        {
+            var res = _commentService.CreateComment(createCommentVM);
+            if(res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
-        //[HttpDelete("[action]")]
-        //public IActionResult Delete([FromQuery] Guid commentId)
-        //{
-        //    var res = _commentRepository.DeleteComment(commentId);
-        //    return Ok(res);
-        //}
+        [HttpPut("[action]")]
+        public IActionResult Update([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
+        {
+            var res = _commentService.UpdateComment(updateCommentVM, commentId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
-        //[HttpPut("[action]")]
-        //public IActionResult Update([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
-        //{
-        //    var res = _commentRepository.UpdateComment(updateCommentVM, commentId);
-        //    return Ok(res);
-        //}
+        [HttpDelete("[action]")]
+        public IActionResult Delete([FromQuery] Guid commentId)
+        {
+            var res = _commentService.DeleteComment(commentId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 }

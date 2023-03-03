@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
+using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Business.Abstract;
+using BlogSite.Business.Validations;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.PostVMs;
@@ -20,12 +22,10 @@ namespace BlogSite.Business.Concrete
     {
         private IUserRepository _userRepository;
         private IMapper _mapper;
-        private readonly IValidator<CreateUserVM> _validator;
 
-        public UserService(IMapper mapper, IValidator<CreateUserVM> validator, IUserRepository userRepository)
+        public UserService(IMapper mapper, IUserRepository userRepository)
         {
             _mapper = mapper;
-            _validator = validator;
             _userRepository = userRepository;
         }
 
@@ -61,10 +61,12 @@ namespace BlogSite.Business.Concrete
 
         public bool CreateUser(CreateUserVM createUserVM)
         {
-            var validation = _validator.Validate(createUserVM);
-            if (validation.IsValid)
-            {
-                User user = _mapper.Map<User>(createUserVM);
+            //var validation = _validator.Validate(createUserVM);
+            //if (validation.IsValid)
+            //{
+            ValidationTool.Validate(new UserValidator(), createUserVM);
+
+            User user = _mapper.Map<User>(createUserVM);
                 user.Id = Guid.NewGuid();
                 var res = _userRepository.CreateUser(user);
                 if (res == true)
@@ -72,8 +74,8 @@ namespace BlogSite.Business.Concrete
                     return true;
                 }
                 return false;
-            }
-            return false;
+            //}
+            //return false;
         }
 
         public Task<bool> CreateUserAsync(CreateUserVM createUserVM)

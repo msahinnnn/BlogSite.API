@@ -2,9 +2,12 @@
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
+using BlogSite.Business.Abstract;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.CommentVMs;
+using BlogSite.Entities.ViewModels.PostVMs;
+using BlogSite.Entities.ViewModels.UserVMs;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,52 +18,67 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        //private IUserService _userService;
-        ////private readonly IValidator<CreateUserVM> _validator;
-        //private IUserRepository _userRepository;
+        private IUserService _userService;
+
+        public UsersController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult Get()
+        {
+            var res = _userService.GetAllUsers();
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetUserById([FromQuery] Guid userId)
+        {
+            var res = _userService.GetUserById(userId);
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
 
 
-        //public UsersController(IUserService userService/*, IValidator<CreateUserVM> validator*/, IUserRepository userRepository)
-        //{
-        //    _userService = userService;
-        //    _userRepository = userRepository;
-        //    //_validator = validator;
-        //}
+        [HttpPost("[action]")]
+        public IActionResult Create([FromBody] CreateUserVM createUserVM)
+        {
+            var res = _userService.CreateUser(createUserVM);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
-        //[HttpGet("[action]")]
-        //public IActionResult Get()
-        //{
-        //    var users = _userRepository.GetAllUsers();
-        //    return Ok(users);
-        //}
+        [HttpPut("[action]")]
+        public IActionResult Update([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
+        {
+            var res = _userService.UpdateUser(updateUserVM, userId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
 
-
-        //[HttpGet("[action]/{userId}")]
-        //public IActionResult GetUserById(Guid userId)
-        //{
-        //    var user = _userRepository.GetUserById(userId);
-        //    return Ok(user);
-        //}
-
-        //[HttpPost("[action]")]
-        //public IActionResult Post([FromBody] CreateUserVM createUserVM, [FromQuery] Guid postId)
-        //{
-        //    //_userRepository.CreateUser()
-        //    return Ok();
-        //}
-
-        //[HttpDelete("[action]")]
-        //public IActionResult Delete([FromQuery] Guid commentId)
-        //{
-        //    var res = _userRepository.DeleteComment(commentId);
-        //    return Ok(res);
-        //}
-
-        //[HttpPut("[action]")]
-        //public IActionResult Update([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
-        //{
-        //    var res = _commentRepository.UpdateComment(updateCommentVM, commentId);
-        //    return Ok(res);
-        //}
+        [HttpDelete("[action]")]
+        public IActionResult Delete([FromQuery] Guid userId)
+        {
+            var res = _userService.DeleteUser(userId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 }

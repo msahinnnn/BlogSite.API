@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
+using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
+using BlogSite.Business.Validations;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.CommentVMs;
@@ -21,12 +23,10 @@ namespace BlogSite.Business.Concrete
     {
         private IPostRepository _postRepository;
         private IMapper _mapper;
-        private readonly IValidator<CreatePostVM> _validator;
-        public PostService(IPostRepository postRepository, IMapper mapper, IValidator<CreatePostVM> validator)
+        public PostService(IPostRepository postRepository, IMapper mapper)
         {
             _postRepository = postRepository;
             _mapper = mapper;
-            _validator = validator;
         }
 
         public List<Post> GetAllPosts()
@@ -76,9 +76,10 @@ namespace BlogSite.Business.Concrete
 
         public bool CreatePost(CreatePostVM createPostVM)
         {
-            var validation = _validator.Validate(createPostVM);
-            if (validation.IsValid)
-            {
+            //var validation = _validator.Validate(createPostVM);
+            ValidationTool.Validate(new PostValidator(), createPostVM);
+            //if (validation.IsValid)
+            //{
                 Post post = _mapper.Map<Post>(createPostVM);
                 post.Id = Guid.NewGuid();
                 post.CreatedDate = DateTime.Now;            
@@ -88,8 +89,8 @@ namespace BlogSite.Business.Concrete
                     return true;
                 }
                 return false;
-            }
-            return false;
+            //}
+            //return false;
         }
 
         public Task<bool> CreatePostAsync(CreatePostVM createPostVM)

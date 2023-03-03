@@ -110,12 +110,12 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         public bool CreateUser(User user)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
-            SqlCommand cmd = new SqlCommand("Insert into Users (Id, Name, Surname, Email) values (@Id, @Name, @Surname, @Email)");
+            con.Open();
+            SqlCommand cmd = new SqlCommand("Insert into Users (Id, Name, Surname, Email) values (@Id, @Name, @Surname, @Email)", con);
             cmd.Parameters.AddWithValue("@Id", user.Id);
             cmd.Parameters.AddWithValue("@Name", user.Name);
             cmd.Parameters.AddWithValue("@Surname", user.Surname);
             cmd.Parameters.AddWithValue("@Email", user.Email);
-            con.Open();
             cmd.ExecuteNonQuery();
             con.Close();
             con.Dispose();         
@@ -148,7 +148,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         public bool UpdateUser(User user)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
-            SqlCommand cmd = new SqlCommand("Update User Set Name=@Name, Surname=@Surname, Email=@Email where Id=@Id", con);
+            SqlCommand cmd = new SqlCommand("Update Users Set Name=@Name, Surname=@Surname, Email=@Email where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", user.Id);
             cmd.Parameters.AddWithValue("@Name",  user.Name);
             cmd.Parameters.AddWithValue("@Surname", user.Surname);

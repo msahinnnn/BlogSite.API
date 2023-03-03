@@ -102,7 +102,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         public bool CreateComment(Comment comment)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
-            SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)");
+            SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)", con);
             cmd.Parameters.AddWithValue("@Id", comment.Id);
             cmd.Parameters.AddWithValue("@Content", comment.Content);
             cmd.Parameters.AddWithValue("@CreateTime", comment.CreateTime);

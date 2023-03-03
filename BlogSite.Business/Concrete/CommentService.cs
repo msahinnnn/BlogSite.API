@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
+using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
+using BlogSite.Business.Validations;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
@@ -18,13 +20,11 @@ namespace BlogSite.Business.Concrete
     {
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
-        private readonly IValidator<CreateCommentVM> _validator;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper, IValidator<CreateCommentVM> validator)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
-            _validator = validator;
         }
 
         public List<Comment> GetAllComments()
@@ -74,9 +74,10 @@ namespace BlogSite.Business.Concrete
 
         public bool CreateComment(CreateCommentVM createCommentVM)
         {
-            var validation = _validator.Validate(createCommentVM);
-            if (validation.IsValid)
-            {
+            //var validation = _validator.Validate(createCommentVM);
+            ValidationTool.Validate(new CommentValidator(), createCommentVM);
+            //if (validation.IsValid)
+            //{
                 Comment comment = _mapper.Map<Comment>(createCommentVM);
                 comment.Id = Guid.NewGuid();
                 comment.CreateTime = DateTime.Now;
@@ -86,8 +87,8 @@ namespace BlogSite.Business.Concrete
                     return true;
                 }
                 return false;
-            }
-            return false;
+            //}
+            //return false;
         }
 
         public Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM)

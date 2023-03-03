@@ -109,7 +109,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         public bool CreatePost(Post post)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
-            SqlCommand cmd = new SqlCommand("Insert into Posts (Id, Title, Content, CreatedDate, UserId) values (@Id, @Title, @Content, @CreatedDate, @UserId)");
+            SqlCommand cmd = new SqlCommand("Insert into Posts (Id, Title, Content, CreatedDate, UserId) values (@Id, @Title, @Content, @CreatedDate, @UserId)", con);
             cmd.Parameters.AddWithValue("@Id", post.Id);
             cmd.Parameters.AddWithValue("@Title", post.Title);
             cmd.Parameters.AddWithValue("@Content", post.Content);

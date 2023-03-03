@@ -3,7 +3,9 @@ using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
+using FluentValidation;
 using FluentValidation.AspNetCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,19 +20,16 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(CommentProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
 
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IPostService, PostService>();
-builder.Services.AddSingleton<ICommentService, CommentService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
-builder.Services.AddSingleton<IPostRepository, PostRepository>();
-builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-builder.Services.AddFluentValidation(conf =>
-{
-    conf.RegisterValidatorsFromAssembly(typeof(Program).Assembly);
-    conf.AutomaticValidationEnabled = false;
-});
+//builder.Services.AddFluentValidationAutoValidation();
+//builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 
