@@ -76,21 +76,17 @@ namespace BlogSite.Business.Concrete
 
         public bool CreatePost(CreatePostVM createPostVM)
         {
-            //var validation = _validator.Validate(createPostVM);
             ValidationTool.Validate(new PostValidator(), createPostVM);
-            //if (validation.IsValid)
-            //{
-                Post post = _mapper.Map<Post>(createPostVM);
-                post.Id = Guid.NewGuid();
-                post.CreatedDate = DateTime.Now;            
-                var res = _postRepository.CreatePost(post);
-                if (res == true)
-                {
-                    return true;
-                }
-                return false;
-            //}
-            //return false;
+            Post post = _mapper.Map<Post>(createPostVM);
+            post.Id = Guid.NewGuid();
+            post.CreatedDate = DateTime.Now;            
+            var res = _postRepository.CreatePost(post);
+            if(res == true)
+            {
+                return true;
+            }
+            return false;
+
         }
 
         public Task<bool> CreatePostAsync(CreatePostVM createPostVM)

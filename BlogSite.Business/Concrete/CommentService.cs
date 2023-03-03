@@ -74,21 +74,16 @@ namespace BlogSite.Business.Concrete
 
         public bool CreateComment(CreateCommentVM createCommentVM)
         {
-            //var validation = _validator.Validate(createCommentVM);
             ValidationTool.Validate(new CommentValidator(), createCommentVM);
-            //if (validation.IsValid)
-            //{
-                Comment comment = _mapper.Map<Comment>(createCommentVM);
-                comment.Id = Guid.NewGuid();
-                comment.CreateTime = DateTime.Now;
-                var res = _commentRepository.CreateComment(comment);
-                if (res == true)
-                {
-                    return true;
-                }
-                return false;
-            //}
-            //return false;
+            Comment comment = _mapper.Map<Comment>(createCommentVM);
+            comment.Id = Guid.NewGuid();
+            comment.CreateTime = DateTime.Now;
+            var res = _commentRepository.CreateComment(comment);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM)

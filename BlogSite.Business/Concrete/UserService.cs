@@ -61,21 +61,20 @@ namespace BlogSite.Business.Concrete
 
         public bool CreateUser(CreateUserVM createUserVM)
         {
-            //var validation = _validator.Validate(createUserVM);
-            //if (validation.IsValid)
-            //{
             ValidationTool.Validate(new UserValidator(), createUserVM);
-
             User user = _mapper.Map<User>(createUserVM);
-                user.Id = Guid.NewGuid();
-                var res = _userRepository.CreateUser(user);
-                if (res == true)
-                {
-                    return true;
-                }
+            user.Id = Guid.NewGuid();
+            var check = _userRepository.CheckUserEmailExists(user.Email);
+            if (check)
+            {
                 return false;
-            //}
-            //return false;
+            }
+            var res = _userRepository.CreateUser(user);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public Task<bool> CreateUserAsync(CreateUserVM createUserVM)
