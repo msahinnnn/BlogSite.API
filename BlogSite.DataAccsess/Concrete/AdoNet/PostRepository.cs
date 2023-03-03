@@ -48,9 +48,27 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return posts;
         }
 
-        public Task<List<Post>> GetAllPostsAsync()
+        public async Task<List<Post>> GetAllPostsAsync()
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlDataAdapter da = new SqlDataAdapter("Select * from Posts", con);
+            DataTable dt = new DataTable();
+            List<Post> posts = new List<Post>();
+            da.Fill(dt);
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                Post post = new Post();
+                post.Id = Guid.Parse(dt.Rows[i]["Id"].ToString());
+                post.Title = dt.Rows[i]["Title"].ToString();
+                post.Content = dt.Rows[i]["Content"].ToString();
+                post.CreatedDate = DateTime.Parse(dt.Rows[i]["CreatedDate"].ToString());
+                post.UserId = Guid.Parse(dt.Rows[i]["UserId"].ToString());
+                posts.Add(post);
+            }
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return posts;
         }
 
         public Post GetPostById(Guid postId)
@@ -73,9 +91,24 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return post;
         }
 
-        public Task<Post> GetPostByIdAsync(Guid postId)
+        public async Task<Post> GetPostByIdAsync(Guid postId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlCommand cmd = new SqlCommand("Select * from Users where Id=@Id", con);
+            cmd.Parameters.AddWithValue("Id", postId);
+            Post post = new Post();
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+            adp.Fill(ds);
+            post.Id = postId;
+            post.Title = ds.Tables[0].Rows[0]["Title"].ToString();
+            post.Content = ds.Tables[0].Rows[0]["Content"].ToString();
+            post.CreatedDate = DateTime.Parse(ds.Tables[0].Rows[0]["CreatedDate"].ToString());
+            post.UserId = Guid.Parse(ds.Tables[0].Rows[0]["UserId"].ToString());
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return post;
         }
 
         public List<Post> GetPostsByUserId(Guid userId)
@@ -101,9 +134,27 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return posts;
         }
 
-        public Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
+        public async Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlDataAdapter da = new SqlDataAdapter("Select * from Posts where UserId='" + userId + '"', con);
+            DataTable dt = new DataTable();
+            List<Post> posts = new List<Post>();
+            da.Fill(dt);
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                Post post = new Post();
+                post.Id = Guid.Parse(dt.Rows[i]["Id"].ToString());
+                post.Title = dt.Rows[i]["Title"].ToString();
+                post.Content = dt.Rows[i]["Content"].ToString();
+                post.CreatedDate = DateTime.Parse(dt.Rows[i]["CreatedDate"].ToString());
+                post.UserId = Guid.Parse(dt.Rows[i]["UserId"].ToString());
+                posts.Add(post);
+            }
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return posts;
         }
 
         public bool CreatePost(Post post)
@@ -122,9 +173,20 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> CreatePostAsync(Post post)
+        public async Task<bool> CreatePostAsync(Post post)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Insert into Posts (Id, Title, Content, CreatedDate, UserId) values (@Id, @Title, @Content, @CreatedDate, @UserId)", con);
+            cmd.Parameters.AddWithValue("@Id", post.Id);
+            cmd.Parameters.AddWithValue("@Title", post.Title);
+            cmd.Parameters.AddWithValue("@Content", post.Content);
+            cmd.Parameters.AddWithValue("@CreatedDate", post.CreatedDate);
+            cmd.Parameters.AddWithValue("@UserId", post.UserId);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
         public bool DeletePost(Guid postId)
@@ -139,9 +201,16 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> DeletePostAsync(Guid postId)
+        public async Task<bool> DeletePostAsync(Guid postId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Delete from Posts where Id=@Id", con);
+            cmd.Parameters.AddWithValue("Id", postId);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
         public bool UpdatePost(Post post)
@@ -158,9 +227,18 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> UpdatePostAsync(Post post)
+        public async Task<bool> UpdatePostAsync(Post post)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Update Posts Set Title=@Title, Content=@Content where Id=@Id", con);
+            cmd.Parameters.AddWithValue("@Id", post.Id);
+            cmd.Parameters.AddWithValue("@Title", post.Title);
+            cmd.Parameters.AddWithValue("@Content", post.Content);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
     }
 }

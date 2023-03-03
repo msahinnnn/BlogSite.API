@@ -39,9 +39,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<List<Post>> GetAllPostsAsync()
+        public async Task<List<Post>> GetAllPostsAsync()
         {
-            throw new NotImplementedException();
+            var res = await _postRepository.GetAllPostsAsync();
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public List<Post> GetPostsByUserId(Guid userId)
@@ -54,9 +59,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
+        public async Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var res = await _postRepository.GetPostsByUserIdAsync(userId);
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public Post GetPostById(Guid postId)
@@ -69,9 +79,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<Post> GetPostByIdAsync(Guid postId)
+        public async Task<Post> GetPostByIdAsync(Guid postId)
         {
-            throw new NotImplementedException();
+            var res = await _postRepository.GetPostByIdAsync(postId);
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public bool CreatePost(CreatePostVM createPostVM)
@@ -89,9 +104,18 @@ namespace BlogSite.Business.Concrete
 
         }
 
-        public Task<bool> CreatePostAsync(CreatePostVM createPostVM)
+        public async Task<bool> CreatePostAsync(CreatePostVM createPostVM)
         {
-            throw new NotImplementedException();
+            ValidationTool.Validate(new PostValidator(), createPostVM);
+            Post post = _mapper.Map<Post>(createPostVM);
+            post.Id = Guid.NewGuid();
+            post.CreatedDate = DateTime.Now;
+            var res = await _postRepository.CreatePostAsync(post);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool UpdatePost(UpdatePostVM updatePostVM, Guid postId)
@@ -106,9 +130,16 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId)
+        public async Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId)
         {
-            throw new NotImplementedException();
+            Post post = _mapper.Map<Post>(updatePostVM);
+            post.Id = postId;
+            var res = await _postRepository.UpdatePostAsync(post);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool DeletePost(Guid postId)
@@ -121,9 +152,14 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> DeletePostAsync(Guid postId)
+        public async Task<bool> DeletePostAsync(Guid postId)
         {
-            throw new NotImplementedException();
+            var res = await _postRepository.DeletePostAsync(postId);
+            if (res == true)
+            {
+                return true;
+            };
+            return false;
         }
     }
 }

@@ -43,9 +43,25 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return comments;
         }
 
-        public Task<List<Comment>> GetAllCommentsAsync()
+        public async Task<List<Comment>> GetAllCommentsAsync()
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlDataAdapter da = new SqlDataAdapter("Select * from Comments", con);
+            DataTable dt = new DataTable();
+            List<Comment> comments = new List<Comment>();
+            da.Fill(dt);
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                Comment comment = new Comment();
+                comment.Id = Guid.Parse(dt.Rows[i]["Id"].ToString());
+                comment.Content = dt.Rows[i]["Content"].ToString();
+                comment.CreateTime = DateTime.Parse(dt.Rows[i]["CreateTime"].ToString());
+                comments.Add(comment);
+            }
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return comments;
         }
 
         public Comment GetCommentById(Guid commentId)
@@ -62,15 +78,28 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             comment.PostId = Guid.Parse(ds.Tables[0].Rows[0]["PostId"].ToString());
             comment.Content = ds.Tables[0].Rows[0]["Content"].ToString();
             comment.CreateTime = DateTime.Parse(ds.Tables[0].Rows[0]["CreateTime"].ToString());
-            //cmd.ExecuteNonQuery();
             con.Close();
             con.Dispose();
             return comment;
         }
 
-        public Task<Comment> GetCommentByIdAsync(Guid commentId)
+        public async Task<Comment> GetCommentByIdAsync(Guid commentId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlCommand cmd = new SqlCommand("Select * from Comments where Id=@Id", con);
+            cmd.Parameters.AddWithValue("Id", commentId);
+            Comment comment = new Comment();
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+            adp.Fill(ds);
+            comment.Id = commentId;
+            comment.PostId = Guid.Parse(ds.Tables[0].Rows[0]["PostId"].ToString());
+            comment.Content = ds.Tables[0].Rows[0]["Content"].ToString();
+            comment.CreateTime = DateTime.Parse(ds.Tables[0].Rows[0]["CreateTime"].ToString());
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return comment;
         }
 
         public List<Comment> GetCommentsByPostId(Guid postId)
@@ -94,9 +123,25 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return comments;
         }
 
-        public Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
+        public async Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlDataAdapter da = new SqlDataAdapter("Select * from Comments where PostId='" + postId + '"', con);
+            DataTable dt = new DataTable();
+            List<Comment> comments = new List<Comment>();
+            da.Fill(dt);
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                Comment comment = new Comment();
+                comment.Id = Guid.Parse(dt.Rows[i]["Id"].ToString());
+                comment.Content = dt.Rows[i]["Content"].ToString();
+                comment.CreateTime = DateTime.Parse(dt.Rows[i]["CreateTime"].ToString());
+                comments.Add(comment);
+            }
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return comments;
         }
 
         public bool CreateComment(Comment comment)
@@ -114,9 +159,19 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> CreateCommentAsync(Comment comment)
+        public async Task<bool> CreateCommentAsync(Comment comment)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)", con);
+            cmd.Parameters.AddWithValue("@Id", comment.Id);
+            cmd.Parameters.AddWithValue("@Content", comment.Content);
+            cmd.Parameters.AddWithValue("@CreateTime", comment.CreateTime);
+            cmd.Parameters.AddWithValue("@PostId", comment.PostId);
+            await con.OpenAsync();
+            await cmd.DisposeAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
         public bool DeleteComment(Guid commentId)
@@ -131,12 +186,19 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> DeleteCommentAsync(Guid commentId)
+        public async Task<bool> DeleteCommentAsync(Guid commentId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Delete from Comments where Id=@Id", con);
+            cmd.Parameters.AddWithValue("Id", commentId);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
-        
+
 
         public bool UpdateComment(Comment comment)
         {
@@ -151,9 +213,17 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> UpdateCommentAsync(Comment comment)
+        public async Task<bool> UpdateCommentAsync(Comment comment)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Update Comments Set Content=@Content where Id=@Id", con);
+            cmd.Parameters.AddWithValue("@Content", comment.Content);
+            cmd.Parameters.AddWithValue("@Id", comment.Id);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
     }
 }

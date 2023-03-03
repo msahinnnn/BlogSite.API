@@ -49,9 +49,29 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> CheckUserEmailExistsAsync(string mail)
+        public async Task<bool> CheckUserEmailExistsAsync(string mail)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlCommand cmd = new SqlCommand("Select * from Users where Email=@Email", con);
+            cmd.Parameters.AddWithValue("Email", mail);
+            User user = new User();
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+            adp.Fill(ds);
+            user.Id = Guid.Parse(ds.Tables[0].Rows[0]["Id"].ToString()); ;
+            user.Name = ds.Tables[0].Rows[0]["Name"].ToString();
+            user.Surname = ds.Tables[0].Rows[0]["Surname"].ToString();
+            user.Email = ds.Tables[0].Rows[0]["Email"].ToString();
+            if (user == null)
+            {
+                await con.CloseAsync();
+                await con.DisposeAsync();
+                return false;
+            }
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
         public List<User> GetAllUsers()
@@ -76,9 +96,26 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return users;
         }
 
-        public Task<List<User>> GetAllUsersAsync()
+        public async Task<List<User>> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlDataAdapter da = new SqlDataAdapter("Select * from Users", con);
+            DataTable dt = new DataTable();
+            List<User> users = new List<User>();
+            da.Fill(dt);
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                User user = new User();
+                user.Id = Guid.Parse(dt.Rows[i]["Id"].ToString());
+                user.Name = dt.Rows[i]["Name"].ToString();
+                user.Surname = dt.Rows[i]["Surname"].ToString();
+                user.Email = dt.Rows[i]["Email"].ToString();
+                users.Add(user);
+            }
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return users;
         }
 
         public User GetUserById(Guid userId)
@@ -95,16 +132,28 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             user.Name = ds.Tables[0].Rows[0]["Name"].ToString();
             user.Surname = ds.Tables[0].Rows[0]["Surname"].ToString();
             user.Email = ds.Tables[0].Rows[0]["Email"].ToString();
-
-            //cmd.ExecuteNonQuery();
             con.Close();
             con.Dispose();
             return user;
         }
 
-        public Task<User> GetUserByIdAsync(Guid userId)
+        public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlCommand cmd = new SqlCommand("Select * from Users where Id=@Id", con);
+            cmd.Parameters.AddWithValue("Id", userId);
+            User user = new User();
+            SqlDataAdapter adp = new SqlDataAdapter(cmd);
+            DataSet ds = new DataSet();
+            adp.Fill(ds);
+            user.Id = userId;
+            user.Name = ds.Tables[0].Rows[0]["Name"].ToString();
+            user.Surname = ds.Tables[0].Rows[0]["Surname"].ToString();
+            user.Email = ds.Tables[0].Rows[0]["Email"].ToString();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return user;
         }
 
         public bool CreateUser(User user)
@@ -122,9 +171,19 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> CreateUserAsync(User user)
+        public async Task<bool> CreateUserAsync(User user)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            await con.OpenAsync();
+            SqlCommand cmd = new SqlCommand("Insert into Users (Id, Name, Surname, Email) values (@Id, @Name, @Surname, @Email)", con);
+            cmd.Parameters.AddWithValue("@Id", user.Id);
+            cmd.Parameters.AddWithValue("@Name", user.Name);
+            cmd.Parameters.AddWithValue("@Surname", user.Surname);
+            cmd.Parameters.AddWithValue("@Email", user.Email);
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
         public bool DeleteUser(Guid userId)
@@ -139,9 +198,16 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> DeleteUserAsync(Guid userId)
+        public async Task<bool> DeleteUserAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Delete from Users where Id=@Id", con);
+            cmd.Parameters.AddWithValue("Id", userId);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
 
 
@@ -160,9 +226,19 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        public Task<bool> UpdateUserAsync(User user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
-            throw new NotImplementedException();
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlCommand cmd = new SqlCommand("Update Users Set Name=@Name, Surname=@Surname, Email=@Email where Id=@Id", con);
+            cmd.Parameters.AddWithValue("@Id", user.Id);
+            cmd.Parameters.AddWithValue("@Name", user.Name);
+            cmd.Parameters.AddWithValue("@Surname", user.Surname);
+            cmd.Parameters.AddWithValue("@Email", user.Email);
+            await con.OpenAsync();
+            await cmd.ExecuteNonQueryAsync();
+            await con.CloseAsync();
+            await con.DisposeAsync();
+            return true;
         }
     }
 }

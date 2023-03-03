@@ -37,9 +37,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<List<Comment>> GetAllCommentsAsync()
+        public async Task<List<Comment>> GetAllCommentsAsync()
         {
-            throw new NotImplementedException();
+            var res = await _commentRepository.GetAllCommentsAsync();
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public List<Comment> GetCommentsByPostId(Guid postId)
@@ -52,9 +57,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
+        public async Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
         {
-            throw new NotImplementedException();
+            var res = await _commentRepository.GetCommentsByPostIdAsync(postId);
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public Comment GetCommentById(Guid commentId)
@@ -67,9 +77,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<Comment> GetCommentByIdAsync(Guid commentId)
+        public async Task<Comment> GetCommentByIdAsync(Guid commentId)
         {
-            throw new NotImplementedException();
+            var res = await _commentRepository.GetCommentByIdAsync(commentId);
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public bool CreateComment(CreateCommentVM createCommentVM)
@@ -86,9 +101,18 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM)
+        public async Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM)
         {
-            throw new NotImplementedException();
+            ValidationTool.Validate(new CommentValidator(), createCommentVM);
+            Comment comment = _mapper.Map<Comment>(createCommentVM);
+            comment.Id = Guid.NewGuid();
+            comment.CreateTime = DateTime.Now;
+            var res = await _commentRepository.CreateCommentAsync(comment);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateComment(UpdateCommentVM updateCommentVM, Guid commentId)
@@ -103,9 +127,16 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId)
+        public async Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId)
         {
-            throw new NotImplementedException();
+            Comment comment = _mapper.Map<Comment>(updateCommentVM);
+            comment.Id = commentId;
+            var res = await _commentRepository.UpdateCommentAsync(comment);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteComment(Guid commentId)
@@ -118,9 +149,14 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> DeleteCommentAsync(Guid commentId)
+        public async Task<bool> DeleteCommentAsync(Guid commentId)
         {
-            throw new NotImplementedException();
+            var res = await _commentRepository.DeleteCommentAsync(commentId);
+            if (res == true)
+            {
+                return true;
+            };
+            return false;
         }
     }
 }

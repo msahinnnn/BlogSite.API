@@ -36,6 +36,17 @@ namespace BlogSite.API.Controllers
             return BadRequest();
         }
 
+        [HttpGet("[action]Async")]
+        public async Task<IActionResult> GetAsync()
+        {
+            var res = await _userService.GetAllUsersAsync();
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
+
         [HttpGet("[action]")]
         public IActionResult GetUserById([FromQuery] Guid userId)
         {
@@ -47,11 +58,32 @@ namespace BlogSite.API.Controllers
             return BadRequest();
         }
 
+        [HttpGet("[action]Async")]
+        public async Task<IActionResult> GetUserByIdAsync([FromQuery] Guid userId)
+        {
+            var res = await _userService.GetUserByIdAsync(userId);
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
 
         [HttpPost("[action]")]
         public IActionResult Create([FromBody] CreateUserVM createUserVM)
         {
             var res = _userService.CreateUser(createUserVM);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("[action]Async")]
+        public async Task<IActionResult> CreateAsync([FromBody] CreateUserVM createUserVM)
+        {
+            var res = await _userService.CreateUserAsync(createUserVM);
             if (res == true)
             {
                 return Ok();
@@ -70,10 +102,32 @@ namespace BlogSite.API.Controllers
             return BadRequest();
         }
 
+        [HttpPut("[action]Async")]
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
+        {
+            var res = await _userService.UpdateUserAsync(updateUserVM, userId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
         [HttpDelete("[action]")]
         public IActionResult Delete([FromQuery] Guid userId)
         {
             var res = _userService.DeleteUser(userId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpDelete("[action]Async")]
+        public async Task<IActionResult> DeleteAsync([FromQuery] Guid userId)
+        {
+            var res = await _userService.DeleteUserAsync(userId);
             if (res == true)
             {
                 return Ok();

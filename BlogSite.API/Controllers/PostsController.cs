@@ -33,10 +33,32 @@ namespace BlogSite.API.Controllers
             return BadRequest();
         }
 
+        [HttpGet("[action]Async")]
+        public async Task<IActionResult> GetAsync()
+        {
+            var res = _postService.GetAllPostsAsync();
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
+
         [HttpGet("[action]")]
         public IActionResult GetPostById([FromQuery] Guid postId)
         {
             var res = _postService.GetPostById(postId);
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("[action]Async")]
+        public async Task<IActionResult> GetPostByIdAsync([FromQuery] Guid postId)
+        {
+            var res = await _postService.GetPostByIdAsync(postId);
             if (res is not null)
             {
                 return Ok(res);
@@ -55,10 +77,32 @@ namespace BlogSite.API.Controllers
             return BadRequest();
         }
 
+        [HttpGet("[action]Async")]
+        public async Task<IActionResult> GetAllPostsByUserIdAsync([FromQuery] Guid userId)
+        {
+            var res = await _postService.GetPostsByUserIdAsync(userId);
+            if (res is not null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
+        }
+
         [HttpPost("[action]")]
         public IActionResult Create([FromBody] CreatePostVM createPostVM)
         {
             var res = _postService.CreatePost(createPostVM);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("[action]Async")]
+        public async Task<IActionResult> CreateAsync([FromBody] CreatePostVM createPostVM)
+        {
+            var res = await _postService.CreatePostAsync(createPostVM);
             if (res == true)
             {
                 return Ok();
@@ -77,10 +121,32 @@ namespace BlogSite.API.Controllers
             return BadRequest();
         }
 
+        [HttpPut("[action]Async")]
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdatePostVM updatePostVM, [FromQuery] Guid postId)
+        {
+            var res = await _postService.UpdatePostAsync(updatePostVM, postId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
         [HttpDelete("[action]")]
         public IActionResult Delete([FromQuery] Guid postId)
         {
             var res = _postService.DeletePost(postId);
+            if (res == true)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpDelete("[action]Async")]
+        public async Task<IActionResult> DeleteAsync([FromQuery] Guid postId)
+        {
+            var res = await _postService.DeletePostAsync(postId);
             if (res == true)
             {
                 return Ok();

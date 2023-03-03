@@ -39,9 +39,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<List<User>> GetAllUsersAsync()
+        public async Task<List<User>> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+            var res = await _userRepository.GetAllUsersAsync();
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public User GetUserById(Guid userId)
@@ -54,9 +59,14 @@ namespace BlogSite.Business.Concrete
             return null;
         }
 
-        public Task<User> GetUserByIdAsync(Guid userId)
+        public async Task<User> GetUserByIdAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var res = await _userRepository.GetUserByIdAsync(userId);
+            if (res is not null)
+            {
+                return res;
+            }
+            return null;
         }
 
         public bool CreateUser(CreateUserVM createUserVM)
@@ -77,9 +87,22 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> CreateUserAsync(CreateUserVM createUserVM)
+        public async Task<bool> CreateUserAsync(CreateUserVM createUserVM)
         {
-            throw new NotImplementedException();
+            ValidationTool.Validate(new UserValidator(), createUserVM);
+            User user = _mapper.Map<User>(createUserVM);
+            user.Id = Guid.NewGuid();
+            var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
+            if (check)
+            {
+                return false;
+            }
+            var res = await _userRepository.CreateUserAsync(user);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool UpdateUser(UpdateUserVM updateUserVM, Guid userId)
@@ -94,9 +117,16 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId)
+        public async Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId)
         {
-            throw new NotImplementedException();
+            User user = _mapper.Map<User>(updateUserVM);
+            user.Id = userId;
+            var res = await _userRepository.UpdateUserAsync(user);
+            if (res == true)
+            {
+                return true;
+            }
+            return false;
         }
 
         public bool DeleteUser(Guid userId)
@@ -109,9 +139,14 @@ namespace BlogSite.Business.Concrete
             return false;
         }
 
-        public Task<bool> DeleteUserAsync(Guid userId)
+        public async Task<bool> DeleteUserAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var res = await _userRepository.DeleteUserAsync(userId);
+            if (res == true)
+            {
+                return true;
+            };
+            return false;
         }
     }
 }
