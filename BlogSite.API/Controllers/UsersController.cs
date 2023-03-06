@@ -24,115 +24,127 @@ namespace BlogSite.API.Controllers
         {
             _userService = userService;
         }
-
-        [HttpGet("[action]")]
-        public IActionResult Get()
-        {
-            var res = _userService.GetAllUsers();
-            if (res is not null)
-            {
-                return Ok(res);
-            }
-            return BadRequest();
-        }
+       
 
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
             var res = await _userService.GetAllUsersAsync();
-            if (res is not null)
+            if (res.Success == true)
             {
-                return Ok(res);
+                return Ok(res.Data);
             }
-            return BadRequest();
+            return BadRequest(res.Message);
         }
 
-        [HttpGet("[action]")]
-        public IActionResult GetUserById([FromQuery] Guid userId)
-        {
-            var res = _userService.GetUserById(userId);
-            if (res is not null)
-            {
-                return Ok(res);
-            }
-            return BadRequest();
-        }
 
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetUserByIdAsync([FromQuery] Guid userId)
         {
             var res = await _userService.GetUserByIdAsync(userId);
-            if (res is not null)
+            if (res.Success == true)
             {
-                return Ok(res);
+                return Ok(res.Data);
             }
-            return BadRequest();
+            return BadRequest(res.Message);
         }
 
-        [HttpPost("[action]")]
-        public IActionResult Create([FromBody] CreateUserVM createUserVM)
-        {
-            var res = _userService.CreateUser(createUserVM);
-            if (res == true)
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
 
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserVM createUserVM)
         {
             var res = await _userService.CreateUserAsync(createUserVM);
-            if (res == true)
+            if (res.Success == true)
             {
-                return Ok();
+                return Ok(res.Message);
             }
-            return BadRequest();
+            return BadRequest(res.Message);
         }
 
-        [HttpPut("[action]")]
-        public IActionResult Update([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
-        {
-            var res = _userService.UpdateUser(updateUserVM, userId);
-            if (res == true)
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
 
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
         {
             var res = await _userService.UpdateUserAsync(updateUserVM, userId);
-            if (res == true)
+            if (res.Success == true)
             {
-                return Ok();
+                return Ok(res.Message);
             }
-            return BadRequest();
+            return BadRequest(res.Message);
         }
 
-        [HttpDelete("[action]")]
-        public IActionResult Delete([FromQuery] Guid userId)
-        {
-            var res = _userService.DeleteUser(userId);
-            if (res == true)
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
 
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid userId)
         {
             var res = await _userService.DeleteUserAsync(userId);
-            if (res == true)
+            if (res.Success == true)
             {
-                return Ok();
+                return Ok(res.Message);
             }
-            return BadRequest();
+            return BadRequest(res.Message);
         }
+
+
+        //[HttpGet("[action]")]
+        //public IActionResult Get()
+        //{
+        //    var res = _userService.GetAllUsers();
+        //    if (res is not null)
+        //    {
+        //        return Ok(res);
+        //    }
+        //    return BadRequest();
+        //}
+
+
+        //[HttpGet("[action]")]
+        //public IActionResult GetUserById([FromQuery] Guid userId)
+        //{
+        //    var res = _userService.GetUserById(userId);
+        //    if (res is not null)
+        //    {
+        //        return Ok(res);
+        //    }
+        //    return BadRequest();
+        //}
+
+
+        //[HttpPost("[action]")]
+        //public IActionResult Create([FromBody] CreateUserVM createUserVM)
+        //{
+        //    var res = _userService.CreateUser(createUserVM);
+        //    if (res == true)
+        //    {
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
+
+
+        //[HttpPut("[action]")]
+        //public IActionResult Update([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
+        //{
+        //    var res = _userService.UpdateUser(updateUserVM, userId);
+        //    if (res == true)
+        //    {
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
+
+
+        //[HttpDelete("[action]")]
+        //public IActionResult Delete([FromQuery] Guid userId)
+        //{
+        //    var res = _userService.DeleteUser(userId);
+        //    if (res == true)
+        //    {
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
+
+
     }
 }

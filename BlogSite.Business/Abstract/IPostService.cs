@@ -1,5 +1,6 @@
 ﻿using BlogSite.API.Models;
 using BlogSite.API.ViewModels.PostVMs;
+using BlogSite.Core.Utilities.Results;
 using BlogSite.Entities.ViewModels.PostVMs;
 using System;
 using System.Collections.Generic;
@@ -11,19 +12,13 @@ namespace BlogSite.Business.Abstract
 {
     public interface IPostService
     {
-        List<Post> GetAllPosts();
-        Task<List<Post>> GetAllPostsAsync();
-        List<Post> GetPostsByUserId(Guid userId);
-        Task<List<Post>> GetPostsByUserIdAsync(Guid userId);
-        Post GetPostById(Guid postId);
-        Task<Post> GetPostByIdAsync(Guid postId);
+        Task<IDataResult<List<Post>>> GetAllPostsAsync();
+        Task<IDataResult<List<Post>>> GetPostsByUserIdAsync(Guid userId);
+        Task<IDataResult<Post>> GetPostByIdAsync(Guid postId);
 
-        bool CreatePost(CreatePostVM createPostVM);
-        Task<bool> CreatePostAsync(CreatePostVM createPostVM);
-        bool UpdatePost(UpdatePostVM updatePostVM, Guid postId);
-        Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId);
-        bool DeletePost(Guid postId);
-        Task<bool> DeletePostAsync(Guid postId);
+        Task<IResult> CreatePostAsync(CreatePostVM createPostVM);
+        Task<IResult> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId);
+        Task<IResult> DeletePostAsync(Guid postId);
 
 
     }

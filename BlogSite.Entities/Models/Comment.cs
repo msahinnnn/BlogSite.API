@@ -1,6 +1,8 @@
-﻿namespace BlogSite.API.Models
+﻿using BlogSite.Core.Entities;
+
+namespace BlogSite.API.Models
 {
-    public class Comment
+    public class Comment : IBaseEntity
     {
         public Guid Id { get; set; }
         public string Content { get; set; }

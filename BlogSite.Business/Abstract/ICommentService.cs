@@ -1,5 +1,6 @@
 ﻿using BlogSite.API.Models;
 using BlogSite.API.ViewModels.CommentVMs;
+using BlogSite.Core.Utilities.Results;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using System;
 using System.Collections.Generic;
@@ -11,18 +12,12 @@ namespace BlogSite.Business.Abstract
 {
     public interface ICommentService
     {
-        List<Comment> GetAllComments();
-        Task<List<Comment>> GetAllCommentsAsync();
-        List<Comment> GetCommentsByPostId(Guid postId);
-        Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId);
-        Comment GetCommentById(Guid commentId);
-        Task<Comment> GetCommentByIdAsync(Guid commentId);
+        Task<IDataResult<List<Comment>>> GetAllCommentsAsync();
+        Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId);
+        Task<IDataResult<Comment>> GetCommentByIdAsync(Guid commentId);
 
-        bool CreateComment(CreateCommentVM createCommentVM);
-        Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM);
-        bool UpdateComment(UpdateCommentVM updateCommentVM, Guid commentId);
-        Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId);
-        bool DeleteComment(Guid commentId);
-        Task<bool> DeleteCommentAsync(Guid commentId);
+        Task<IResult> CreateCommentAsync(CreateCommentVM createCommentVM);
+        Task<IResult> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId);
+        Task<IResult> DeleteCommentAsync(Guid commentId);
     }
 }
