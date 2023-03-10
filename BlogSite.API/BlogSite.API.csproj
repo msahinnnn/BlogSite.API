@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlogSite.Business\BlogSite.Business.csproj" />
-    <ProjectReference Include="..\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
+    <ProjectReference Include="..\BlogSite.DataAccsess\BlogSite.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

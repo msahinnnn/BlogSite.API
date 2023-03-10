@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  sql-server-db:
+    container_name: mssql-server-cont
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "password"
+      ACCEPT_EULA: "Y"
+
+
+
+
+
+
+
