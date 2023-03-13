@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogSite.Business", "BlogSi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogSite.Entities", "BlogSite.Entities\BlogSite.Entities.csproj", "{A43E601D-5379-4592-8684-656AF11DBB44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogSite.DataAccess", "BlogSite.DataAccsess\BlogSite.DataAccess.csproj", "{74BF78A9-897D-407F-BF55-BD9767D61532}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogSite.DataAccsess", "BlogSite.DataAccsess\BlogSite.DataAccsess.csproj", "{74BF78A9-897D-407F-BF55-BD9767D61532}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogSite.Core", "BlogSite.Core\BlogSite.Core.csproj", "{06E2C96F-6EEF-4BD3-9357-70E5C87304D3}"
 EndProject

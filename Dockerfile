@@ -1,5 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
 COPY ./BlogSite.Entities/*.csproj ./BlogSite.Entities/
 COPY ./BlogSite.DataAccsess/*.csproj ./BlogSite.DataAccsess/
@@ -11,13 +13,11 @@ RUN dotnet restore
 COPY . .
 RUN dotnet publish ./BlogSite.API/*.csproj -o /publish/
 
-FROM mcr.microsoft.com/dotnet/runtime:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build /publish .
-ENV ASPNETCORE_URLS="https://*:5000"
+#ENV ASPNETCORE_URLS="http://*:5174"
 ENTRYPOINT [ "dotnet","BlogSite.API.dll" ]
-
-
 
 
 

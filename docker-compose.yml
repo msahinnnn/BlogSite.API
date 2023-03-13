@@ -1,15 +1,54 @@
+# version: '3.4'
+
+# services:
+#   blogsite-api:
+#     build : .
+#     environment:
+#       - ConnectionStrings__DefaultConnection=User ID=mehmetsahin;Password=password123;Server=localhost\\SQLEXPRESS;Port=1433;Database=BlogSiteDB;Trusted_Connection=True;Encrypt=false;
+#     ports:
+#       - "8080:80"
+#     depends_on:
+#       - "sql-server-db"
+
+
+#   sql-server-db:
+#     image: mcr.microsoft.com/mssql/server:2019-latest
+#     container_name: sql-server-db
+#     ports:
+#       - "1433:1433"
+#     environment:
+#       ACCEPT_EULA: "Y"
+
+#-------------------------------------------------------------------------------
+
 version: '3.4'
 
+networks:
+  dev:
+    driver: bridge
+
+
 services:
+  blogsite-api:
+    build : .
+    ports:
+      - "8080:80"
+    depends_on:
+      - sql-server-db
+    networks:
+      - dev
+
   sql-server-db:
-    container_name: mssql-server-cont
     image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql-server-db   
     ports:
       - "1433:1433"
     environment:
-      SA_PASSWORD: "password"
       ACCEPT_EULA: "Y"
-
+      MSSQL_PID: Express
+      MSSQL_PASSWORD: "password123"
+    networks:
+      - dev
 
 
 
