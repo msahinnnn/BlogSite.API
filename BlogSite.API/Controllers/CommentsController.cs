@@ -30,6 +30,7 @@ namespace BlogSite.API.Controllers
                 return Ok(res.Data);
             }
             return BadRequest(res.Message);
+            //return Ok("test");
         }
 
         [HttpGet("[action]Async")]
