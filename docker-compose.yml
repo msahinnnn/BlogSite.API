@@ -21,11 +21,11 @@
 
 #-------------------------------------------------------------------------------
 
-version: '3.4'
+version: '3.8'
 
 networks:
   dev:
-    driver: bridge
+
 
 
 services:
@@ -35,8 +35,11 @@ services:
       - "8080:80"
     depends_on:
       - mssql
-    environment:
-      - ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=BlogSiteDB;User ID=sa;Password=Password_123*;Trusted_Connection=True;Encrypt=false;MultipleActiveResultSets=true;"
+    #environment:
+    #   - ConnectionStrings__MsSqlConnection=Server=mssql,1433;Database=BlogSiteDB;User ID=SA;Password=Password123;TrustServerCertificate=False;Trusted_Connection=False;Encrypt=false;MultipleActiveResultSets=true;
+      # - DB_HOST=mssql
+      # - DB_NAME=BlogSiteAppDB
+      # - DB_SA_PASSWORD=P@ssw0rd12345
     networks:
       - dev
 
@@ -46,9 +49,11 @@ services:
     ports:
       - 1433:1433
     environment:
-      ACCEPT_EULA: Y
-      MSSQL_PID: Express
-      MSSQL_SA_PASSWORD: "Password_123*"
+      - ACCEPT_EULA=Y
+      #MSSQL_PID: Express
+      - MSSQL_SA_PASSWORD=mrMehmet123#
+    volumes:
+      - C:\Users\mehme\OneDrive\Masaüstü\BlogSiteVolumes:/var/opt/mssql/data
     networks:
       - dev
 

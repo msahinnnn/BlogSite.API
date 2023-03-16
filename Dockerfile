@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+#EXPOSE 443
 
 COPY ./BlogSite.Entities/*.csproj ./BlogSite.Entities/
 COPY ./BlogSite.DataAccsess/*.csproj ./BlogSite.DataAccsess/
