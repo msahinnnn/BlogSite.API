@@ -124,7 +124,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return true;
         }
 
-        
+
 
         //public List<Comment> GetAllComments()
         //{

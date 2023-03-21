@@ -35,13 +35,15 @@ services:
       - "8080:80"
     depends_on:
       - mssql
-    #environment:
-    #   - ConnectionStrings__MsSqlConnection=Server=mssql,1433;Database=BlogSiteDB;User ID=SA;Password=Password123;TrustServerCertificate=False;Trusted_Connection=False;Encrypt=false;MultipleActiveResultSets=true;
-      # - DB_HOST=mssql
-      # - DB_NAME=BlogSiteAppDB
-      # - DB_SA_PASSWORD=P@ssw0rd12345
     networks:
       - dev
+
+  app_redis:
+    container_name: redis
+    image: redis
+    ports:
+      - 6379:6379
+
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -50,7 +52,6 @@ services:
       - 1433:1433
     environment:
       - ACCEPT_EULA=Y
-      #MSSQL_PID: Express
       - MSSQL_SA_PASSWORD=mrMehmet123#
     volumes:
       - C:\Users\mehme\OneDrive\Masaüstü\BlogSiteVolumes:/var/opt/mssql/data

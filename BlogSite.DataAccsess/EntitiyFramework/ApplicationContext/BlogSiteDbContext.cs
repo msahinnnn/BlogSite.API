@@ -10,10 +10,13 @@ namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
         public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
+
+
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
         //    optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=BlogSiteDB;Trusted_Connection=True;Encrypt=false;");
         //}
+
         public BlogSiteDbContext(DbContextOptions<BlogSiteDbContext> options) : base(options)
         {
             try
@@ -29,22 +32,21 @@ namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
                 Console.WriteLine(ex.Message);
             }
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.Posts)
+                .HasForeignKey(up => up.UserId);
 
-        //    modelBuilder.Entity<Post>()
-        //        .HasOne(p => p.User)
-        //        .WithMany(u => u.Posts)
-        //        .HasForeignKey(up => up.UserId);
-
-        //    modelBuilder.Entity<Comment>()
-        //        .HasOne(c => c.Post)
-        //        .WithMany(p => p.Comments)
-        //        .HasForeignKey(pc => pc.PostId);
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Post)
+                .WithMany(p => p.Comments)
+                .HasForeignKey(pc => pc.PostId);
 
 
-        //}
+        }
 
 
     }

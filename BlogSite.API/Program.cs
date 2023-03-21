@@ -9,6 +9,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,16 +30,6 @@ var connectionString = builder.Configuration.GetConnectionString("MsSqlConnectio
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(connectionString));
 
 
-//builder.Services.AddDbContext<BlogSiteDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection")));
-//builder.Services.AddDbContext<BlogSiteDbContext>(
-//    options => options.UseSqlServer(con));
-
-//var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-//var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-//var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
-//var connectionString = $"Data Source={dbHost};Initial Catalog={dbName};User ID=sa;Password={dbPassword}";
-//builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -57,8 +48,13 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
+builder.Services.AddScoped<ICacheService, CacheService>();
 //builder.Services.AddFluentValidationAutoValidation();
 //builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+
+
+
 
 var app = builder.Build();
 

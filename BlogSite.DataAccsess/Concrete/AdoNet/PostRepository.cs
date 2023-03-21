@@ -134,6 +134,8 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         }
 
 
+
+
         //public List<Post> GetAllPosts()
         //{
         //    SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));

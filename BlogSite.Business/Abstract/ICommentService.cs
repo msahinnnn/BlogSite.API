@@ -16,7 +16,7 @@ namespace BlogSite.Business.Abstract
         Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId);
         Task<IDataResult<Comment>> GetCommentByIdAsync(Guid commentId);
 
-        Task<IResult> CreateCommentAsync(CreateCommentVM createCommentVM);
+        Task<IDataResult<Comment>> CreateCommentAsync(CreateCommentVM createCommentVM);
         Task<IResult> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId);
         Task<IResult> DeleteCommentAsync(Guid commentId);
     }

@@ -48,7 +48,7 @@ namespace BlogSite.Business.Concrete
             return new DataResult<List<Comment>>(res, true, "Comments by Post Id...");
         }
 
-        public async Task<IResult> CreateCommentAsync(CreateCommentVM createCommentVM)
+        public async Task<IDataResult<Comment>> CreateCommentAsync(CreateCommentVM createCommentVM)
         {
             ValidationTool.Validate(new CommentValidator(), createCommentVM);
             Comment comment = _mapper.Map<Comment>(createCommentVM);
@@ -57,9 +57,9 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.CreateAsync(comment);
             if (res == true)
             {
-                return new Result(true, "Comment successfully created...");
+                return new DataResult<Comment>(comment, true, "Comment successfully created...");
             }
-            return new Result(false, "Something went wrong! Please try again.");
+            return new DataResult<Comment>(null, false, "Something went wrong! Please try again.");
         }
 
         public async Task<IResult> DeleteCommentAsync(Guid commentId)

@@ -126,6 +126,8 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         }
 
+  
+
         //public bool CheckUserEmailExists(string mail)
         //{
         //    SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));

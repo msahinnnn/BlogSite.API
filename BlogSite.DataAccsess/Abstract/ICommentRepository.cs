@@ -15,17 +15,18 @@ namespace BlogSite.DataAccsess.Abstract
         Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId);
 
         //Comment GetCommentById(Guid commentId);
+        //Task<Comment> GetByIdAsync(Guid id);
         //List<Comment> GetAllComments();
-        //Task<List<Comment>> GetAllCommentsAsync();
+        //Task<List<Comment>> GetAllAsync();
         //List<Comment> GetCommentsByPostId(Guid postId);
-        //Task<Comment> GetCommentByIdAsync(Guid commentId);
+
 
         //bool CreateComment(Comment comment);
-        //Task<bool> CreateCommentAsync(Comment comment);
+        //Task<bool> CreateAsync(Comment entity);
         //bool UpdateComment(Comment comment);
-        //Task<bool> UpdateCommentAsync(Comment comment);
+        //Task<bool> UpdateAsync(Comment entity);
         //bool DeleteComment(Guid commentId);
-        //Task<bool> DeleteCommentAsync(Guid commentId);
+        //Task<bool> DeleteAsync(Guid id);
 
     }
 }
