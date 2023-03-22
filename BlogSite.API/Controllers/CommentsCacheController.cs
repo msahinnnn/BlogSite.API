@@ -4,6 +4,7 @@ using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace BlogSite.API.Controllers
 {
@@ -13,19 +14,22 @@ namespace BlogSite.API.Controllers
     {
         private ICommentCacheService _commentCacheService;
         private readonly CacheService _cacheService;
-        public CommentsCacheController(ICommentCacheService commentCacheService, CacheService cacheService)
+        private IDistributedCache _distributedCache;
+        public CommentsCacheController(ICommentCacheService commentCacheService, CacheService cacheService, IDistributedCache distributedCache)
         {
             _commentCacheService = commentCacheService;
             _cacheService = cacheService;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> Get()
         {
-           var db =  _cacheService.GetDb(0);
-           await db.StringSetAsync("adı", "mehmet");
-            return Ok();
-           //return Ok(await _commentCacheService.GetAsync());
+            //var db =  _cacheService.GetDb(0);
+            //await db.StringSetAsync("adı", "mehmet");
+            //await _distributedCache.SetStringAsync("test","test");
+            //return Ok();
+           return Ok(await _commentCacheService.GetAsync());
         }
 
         [HttpGet("[action]")]

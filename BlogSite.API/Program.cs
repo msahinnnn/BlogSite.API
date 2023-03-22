@@ -48,15 +48,25 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
+
+//builder.Services.AddSingleton<CacheService>(sp =>
+//{
+//    return new CacheService("localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
+//});
+//builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
+
+
 builder.Services.AddSingleton<CacheService>(sp =>
 {
-    return new CacheService("localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
+    return new CacheService("app_redis:1920,abortConnect=false");
 });
+builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "app_redis,abortConnect=false");
+
+
 //builder.Services.AddFluentValidationAutoValidation();
 //builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
-ThreadPool.SetMinThreads(1024, 100);
+//ThreadPool.SetMinThreads(1024, 100);
 //builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
 //    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis"))
 //);

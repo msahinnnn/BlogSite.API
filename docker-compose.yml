@@ -1,25 +1,3 @@
-# version: '3.4'
-
-# services:
-#   blogsite-api:
-#     build : .
-#     environment:
-#       - ConnectionStrings__DefaultConnection=User ID=mehmetsahin;Password=password123;Server=localhost\\SQLEXPRESS;Port=1433;Database=BlogSiteDB;Trusted_Connection=True;Encrypt=false;
-#     ports:
-#       - "8080:80"
-#     depends_on:
-#       - "sql-server-db"
-
-
-#   sql-server-db:
-#     image: mcr.microsoft.com/mssql/server:2019-latest
-#     container_name: sql-server-db
-#     ports:
-#       - "1433:1433"
-#     environment:
-#       ACCEPT_EULA: "Y"
-
-#-------------------------------------------------------------------------------
 
 version: '3.8'
 
@@ -29,6 +7,7 @@ networks:
 
 
 services:
+
   blogsite-api:
     build : .
     ports:
@@ -38,6 +17,8 @@ services:
       - app_redis
     networks:
       - dev
+    links:
+      - app_redis
 
   app_redis:
     container_name: redis
