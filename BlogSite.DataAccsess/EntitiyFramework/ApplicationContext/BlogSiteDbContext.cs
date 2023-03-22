@@ -7,9 +7,9 @@ namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
 {
     public class BlogSiteDbContext : DbContext
     {
-        public DbSet<User> Users { get; set; }
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<Comment> Comments { get; set; }
+        public DbSet<User>? Users { get; set; }
+        public DbSet<Post>? Posts { get; set; }
+        public DbSet<Comment>? Comments { get; set; }
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -22,13 +22,14 @@ namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
             try
             {
                 var databaseCreator = Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
-                if(databaseCreator != null)
+                if (databaseCreator != null)
                 {
                     if (!databaseCreator.CanConnect()) databaseCreator.Create();
                     if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
                 }
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
             }
         }
