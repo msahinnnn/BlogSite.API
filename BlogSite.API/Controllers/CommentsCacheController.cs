@@ -22,31 +22,34 @@ namespace BlogSite.API.Controllers
             _distributedCache = distributedCache;
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Get()
-        {
-            //var db =  _cacheService.GetDb(0);
-            //await db.StringSetAsync("adı", "mehmet");
-            //await _distributedCache.SetStringAsync("test","test");
-            //return Ok();
-           return Ok(await _commentCacheService.GetAsync());
-        }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetById([FromQuery]Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
             return Ok(await _commentCacheService.GetByIdAsync(id));
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Crate([FromBody] CreateCommentVM createCommentVM)
+        public async Task<IActionResult> Create([FromBody] CreateCommentVM createCommentVM)
         {
-            return Ok(await _commentCacheService.CreateAsync(createCommentVM));
+            var res = await _commentCacheService.CreateAsync(createCommentVM);
+            if (res.Success == true)
+            {
+                return Ok(res.Message);
+            }
+            return BadRequest(res.Message);
         }
 
+        [HttpDelete("[action]")]
+        public async Task<IActionResult> Delete([FromQuery] Guid id)
+        {
+            var res = await _commentCacheService.RemoveAsync(id);
+            if (res.Success == true)
+            {
+                return Ok(res.Message);
+            }
+            return BadRequest(res.Message);
 
-
-
-
+        }
     }
 }
