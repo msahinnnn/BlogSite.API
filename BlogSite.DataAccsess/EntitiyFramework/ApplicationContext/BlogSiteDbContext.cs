@@ -19,32 +19,32 @@ namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
 
         public BlogSiteDbContext(DbContextOptions<BlogSiteDbContext> options) : base(options)
         {
-            try
-            {
-                var databaseCreator = Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
-                if (databaseCreator != null)
-                {
-                    if (!databaseCreator.CanConnect()) databaseCreator.Create();
-                    if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            //try
+            //{
+            //    var databaseCreator = Database.GetService<IDatabaseCreator>() as RelationalDatabaseCreator;
+            //    if (databaseCreator != null)
+            //    {
+            //        if (!databaseCreator.CanConnect()) databaseCreator.Create();
+            //        if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.Message);
+            //}
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<Post>()
-                .HasOne(p => p.User)
-                .WithMany(u => u.Posts)
-                .HasForeignKey(up => up.UserId);
+            //modelBuilder.Entity<Post>()
+            //    .HasOne(p => p.User)
+            //    .WithMany(u => u.Posts)
+            //    .HasForeignKey(up => up.UserId);
 
-            modelBuilder.Entity<Comment>()
-                .HasOne(c => c.Post)
-                .WithMany(p => p.Comments)
-                .HasForeignKey(pc => pc.PostId);
+            //modelBuilder.Entity<Comment>()
+            //    .HasOne(c => c.Post)
+            //    .WithMany(p => p.Comments)
+            //    .HasForeignKey(pc => pc.PostId);
 
 
         }

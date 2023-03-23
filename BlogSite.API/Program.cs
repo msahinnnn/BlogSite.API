@@ -25,9 +25,9 @@ var builder = WebApplication.CreateBuilder(args);
 //var database = builder.Configuration["Database"] ?? "BlogSiteAppDB";
 ////var connectionString = $"Server={server}, {port};Initial Catalog={database};User ID={user};Password={password};";
 
-var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
+//var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
 
-builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(connectionString));
 
 
 
