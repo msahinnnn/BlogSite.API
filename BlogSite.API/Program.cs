@@ -43,11 +43,12 @@ builder.Services.AddAutoMapper(typeof(PostProfile));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IRedisService, RedisService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
+//builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
 
 //builder.Services.AddSingleton<CacheService>(sp =>
 //{

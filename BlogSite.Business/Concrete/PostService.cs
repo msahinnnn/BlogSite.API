@@ -1,14 +1,12 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
 using BlogSite.API.Validations;
-using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Validations;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
-using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
 using System;
@@ -24,22 +22,29 @@ namespace BlogSite.Business.Concrete
     {
         private IPostRepository _postRepository;
         private IMapper _mapper;
-        public PostService(IPostRepository postRepository, IMapper mapper)
+        private IRedisService _redisService;
+        public PostService(IPostRepository postRepository, IMapper mapper, IRedisService redisService)
         {
             _postRepository = postRepository;
             _mapper = mapper;
+            _redisService = redisService;
         }
 
         public async Task<IDataResult<List<Post>>> GetAllPostsAsync()
         {
-            var res = await _postRepository.GetAllAsync();
-            return new DataResult<List<Post>>(res, true, "All Posts...");
+            List<Post> posts = await _postRepository.GetAllAsync();
+            var res = await _redisService.GetAllCacheAsync<Post>("posts", posts);
+            return new DataResult<List<Post>>(res.Data, true, "All Posts...");
         }
 
         public async Task<IDataResult<Post>> GetPostByIdAsync(Guid postId)
         {
-            var res = await _postRepository.GetByIdAsync(postId);
-            return new DataResult<Post>(res, true, "Post by Id...");
+            var res = await _redisService.GetByIdCacheAsync<Post>("posts", postId);
+            if (res.Success == true)
+            {
+                return new DataResult<Post>(res.Data, true, "Post by Id...");
+            }
+            return new DataResult<Post>(res.Data, false, res.Message);
         }
 
         public async Task<IDataResult<List<Post>>> GetPostsByUserIdAsync(Guid userId)
@@ -54,10 +59,16 @@ namespace BlogSite.Business.Concrete
             Post post = _mapper.Map<Post>(createPostVM);
             post.Id = Guid.NewGuid();
             post.CreatedDate = DateTime.Now;
+            post.UserId = createPostVM.UserId;
             var res = await _postRepository.CreateAsync(post);
             if(res == true)
             {
-                return new Result(true, "Post successfully created...");
+                var cache = await _redisService.CreateCacheAsync<Post>($"posts:{post.Id}", post);
+                if (cache.Success == true)
+                {
+                    return new DataResult<Post>(post, true, "Post successfully created...");
+                }
+                return new DataResult<Post>(post, true, "Post successfully added to db but couldn' t added to CacheDB...");
             }
             return new Result(false, "Something went wrong! Please try again.");
         }
@@ -67,7 +78,12 @@ namespace BlogSite.Business.Concrete
             var res = await _postRepository.DeleteAsync(postId);
             if (res == true)
             {
-                return new Result(true, "Post successfully deleted...");
+                var cache = await _redisService.DeleteCacheAsync($"posts:{postId}", postId);
+                if (cache.Success == true)
+                {
+                    return new Result(true, "Post successfully deleted...");
+                }
+                return new Result(true, "Post successfully deleted from DB but couldn't deleted from CacheDB...");
             }
             return new Result(false, "Something went wrong! Please try again.");
         }

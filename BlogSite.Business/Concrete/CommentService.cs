@@ -23,23 +23,32 @@ namespace BlogSite.Business.Concrete
     {
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
+        private IRedisService _redisService;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper, IRedisService redisService)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
+            _redisService = redisService;
         }
 
         public async Task<IDataResult<List<Comment>>> GetAllCommentsAsync()
         {
-            var res = await _commentRepository.GetAllAsync();
-            return new DataResult<List<Comment>>(res, true, "All Comments...");
+            //var res = await _commentRepository.GetAllAsync();
+            List<Comment> comments = await _commentRepository.GetAllAsync();
+            var res = await _redisService.GetAllCacheAsync<Comment>("comments", comments);
+            return new DataResult<List<Comment>>(res.Data, true, "All Comments...");
         }
 
         public async Task<IDataResult<Comment>> GetCommentByIdAsync(Guid commentId)
         {
-            var res = await _commentRepository.GetByIdAsync(commentId);
-            return new DataResult<Comment>(res, true, "Comment by Id...");
+            //var res = await _commentRepository.GetByIdAsync(commentId);
+            var res = await _redisService.GetByIdCacheAsync<Comment>($"comments:{commentId}", commentId);
+            if(res.Success == true)
+            {
+                return new DataResult<Comment>(res.Data, true, "Comment by Id...");
+            }
+            return new DataResult<Comment>(res.Data, false, res.Message);
         }
 
         public async Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId)
@@ -53,11 +62,17 @@ namespace BlogSite.Business.Concrete
             ValidationTool.Validate(new CommentValidator(), createCommentVM);
             Comment comment = _mapper.Map<Comment>(createCommentVM);
             comment.Id = Guid.NewGuid();
+            comment.PostId = createCommentVM.PostId;
             comment.CreateTime = DateTime.Now;
             var res = await _commentRepository.CreateAsync(comment);
             if (res == true)
             {
-                return new DataResult<Comment>(comment, true, "Comment successfully created...");
+                var cache = await _redisService.CreateCacheAsync<Comment>($"comments:{comment.Id}", comment);
+                if(cache.Success == true)
+                {
+                    return new DataResult<Comment>(comment, true, "Comment successfully created...");
+                }
+                return new DataResult<Comment>(comment, true, "Comment successfully added to db but couldn' t added to CacheDB...");
             }
             return new DataResult<Comment>(null, false, "Something went wrong! Please try again.");
         }
@@ -67,7 +82,12 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.DeleteAsync(commentId);
             if (res == true)
             {
-                return new Result(true, "Comment successfully deleted...");
+                var cache = await _redisService.DeleteCacheAsync($"comments:{commentId}", commentId);
+                if(cache.Success == true)
+                {
+                    return new Result(true, "Comment successfully deleted...");
+                }
+                return new Result(true, "Comment successfully deleted from DB but couldn't deleted from CacheDB...");
             }
             return new Result(false, "Something went wrong! Please try again.");
         }

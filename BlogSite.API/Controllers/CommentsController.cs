@@ -28,6 +28,7 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Data);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
             //return Ok("test");
@@ -40,12 +41,13 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Data);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
 
         [HttpGet("[action]Async")]
-        public async Task<IActionResult> GetAllCommentByPostIdAsync([FromQuery] Guid postId)
+        public async Task<IActionResult> GetAllCommentsByPostIdAsync([FromQuery] Guid postId)
         {
             var res = await _commentService.GetCommentsByPostIdAsync(postId);
             if (res.Success == true)
@@ -61,7 +63,8 @@ namespace BlogSite.API.Controllers
             var res = await _commentService.CreateCommentAsync(createCommentVM);
             if (res.Success == true)
             {
-                return Ok(res.Message);
+                // return Ok(res.Message);
+                return Ok(res);
             }
             return BadRequest(res.Message);
         }
@@ -84,6 +87,7 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Message);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
         }

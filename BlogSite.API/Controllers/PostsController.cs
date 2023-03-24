@@ -29,6 +29,7 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Data);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
@@ -41,6 +42,7 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Data);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
@@ -65,6 +67,7 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Message);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
@@ -89,6 +92,7 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Message);
+                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
