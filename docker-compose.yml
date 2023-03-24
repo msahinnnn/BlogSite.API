@@ -37,7 +37,7 @@ services:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=mrMehmet123#
     volumes:
-      - C:\Users\mehme\OneDrive\Masaüstü\BlogSiteVolumes:/var/opt/mssql/data
+      - ./BlogSiteVolume:/var/opt/mssql/data
     networks:
       - dev
 
