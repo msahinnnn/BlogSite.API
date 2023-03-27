@@ -1,3 +1,4 @@
+using BlogSite.API.Controllers;
 using BlogSite.API.Mapping;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
@@ -40,14 +41,14 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(CommentProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IPostService, PostService>();
+builder.Services.AddSingleton<ICommentService, CommentService>();
+builder.Services.AddSingleton<IRedisService, RedisService>();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IPostRepository, PostRepository>();
+builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
 //builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
 
 //builder.Services.AddSingleton<CacheService>(sp =>
@@ -57,10 +58,10 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 //builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
 
 
-builder.Services.AddSingleton<CacheService>(sp =>
-{
-    return new CacheService("app_redis:1920,abortConnect=false");
-});
+//builder.Services.AddSingleton<CacheService>(sp =>
+//{
+//    return new CacheService("app_redis:1920,abortConnect=false");
+//});
 builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "app_redis,abortConnect=false");
 
 

@@ -17,59 +17,39 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        private IDistributedCache _distributedCache;
-        private ICommentRepository _commentRepository;
+    //    private IDistributedCache _distributedCache;
+    //    private ICommentRepository _commentRepository;
+    //    private IRService _rService;
 
-        public TestController(IDistributedCache distributedCache, ICommentRepository commentRepository)
-        {
-            _distributedCache = distributedCache;
-            _commentRepository = commentRepository;
-        }
+    //    public TestController(IDistributedCache distributedCache, ICommentRepository commentRepository, IRService rService)
+    //    {
+    //        _distributedCache = distributedCache;
+    //        _commentRepository = commentRepository;
+    //        _rService = rService;
+    //    }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Get()
-        {
-            List<string> listKeys = new List<string>();
-            using (ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost:1920"))
-            {
-                var keys = redis.GetServer("localhost", 1920).Keys();
-                listKeys.AddRange(keys.Select(key => (string)key).Where(k=>k.StartsWith("comments")).ToList());
-            }
-            return Ok(listKeys);
-        }
+    //    [HttpGet("[action]")]
+    //    public async Task<IActionResult> Get()
+    //    {
+    //        List<string> listKeys = new List<string>();
+    //        using (ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost:1920"))
+    //        {
+    //            var keys = redis.GetServer("localhost", 1920).Keys();
+    //            listKeys.AddRange(keys.Select(key => (string)key).Where(k=>k.StartsWith("comments")).ToList());
+    //        }
+    //        return Ok(listKeys);
+    //    }
 
-        [HttpGet("second")]
-        public async Task<IActionResult> GetSecond()
-        {
-            //string serializedDatas;
-            //List<Comment> datas = new List<Comment>();
-            //var jsonDatas = await _distributedCache.GetStringAsync("comments");
-            //if (jsonDatas != null)
-            //{
-            //    serializedDatas = Encoding.UTF8.GetString(jsonDatas);
-            //    datas = JsonConvert.DeserializeObject<List<Comment>>(serializedDatas);
-            //}
-            List<Comment> comments = new List<Comment>();
-            List<string> listKeys = new List<string>();
-            using (ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost:1920"))
-            {
-                var keys = redis.GetServer("localhost", 1920).Keys();
-                listKeys.AddRange(keys.Select(key => (string)key).ToList());
-            }
-            foreach (string key in listKeys)
-            {
-                var userFromCache = await _distributedCache.GetStringAsync(key);
-                if (userFromCache != null)
-                {
-                    // we take User from cache
-                    //var serializedUser = Encoding.UTF8.GetString(userFromCache);
-                    //var userOut = JsonConvert.DeserializeObject<Comment>(serializedUser);
+    //    [HttpGet("second")]
+    //    public async Task<IActionResult> GetSecond()
+    //    {
+    //        //if (_rService.Any("comments"))
+    //        //{
+    //            var comments = _rService.Get<List<Comment>>("comments");
+    //            return Ok(comments);
+    //        //}
+    //        //return BadRequest();
+    //    }
 
-                    var com = JsonConvert.DeserializeObject<Comment>(userFromCache);
-                    comments.Add(com);
-                }
-            }
-            return Ok(comments);
-        }
     }
 }

@@ -45,7 +45,7 @@ namespace BlogSite.Business.Concrete
 
         public async Task<IDataResult<T>> GetByIdCacheAsync<T>(string key, Guid id)
         {
-            var res = await _distributedCache.GetStringAsync($"{key}:{id.ToString()}");
+            var res = await _distributedCache.GetStringAsync($"{key}-{id.ToString()}");
             T data = JsonConvert.DeserializeObject<T>(res);
             if(data != null)
             {
@@ -67,7 +67,7 @@ namespace BlogSite.Business.Concrete
             var check = await _distributedCache.GetStringAsync(key);
             if(check != null)
             {
-                await _distributedCache.RemoveAsync($"{key}:{id.ToString()}");
+                await _distributedCache.RemoveAsync($"{key}-{id.ToString()}");
                 return new Result(true, $"Item deleted from cache...");
             }
             return new Result(false, $"Id : {id} not exists...");

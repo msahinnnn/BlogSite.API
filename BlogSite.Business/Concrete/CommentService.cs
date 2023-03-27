@@ -11,6 +11,7 @@ using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,14 +37,14 @@ namespace BlogSite.Business.Concrete
         {
             //var res = await _commentRepository.GetAllAsync();
             List<Comment> comments = await _commentRepository.GetAllAsync();
-            var res = await _redisService.GetAllCacheAsync<Comment>("comments", comments);
+            var res = await _redisService.GetAllCacheAsync<Comment>("comment", comments);
             return new DataResult<List<Comment>>(res.Data, true, "All Comments...");
         }
 
         public async Task<IDataResult<Comment>> GetCommentByIdAsync(Guid commentId)
         {
             //var res = await _commentRepository.GetByIdAsync(commentId);
-            var res = await _redisService.GetByIdCacheAsync<Comment>($"comments:{commentId}", commentId);
+            var res = await _redisService.GetByIdCacheAsync<Comment>("comment", commentId);
             if(res.Success == true)
             {
                 return new DataResult<Comment>(res.Data, true, "Comment by Id...");
@@ -67,7 +68,7 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.CreateAsync(comment);
             if (res == true)
             {
-                var cache = await _redisService.CreateCacheAsync<Comment>($"comments:{comment.Id}", comment);
+                var cache = await _redisService.CreateCacheAsync<Comment>($"comment-{comment.Id}", comment);
                 if(cache.Success == true)
                 {
                     return new DataResult<Comment>(comment, true, "Comment successfully created...");
@@ -82,7 +83,7 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.DeleteAsync(commentId);
             if (res == true)
             {
-                var cache = await _redisService.DeleteCacheAsync($"comments:{commentId}", commentId);
+                var cache = await _redisService.DeleteCacheAsync("comments", commentId);
                 if(cache.Success == true)
                 {
                     return new Result(true, "Comment successfully deleted...");
