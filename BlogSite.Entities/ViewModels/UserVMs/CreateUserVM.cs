@@ -1,6 +1,8 @@
-﻿namespace BlogSite.API.ViewModels.UserVMs
+﻿using BlogSite.API.Models;
+using BlogSite.Core.Entities;
+namespace BlogSite.API.ViewModels.UserVMs
 {
-    public class CreateUserVM
+    public class CreateUserVM : IVM<User>
     {
         public string Name { get; set; }
         public string Surname { get; set; }

@@ -4,6 +4,7 @@ using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Validations;
+using BlogSite.Core.Entities;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
@@ -30,16 +31,16 @@ namespace BlogSite.Business.Concrete
             _redisService = redisService;
         }
 
-        public async Task<IDataResult<List<Post>>> GetAllPostsAsync()
+        public async Task<IDataResult<List<Post>>> GetAllAsync()
         {
             List<Post> posts = await _postRepository.GetAllAsync();
-            var res = await _redisService.GetAllCacheAsync<Post>("posts", posts);
+            var res = await _redisService.GetAllCacheAsync<Post>("post", posts);
             return new DataResult<List<Post>>(res.Data, true, "All Posts...");
         }
 
-        public async Task<IDataResult<Post>> GetPostByIdAsync(Guid postId)
+        public async Task<IDataResult<Post>> GetByIdAsync(Guid id)
         {
-            var res = await _redisService.GetByIdCacheAsync<Post>("posts", postId);
+            var res = await _redisService.GetByIdCacheAsync<Post>("post", id);
             if (res.Success == true)
             {
                 return new DataResult<Post>(res.Data, true, "Post by Id...");
@@ -53,32 +54,31 @@ namespace BlogSite.Business.Concrete
             return new DataResult<List<Post>>(res, true, "Posts by User Id...");
         }
 
-        public async Task<IResult> CreatePostAsync(CreatePostVM createPostVM)
+        public async Task<IDataResult<Post>> CreateAsync(IVM<Post> entityVM)
         {
-            ValidationTool.Validate(new PostValidator(), createPostVM);
-            Post post = _mapper.Map<Post>(createPostVM);
+            ValidationTool.Validate(new PostValidator(), entityVM);
+            Post post = _mapper.Map<Post>(entityVM);
             post.Id = Guid.NewGuid();
             post.CreatedDate = DateTime.Now;
-            post.UserId = createPostVM.UserId;
             var res = await _postRepository.CreateAsync(post);
-            if(res == true)
+            if (res is not null)
             {
-                var cache = await _redisService.CreateCacheAsync<Post>($"posts:{post.Id}", post);
+                var cache = await _redisService.CreateCacheAsync<Post>($"post-{post.Id}", post);
                 if (cache.Success == true)
                 {
                     return new DataResult<Post>(post, true, "Post successfully created...");
                 }
                 return new DataResult<Post>(post, true, "Post successfully added to db but couldn' t added to CacheDB...");
             }
-            return new Result(false, "Something went wrong! Please try again.");
+            return new DataResult<Post>(res, false, "Something went wrong! Please try again.");
         }
 
-        public async Task<IResult> DeletePostAsync(Guid postId)
+        public async Task<IResult> DeleteAsync(Guid id)
         {
-            var res = await _postRepository.DeleteAsync(postId);
+            var res = await _postRepository.DeleteAsync(id);
             if (res == true)
             {
-                var cache = await _redisService.DeleteCacheAsync($"posts:{postId}", postId);
+                var cache = await _redisService.DeleteCacheAsync($"post-{id}", id);
                 if (cache.Success == true)
                 {
                     return new Result(true, "Post successfully deleted...");
@@ -88,10 +88,10 @@ namespace BlogSite.Business.Concrete
             return new Result(false, "Something went wrong! Please try again.");
         }
 
-        public async Task<IResult> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId)
+        public async Task<IResult> UpdateAsync(IVM<Post> entityVM, Guid id)
         {
-            Post post = _mapper.Map<Post>(updatePostVM);
-            post.Id = postId;
+            Post post = _mapper.Map<Post>(entityVM);
+            post.Id = id;
             var res = await _postRepository.UpdateAsync(post);
             if (res == true)
             {
@@ -100,137 +100,82 @@ namespace BlogSite.Business.Concrete
             return new Result(false, "Something went wrong! Please try again.");
         }
 
-        //public List<Post> GetAllPosts()
+
+
+
+
+
+
+        //public async Task<IDataResult<List<Post>>> GetAllPostsAsync()
         //{
-        //    var res = _postRepository.GetAllPosts();
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
+        //    List<Post> posts = await _postRepository.GetAllAsync();
+        //    var res = await _redisService.GetAllCacheAsync<Post>("post", posts);
+        //    return new DataResult<List<Post>>(res.Data, true, "All Posts...");
         //}
 
-        //public async Task<List<Post>> GetAllPostsAsync()
+        //public async Task<IDataResult<Post>> GetPostByIdAsync(Guid postId)
         //{
-        //    var res = await _postRepository.GetAllPostsAsync();
-        //    if (res is not null)
+        //    var res = await _redisService.GetByIdCacheAsync<Post>("post", postId);
+        //    if (res.Success == true)
         //    {
-        //        return res;
+        //        return new DataResult<Post>(res.Data, true, "Post by Id...");
         //    }
-        //    return null;
+        //    return new DataResult<Post>(res.Data, false, res.Message);
         //}
 
-        //public List<Post> GetPostsByUserId(Guid userId)
-        //{
-        //    var res = _postRepository.GetPostsByUserId(userId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
+        //public async Task<IDataResult<List<Post>>> GetPostsByUserIdAsync(Guid userId)
         //{
         //    var res = await _postRepository.GetPostsByUserIdAsync(userId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
+        //    return new DataResult<List<Post>>(res, true, "Posts by User Id...");
         //}
 
-        //public Post GetPostById(Guid postId)
-        //{
-        //    var res = _postRepository.GetPostById(postId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<Post> GetPostByIdAsync(Guid postId)
-        //{
-        //    var res = await _postRepository.GetPostByIdAsync(postId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public bool CreatePost(CreatePostVM createPostVM)
-        //{
-        //    ValidationTool.Validate(new PostValidator(), createPostVM);
-        //    Post post = _mapper.Map<Post>(createPostVM);
-        //    post.Id = Guid.NewGuid();
-        //    post.CreatedDate = DateTime.Now;            
-        //    var res = _postRepository.CreatePost(post);
-        //    if(res == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-
-        //}
-
-        //public async Task<bool> CreatePostAsync(CreatePostVM createPostVM)
+        //public async Task<IResult> CreatePostAsync(CreatePostVM createPostVM)
         //{
         //    ValidationTool.Validate(new PostValidator(), createPostVM);
         //    Post post = _mapper.Map<Post>(createPostVM);
         //    post.Id = Guid.NewGuid();
         //    post.CreatedDate = DateTime.Now;
-        //    var res = await _postRepository.CreatePostAsync(post);
-        //    if (res == true)
+        //    post.UserId = createPostVM.UserId;
+        //    var res = await _postRepository.CreateAsync(post);
+        //    if(res == true)
         //    {
-        //        return true;
+        //        var cache = await _redisService.CreateCacheAsync<Post>($"post-{post.Id}", post);
+        //        if (cache.Success == true)
+        //        {
+        //            return new DataResult<Post>(post, true, "Post successfully created...");
+        //        }
+        //        return new DataResult<Post>(post, true, "Post successfully added to db but couldn' t added to CacheDB...");
         //    }
-        //    return false;
+        //    return new Result(false, "Something went wrong! Please try again.");
         //}
 
-        //public bool UpdatePost(UpdatePostVM updatePostVM, Guid postId)
+        //public async Task<IResult> DeletePostAsync(Guid postId)
+        //{
+        //    var res = await _postRepository.DeleteAsync(postId);
+        //    if (res == true)
+        //    {
+        //        var cache = await _redisService.DeleteCacheAsync($"post-{postId}", postId);
+        //        if (cache.Success == true)
+        //        {
+        //            return new Result(true, "Post successfully deleted...");
+        //        }
+        //        return new Result(true, "Post successfully deleted from DB but couldn't deleted from CacheDB...");
+        //    }
+        //    return new Result(false, "Something went wrong! Please try again.");
+        //}
+
+        //public async Task<IResult> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId)
         //{
         //    Post post = _mapper.Map<Post>(updatePostVM);
         //    post.Id = postId;
-        //    var res = _postRepository.UpdatePost(post);
+        //    var res = await _postRepository.UpdateAsync(post);
         //    if (res == true)
         //    {
-        //        return true;
+        //        return new Result(true, "Post successfully updated...");
         //    }
-        //    return false;
+        //    return new Result(false, "Something went wrong! Please try again.");
         //}
 
-        //public async Task<bool> UpdatePostAsync(UpdatePostVM updatePostVM, Guid postId)
-        //{
-        //    Post post = _mapper.Map<Post>(updatePostVM);
-        //    post.Id = postId;
-        //    var res = await _postRepository.UpdatePostAsync(post);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
-        //public bool DeletePost(Guid postId)
-        //{
-        //    var res = _postRepository.DeletePost(postId);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    };
-        //    return false;
-        //}
-
-        //public async Task<bool> DeletePostAsync(Guid postId)
-        //{
-        //    var res = await _postRepository.DeletePostAsync(postId);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    };
-        //    return false;
-        //}
     }
 }

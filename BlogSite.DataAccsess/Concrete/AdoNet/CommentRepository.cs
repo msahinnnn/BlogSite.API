@@ -84,7 +84,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return comments;
         }
 
-        public async Task<bool> CreateAsync(Comment entity)
+        public async Task<Comment> CreateAsync(Comment entity)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)", con);
@@ -96,7 +96,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             await cmd.ExecuteNonQueryAsync();
             await con.CloseAsync();
             await con.DisposeAsync();
-            return true;
+            return entity;
         }
 
         public async Task<bool> DeleteAsync(Guid id)

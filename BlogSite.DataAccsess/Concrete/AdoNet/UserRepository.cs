@@ -66,7 +66,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             return user;
         }
 
-        public async Task<bool> CreateAsync(User entity)
+        public async Task<User> CreateAsync(User entity)
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             await con.OpenAsync();
@@ -78,7 +78,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
             await cmd.ExecuteNonQueryAsync();
             await con.CloseAsync();
             await con.DisposeAsync();
-            return true;
+            return entity;
         }
 
         public async Task<bool> DeleteAsync(Guid id)

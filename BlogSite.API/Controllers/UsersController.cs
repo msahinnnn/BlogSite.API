@@ -29,7 +29,7 @@ namespace BlogSite.API.Controllers
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
-            var res = await _userService.GetAllUsersAsync();
+            var res = await _userService.GetAllAsync();
             if (res.Success == true)
             {
                 return Ok(res.Data);
@@ -41,7 +41,7 @@ namespace BlogSite.API.Controllers
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetUserByIdAsync([FromQuery] Guid userId)
         {
-            var res = await _userService.GetUserByIdAsync(userId);
+            var res = await _userService.GetByIdAsync(userId);
             if (res.Success == true)
             {
                 return Ok(res.Data);
@@ -53,7 +53,7 @@ namespace BlogSite.API.Controllers
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserVM createUserVM)
         {
-            var res = await _userService.CreateUserAsync(createUserVM);
+            var res = await _userService.CreateAsync(createUserVM);
             if (res.Success == true)
             {
                 return Ok(res.Message);
@@ -65,7 +65,7 @@ namespace BlogSite.API.Controllers
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
         {
-            var res = await _userService.UpdateUserAsync(updateUserVM, userId);
+            var res = await _userService.UpdateAsync(updateUserVM, userId);
             if (res.Success == true)
             {
                 return Ok(res.Message);
@@ -77,7 +77,7 @@ namespace BlogSite.API.Controllers
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid userId)
         {
-            var res = await _userService.DeleteUserAsync(userId);
+            var res = await _userService.DeleteAsync(userId);
             if (res.Success == true)
             {
                 return Ok(res.Message);

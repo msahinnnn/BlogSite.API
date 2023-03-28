@@ -24,7 +24,7 @@ namespace BlogSite.API.Controllers
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
-            var res = await _commentService.GetAllCommentsAsync();
+            var res = await _commentService.GetAllAsync();
             if (res.Success == true)
             {
                 return Ok(res.Data);
@@ -37,7 +37,7 @@ namespace BlogSite.API.Controllers
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetCommentByIdAsync([FromQuery] Guid commentId)
         {
-            var res = await _commentService.GetCommentByIdAsync(commentId);
+            var res = await _commentService.GetByIdAsync(commentId);
             if (res.Success == true)
             {
                 return Ok(res.Data);
@@ -60,7 +60,7 @@ namespace BlogSite.API.Controllers
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCommentVM createCommentVM)
         {
-            var res = await _commentService.CreateCommentAsync(createCommentVM);
+            var res = await _commentService.CreateAsync(createCommentVM);
             if (res.Success == true)
             {
                 // return Ok(res.Message);
@@ -72,7 +72,7 @@ namespace BlogSite.API.Controllers
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
         {
-            var res = await _commentService.UpdateCommentAsync(updateCommentVM, commentId);
+            var res = await _commentService.UpdateAsync(updateCommentVM, commentId);
             if (res.Success == true)
             {
                 return Ok(res.Message);
@@ -83,7 +83,7 @@ namespace BlogSite.API.Controllers
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid commentId)
         {
-            var res = await _commentService.DeleteCommentAsync(commentId);
+            var res = await _commentService.DeleteAsync(commentId);
             if (res.Success == true)
             {
                 return Ok(res.Message);

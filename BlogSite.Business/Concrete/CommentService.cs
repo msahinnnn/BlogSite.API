@@ -5,6 +5,7 @@ using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Validations;
+using BlogSite.Core.Entities;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
@@ -33,25 +34,27 @@ namespace BlogSite.Business.Concrete
             _redisService = redisService;
         }
 
-        public async Task<IDataResult<List<Comment>>> GetAllCommentsAsync()
+
+        public async Task<IDataResult<List<Comment>>> GetAllAsync()
         {
-            //var res = await _commentRepository.GetAllAsync();
             List<Comment> comments = await _commentRepository.GetAllAsync();
             var res = await _redisService.GetAllCacheAsync<Comment>("comment", comments);
-            return new DataResult<List<Comment>>(res.Data, true, "All Comments...");
+            if (res.Success == true)
+            {
+                return new DataResult<List<Comment>>(res.Data, true, "All Comments...");
+            }
+            return new DataResult<List<Comment>>(res.Data, true, "Comments not found...");
         }
 
-        public async Task<IDataResult<Comment>> GetCommentByIdAsync(Guid commentId)
+        public async Task<IDataResult<Comment>> GetByIdAsync(Guid id)
         {
-            //var res = await _commentRepository.GetByIdAsync(commentId);
-            var res = await _redisService.GetByIdCacheAsync<Comment>("comment", commentId);
-            if(res.Success == true)
+            var res = await _redisService.GetByIdCacheAsync<Comment>("comment", id);
+            if (res.Success == true)
             {
                 return new DataResult<Comment>(res.Data, true, "Comment by Id...");
             }
             return new DataResult<Comment>(res.Data, false, res.Message);
         }
-        //
 
         public async Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId)
         {
@@ -59,18 +62,17 @@ namespace BlogSite.Business.Concrete
             return new DataResult<List<Comment>>(res, true, "Comments by Post Id...");
         }
 
-        public async Task<IDataResult<Comment>> CreateCommentAsync(CreateCommentVM createCommentVM)
+        public async Task<IDataResult<Comment>> CreateAsync(IVM<Comment> entityVM)
         {
-            ValidationTool.Validate(new CommentValidator(), createCommentVM);
-            Comment comment = _mapper.Map<Comment>(createCommentVM);
+            ValidationTool.Validate(new CommentValidator(), entityVM);
+            Comment comment = _mapper.Map<Comment>(entityVM);
             comment.Id = Guid.NewGuid();
-            comment.PostId = createCommentVM.PostId;
             comment.CreateTime = DateTime.Now;
             var res = await _commentRepository.CreateAsync(comment);
-            if (res == true)
+            if (res is not null)
             {
                 var cache = await _redisService.CreateCacheAsync<Comment>($"comment-{comment.Id}", comment);
-                if(cache.Success == true)
+                if (cache.Success == true)
                 {
                     return new DataResult<Comment>(comment, true, "Comment successfully created...");
                 }
@@ -79,13 +81,13 @@ namespace BlogSite.Business.Concrete
             return new DataResult<Comment>(null, false, "Something went wrong! Please try again.");
         }
 
-        public async Task<IResult> DeleteCommentAsync(Guid commentId)
+        public async Task<IResult> DeleteAsync(Guid id)
         {
-            var res = await _commentRepository.DeleteAsync(commentId);
+            var res = await _commentRepository.DeleteAsync(id);
             if (res == true)
             {
-                var cache = await _redisService.DeleteCacheAsync("comments", commentId);
-                if(cache.Success == true)
+                var cache = await _redisService.DeleteCacheAsync("comment", id);
+                if (cache.Success == true)
                 {
                     return new Result(true, "Comment successfully deleted...");
                 }
@@ -93,11 +95,10 @@ namespace BlogSite.Business.Concrete
             }
             return new Result(false, "Something went wrong! Please try again.");
         }
-
-        public async Task<IResult> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId)
+        public async Task<IResult> UpdateAsync(IVM<Comment> entityVM, Guid id)
         {
-            Comment comment = _mapper.Map<Comment>(updateCommentVM);
-            comment.Id = commentId;
+            Comment comment = _mapper.Map<Comment>(entityVM);
+            comment.Id = id;
             var res = await _commentRepository.UpdateAsync(comment);
             if (res == true)
             {
@@ -106,136 +107,88 @@ namespace BlogSite.Business.Concrete
             return new Result(false, "Something went wrong! Please try again.");
         }
 
-        //public List<Comment> GetAllComments()
+
+
+
+
+
+        //public async Task<IDataResult<List<Comment>>> GetAllCommentsAsync()
         //{
-        //    var res = _commentRepository.GetAllComments();
-        //    if(res is not null)
+        //    //var res = await _commentRepository.GetAllAsync();
+        //    List<Comment> comments = await _commentRepository.GetAllAsync();
+        //    var res = await _redisService.GetAllCacheAsync<Comment>("comment", comments);
+        //    if(res.Success == true)
         //    {
-        //        return res;
+        //        return new DataResult<List<Comment>>(res.Data, true, "All Comments...");
         //    }
-        //    return null;
+        //    return new DataResult<List<Comment>>(res.Data, true, "Comments not found...");
         //}
 
-        //public async Task<List<Comment>> GetAllCommentsAsync()
+        //public async Task<IDataResult<Comment>> GetCommentByIdAsync(Guid commentId)
         //{
-        //    var res = await _commentRepository.GetAllCommentsAsync();
-        //    if (res is not null)
+        //    //var res = await _commentRepository.GetByIdAsync(commentId);
+        //    var res = await _redisService.GetByIdCacheAsync<Comment>("comment", commentId);
+        //    if(res.Success == true)
         //    {
-        //        return res;
+        //        return new DataResult<Comment>(res.Data, true, "Comment by Id...");
         //    }
-        //    return null;
+        //    return new DataResult<Comment>(res.Data, false, res.Message);
         //}
+        ////
 
-        //public List<Comment> GetCommentsByPostId(Guid postId)
-        //{
-        //    var res = _commentRepository.GetCommentsByPostId(postId);
-        //    if(res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
+        //public async Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId)
         //{
         //    var res = await _commentRepository.GetCommentsByPostIdAsync(postId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
+        //    return new DataResult<List<Comment>>(res, true, "Comments by Post Id...");
         //}
 
-        //public Comment GetCommentById(Guid commentId)
-        //{
-        //    var res = _commentRepository.GetCommentById(commentId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<Comment> GetCommentByIdAsync(Guid commentId)
-        //{
-        //    var res = await _commentRepository.GetCommentByIdAsync(commentId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public bool CreateComment(CreateCommentVM createCommentVM)
+        //public async Task<IDataResult<Comment>> CreateCommentAsync(CreateCommentVM createCommentVM)
         //{
         //    ValidationTool.Validate(new CommentValidator(), createCommentVM);
         //    Comment comment = _mapper.Map<Comment>(createCommentVM);
         //    comment.Id = Guid.NewGuid();
+        //    comment.PostId = createCommentVM.PostId;
         //    comment.CreateTime = DateTime.Now;
-        //    var res = _commentRepository.CreateComment(comment);
+        //    var res = await _commentRepository.CreateAsync(comment);
         //    if (res == true)
         //    {
-        //        return true;
+        //        var cache = await _redisService.CreateCacheAsync<Comment>($"comment-{comment.Id}", comment);
+        //        if(cache.Success == true)
+        //        {
+        //            return new DataResult<Comment>(comment, true, "Comment successfully created...");
+        //        }
+        //        return new DataResult<Comment>(comment, true, "Comment successfully added to db but couldn' t added to CacheDB...");
         //    }
-        //    return false;
+        //    return new DataResult<Comment>(null, false, "Something went wrong! Please try again.");
         //}
 
-        //public async Task<bool> CreateCommentAsync(CreateCommentVM createCommentVM)
+        //public async Task<IResult> DeleteCommentAsync(Guid commentId)
         //{
-        //    ValidationTool.Validate(new CommentValidator(), createCommentVM);
-        //    Comment comment = _mapper.Map<Comment>(createCommentVM);
-        //    comment.Id = Guid.NewGuid();
-        //    comment.CreateTime = DateTime.Now;
-        //    var res = await _commentRepository.CreateCommentAsync(comment);
+        //    var res = await _commentRepository.DeleteAsync(commentId);
         //    if (res == true)
         //    {
-        //        return true;
+        //        var cache = await _redisService.DeleteCacheAsync("comment", commentId);
+        //        if(cache.Success == true)
+        //        {
+        //            return new Result(true, "Comment successfully deleted...");
+        //        }
+        //        return new Result(true, "Comment successfully deleted from DB but couldn't deleted from CacheDB...");
         //    }
-        //    return false;
+        //    return new Result(false, "Something went wrong! Please try again.");
         //}
 
-        //public bool UpdateComment(UpdateCommentVM updateCommentVM, Guid commentId)
+        //public async Task<IResult> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId)
         //{
         //    Comment comment = _mapper.Map<Comment>(updateCommentVM);
         //    comment.Id = commentId;
-        //    var res = _commentRepository.UpdateComment(comment);
+        //    var res = await _commentRepository.UpdateAsync(comment);
         //    if (res == true)
         //    {
-        //        return true;
+        //        return new Result(true, "Comment successfully updated...");
         //    }
-        //    return false;
+        //    return new Result(false, "Something went wrong! Please try again.");
         //}
 
-        //public async Task<bool> UpdateCommentAsync(UpdateCommentVM updateCommentVM, Guid commentId)
-        //{
-        //    Comment comment = _mapper.Map<Comment>(updateCommentVM);
-        //    comment.Id = commentId;
-        //    var res = await _commentRepository.UpdateCommentAsync(comment);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
-        //public bool DeleteComment(Guid commentId)
-        //{
-        //    var res = _commentRepository.DeleteComment(commentId);
-        //    if (res == true) 
-        //    {
-        //        return true;
-        //    };
-        //    return false;
-        //}
-
-        //public async Task<bool> DeleteCommentAsync(Guid commentId)
-        //{
-        //    var res = await _commentRepository.DeleteCommentAsync(commentId);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    };
-        //    return false;
-        //}
     }
 }

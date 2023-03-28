@@ -5,6 +5,7 @@ using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Validations;
+using BlogSite.Core.Entities;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
@@ -30,39 +31,38 @@ namespace BlogSite.Business.Concrete
             _userRepository = userRepository;
         }
 
-        public async Task<IDataResult<List<User>>> GetAllUsersAsync()
+        public async Task<IDataResult<List<User>>> GetAllAsync()
         {
             var res = await _userRepository.GetAllAsync();
             return new DataResult<List<User>>(res, true, "All Users...");
         }
 
-        public async Task<IDataResult<User>> GetUserByIdAsync(Guid userId)
+        public async Task<IDataResult<User>> GetByIdAsync(Guid id)
         {
-            var res = await _userRepository.GetByIdAsync(userId);
+            var res = await _userRepository.GetByIdAsync(id);
             return new DataResult<User>(res, true, "User by Id...");
         }
-
-        public async Task<IResult> CreateUserAsync(CreateUserVM createUserVM)
+        public async Task<IDataResult<User>> CreateAsync(IVM<User> entityVM)
         {
-            ValidationTool.Validate(new UserValidator(), createUserVM);
-            User user = _mapper.Map<User>(createUserVM);
+            ValidationTool.Validate(new UserValidator(), entityVM);
+            User user = _mapper.Map<User>(entityVM);
             user.Id = Guid.NewGuid();
             var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
             if (!check)
             {
                 var res = await _userRepository.CreateAsync(user);
-                if (res == true)
+                if (res is not null)
                 {
-                    return new Result(true, "User successfully created...");
+                    return new DataResult<User>(user, true, "User successfully created...");
                 }
-                return new Result(false, "Something went wrong! Please try again.");
+                return new DataResult<User>(user, false, "Something went wrong! Please try again.");
             }
-            return new Result(false, "User already exists!");
+            return new DataResult<User>(user, false, "User already exists!");
         }
 
-        public async Task<IResult> DeleteUserAsync(Guid userId)
+        public async Task<IResult> DeleteAsync(Guid id)
         {
-            var res = await _userRepository.DeleteAsync(userId);
+            var res = await _userRepository.DeleteAsync(id);
             if (res == true)
             {
                 return new Result(true, "User successfully deleted...");
@@ -70,10 +70,10 @@ namespace BlogSite.Business.Concrete
             return new Result(false, "Something went wrong! Please try again.");
         }
 
-        public async Task<IResult> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId)
+        public async Task<IResult> UpdateAsync(IVM<User> entityVM, Guid id)
         {
-            User user = _mapper.Map<User>(updateUserVM);
-            user.Id = userId;
+            User user = _mapper.Map<User>(entityVM);
+            user.Id = id;
             var res = await _userRepository.UpdateAsync(user);
             if (res == true)
             {
@@ -83,124 +83,60 @@ namespace BlogSite.Business.Concrete
         }
 
 
-        //public List<User> GetAllUsers()
+
+        //public async Task<IDataResult<List<User>>> GetAllUsersAsync()
         //{
-        //    var res = _userRepository.GetAllUsers();
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
+        //    var res = await _userRepository.GetAllAsync();
+        //    return new DataResult<List<User>>(res, true, "All Users...");
         //}
 
-        //public async Task<List<User>> GetAllUsersAsync()
+        //public async Task<IDataResult<User>> GetUserByIdAsync(Guid userId)
         //{
-        //    var res = await _userRepository.GetAllUsersAsync();
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
+        //    var res = await _userRepository.GetByIdAsync(userId);
+        //    return new DataResult<User>(res, true, "User by Id...");
         //}
 
-        //public User GetUserById(Guid userId)
-        //{
-        //    var res = _userRepository.GetUserById(userId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<User> GetUserByIdAsync(Guid userId)
-        //{
-        //    var res = await _userRepository.GetUserByIdAsync(userId);
-        //    if (res is not null)
-        //    {
-        //        return res;
-        //    }
-        //    return null;
-        //}
-
-        //public bool CreateUser(CreateUserVM createUserVM)
-        //{
-        //    ValidationTool.Validate(new UserValidator(), createUserVM);
-        //    User user = _mapper.Map<User>(createUserVM);
-        //    user.Id = Guid.NewGuid();
-        //    var check = _userRepository.CheckUserEmailExists(user.Email);
-        //    if (check)
-        //    {
-        //        return false;
-        //    }
-        //    var res = _userRepository.CreateUser(user);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
-        //public async Task<bool> CreateUserAsync(CreateUserVM createUserVM)
+        //public async Task<IResult> CreateUserAsync(CreateUserVM createUserVM)
         //{
         //    ValidationTool.Validate(new UserValidator(), createUserVM);
         //    User user = _mapper.Map<User>(createUserVM);
         //    user.Id = Guid.NewGuid();
         //    var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
-        //    if (check)
+        //    if (!check)
         //    {
-        //        return false;
+        //        var res = await _userRepository.CreateAsync(user);
+        //        if (res == true)
+        //        {
+        //            return new Result(true, "User successfully created...");
+        //        }
+        //        return new Result(false, "Something went wrong! Please try again.");
         //    }
-        //    var res = await _userRepository.CreateUserAsync(user);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
+        //    return new Result(false, "User already exists!");
         //}
 
-        //public bool UpdateUser(UpdateUserVM updateUserVM, Guid userId)
+        //public async Task<IResult> DeleteUserAsync(Guid userId)
+        //{
+        //    var res = await _userRepository.DeleteAsync(userId);
+        //    if (res == true)
+        //    {
+        //        return new Result(true, "User successfully deleted...");
+        //    }
+        //    return new Result(false, "Something went wrong! Please try again.");
+        //}
+
+        //public async Task<IResult> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId)
         //{
         //    User user = _mapper.Map<User>(updateUserVM);
         //    user.Id = userId;
-        //    var res = _userRepository.UpdateUser(user);
+        //    var res = await _userRepository.UpdateAsync(user);
         //    if (res == true)
         //    {
-        //        return true;
+        //        return new Result(true, "User successfully updated...");
         //    }
-        //    return false;
+        //    return new Result(false, "Something went wrong! Please try again.");
         //}
 
-        //public async Task<bool> UpdateUserAsync(UpdateUserVM updateUserVM, Guid userId)
-        //{
-        //    User user = _mapper.Map<User>(updateUserVM);
-        //    user.Id = userId;
-        //    var res = await _userRepository.UpdateUserAsync(user);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
 
-        //public bool DeleteUser(Guid userId)
-        //{
-        //    var res = _userRepository.DeleteUser(userId);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    };
-        //    return false;
-        //}
 
-        //public async Task<bool> DeleteUserAsync(Guid userId)
-        //{
-        //    var res = await _userRepository.DeleteUserAsync(userId);
-        //    if (res == true)
-        //    {
-        //        return true;
-        //    };
-        //    return false;
-        //}
     }
 }
