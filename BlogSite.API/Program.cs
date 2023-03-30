@@ -17,14 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//var con = builder.Configuration.GetConnectionString("MsSqlConnection");
-
-//var server = builder.Configuration["DbServer"] ?? "localhost";
-//var port = builder.Configuration["DbPort"] ?? "1433";
-//var user = builder.Configuration["DbUser"] ?? "SA";
-//var password = builder.Configuration["Password"] ?? "mrMehmet123#";
-//var database = builder.Configuration["Database"] ?? "BlogSiteAppDB";
-////var connectionString = $"Server={server}, {port};Initial Catalog={database};User ID={user};Password={password};";
 
 var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
 
@@ -49,39 +41,11 @@ builder.Services.AddSingleton<IRedisService, RedisService>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPostRepository, PostRepository>();
 builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
-//builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
 
-//builder.Services.AddSingleton<CacheService>(sp =>
-//{
-//    return new CacheService("localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
-//});
-//builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "localhost:1920,connectTimeout=30000,abortConnect=false,responseTimeout=30000,asyncTimeout=30000,syncTimeout=30000");
+builder.Services.AddStackExchangeRedisCache(options => 
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection")
+);
 
-
-//builder.Services.AddSingleton<CacheService>(sp =>
-//{
-//    return new CacheService("app_redis:1920,abortConnect=false");
-//});
-builder.Services.AddStackExchangeRedisCache(options => options.Configuration = "app_redis,abortConnect=false");
-
-
-//builder.Services.AddFluentValidationAutoValidation();
-//builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-//ThreadPool.SetMinThreads(1024, 100);
-//builder.Services.AddSingleton<IConnectionMultiplexer>(opt =>
-//    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis"))
-//);
-
-//ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
-
-//Console.WriteLine($"Worker Threads = {workerThreads} - Completion Port Threads = {completionPortThreads}");
-
-//ThreadPool.SetMinThreads(workerThreads * 10, completionPortThreads);
-
-//ThreadPool.GetMinThreads(out workerThreads, out completionPortThreads);
-
-//Console.WriteLine($"Worker Threads = {workerThreads} - Completion Port Threads = {completionPortThreads}");
 
 
 var app = builder.Build();
@@ -93,7 +57,6 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
 }
 
-//DatabaseManagementService.MigrationInitialisation(app);
 app.UseSwagger();
 app.UseSwaggerUI();
 

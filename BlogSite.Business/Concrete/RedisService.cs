@@ -1,5 +1,6 @@
 ﻿using BlogSite.API.Models;
 using BlogSite.Business.Abstract;
+using BlogSite.Business.Constants;
 using BlogSite.Core.Utilities.Results;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -38,7 +39,7 @@ namespace BlogSite.Business.Concrete
                 var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(7));
                 await _distributedCache.SetAsync(key, jsonDatas, options);
             }
-            return new DataResult<List<T>>(datas, true, "Cached datas...");
+            return new SuccessDataResult<List<T>>(datas, RedisMessages.ItemsListed);
 
         }
 
@@ -49,9 +50,9 @@ namespace BlogSite.Business.Concrete
             T data = JsonConvert.DeserializeObject<T>(res);
             if(data != null)
             {
-                return new DataResult<T>(data, true, "Cached data by Id...");
+                return new SuccessDataResult<T>(data, RedisMessages.ItemsListed);
             }
-            return new DataResult<T>(data, false, $"Id : {id} not exists...");
+            return new ErrorDataResult<T>(data, RedisMessages.ItemsListedError);
         }
 
         public async Task<IResult> CreateCacheAsync<T>(string key, T data)
@@ -59,7 +60,7 @@ namespace BlogSite.Business.Concrete
             var jsonData = JsonConvert.SerializeObject(data);
             var options = new DistributedCacheEntryOptions().SetAbsoluteExpiration(DateTime.Now.AddDays(7));
             await _distributedCache.SetStringAsync(key, jsonData, options);
-            return new Result(true, $"Item added to cache...");
+            return new SuccessResult(RedisMessages.ItemAdded);
         }
 
         public async Task<IResult> DeleteCacheAsync(string key, Guid id)
@@ -68,9 +69,9 @@ namespace BlogSite.Business.Concrete
             if(check != null)
             {
                 await _distributedCache.RemoveAsync($"{key}-{id.ToString()}");
-                return new Result(true, $"Item deleted from cache...");
+                return new SuccessResult(RedisMessages.ItemDeleted);
             }
-            return new Result(false, $"Id : {id} not exists...");
+            return new ErrorResult(RedisMessages.ItemDeletedError);
             
         }
 
