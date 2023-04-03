@@ -1,4 +1,5 @@
 using BlogSite.API.Controllers;
+using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
@@ -10,6 +11,11 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 using StackExchange.Redis;
 using System.Reflection;
 
@@ -18,11 +24,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 
-var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
+//var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
+var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
 
-builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(connectionString));
+builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
+Logger log = new LoggerConfiguration()
+    .WriteTo.File("logs/logs.txt")
+    .WriteTo.MSSqlServer(
+        connectionString: builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"],
+        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
+    )
+    .Enrich.FromLogContext()
+    .MinimumLevel.Information()
+    .CreateLogger();
 
+builder.Host.UseSerilog(log);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,8 +59,10 @@ builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPostRepository, PostRepository>();
 builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
 
+//var redisConnection = builder.Configuration.GetConnectionString("RedisConnection");
+var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
 builder.Services.AddStackExchangeRedisCache(options => 
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection")
+    options.Configuration = redisConnection
 );
 
 
@@ -56,6 +75,10 @@ if (app.Environment.IsDevelopment())
     //app.UseSwagger();
     //app.UseSwaggerUI();
 }
+
+app.ExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
+
+app.UseSerilogRequestLogging();
 
 app.UseSwagger();
 app.UseSwaggerUI();

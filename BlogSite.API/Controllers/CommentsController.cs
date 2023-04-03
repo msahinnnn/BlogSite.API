@@ -14,10 +14,11 @@ namespace BlogSite.API.Controllers
     public class CommentsController : ControllerBase
     {
         private ICommentService _commentService;
-
-        public CommentsController(ICommentService commentService)
+        private ILogger<CommentsController> _logger;
+        public CommentsController(ICommentService commentService, ILogger<CommentsController> logger)
         {
             _commentService = commentService;
+            _logger = logger;
         }
 
 
