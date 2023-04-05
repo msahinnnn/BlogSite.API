@@ -3,6 +3,8 @@ version: '3.8'
 
 networks:
   dev:
+  elastic:
+    driver: bridge
 
 
 
@@ -40,6 +42,41 @@ services:
       - ./BlogSiteVolume:/var/opt/mssql/data
     networks:
       - dev
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.1
+    container_name: elasticsearch
+    environment:
+      - xpack.monitoring.enable=true
+      - xpack.watcher.enable=false
+      - discovery.type=single-singlenode
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ./BlogSiteLogVolume:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.16.1
+    container_name: kibana
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://localhost:9200
+    networks:
+      - elastic
+
+
+
+
+
+
 
 
 

@@ -25,6 +25,7 @@ namespace BlogSite.API.Controllers
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
+            _logger.LogInformation("TEST LOG TEST LOG TEST LOG TEST LOG", DateTime.UtcNow);
             var res = await _commentService.GetAllAsync();
             if (res.Success == true)
             {
