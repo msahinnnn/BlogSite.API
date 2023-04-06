@@ -24,25 +24,32 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-ConfigureLogs();
+//ConfigureLogs();
 
 //var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
 var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
 
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
-//Logger log = new LoggerConfiguration()
-//    .WriteTo.File("logs/logs.txt")
-//    .WriteTo.MSSqlServer(
-//        connectionString: builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"],
-//        sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
-//    )
-//    .Enrich.FromLogContext()
-//    .MinimumLevel.Information()
-//    .CreateLogger();
-builder.Host.UseSerilog();
 
-
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.Enrich.FromLogContext()
+    .WriteTo.File("logs/logs.txt")
+        .WriteTo.MSSqlServer(
+            connectionString: builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"],
+            sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
+        )
+    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]))
+    {
+        IndexFormat = $"{context.Configuration["ApplicationName"]}-logs-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
+        AutoRegisterTemplate = true,
+        NumberOfShards = 2,
+        NumberOfReplicas = 1
+    })
+    .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
+    .ReadFrom.Configuration(context.Configuration);
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -94,29 +101,3 @@ app.MapControllers();
 
 app.Run();
 
-void ConfigureLogs(){
-    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-    //var configuration = new ConfigurationBuilder()
-    //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    //    .Build();
-
-    Log.Logger = new LoggerConfiguration()
-        .WriteTo.File("logs/logs.txt")
-        .WriteTo.MSSqlServer(
-            connectionString: builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"],
-            sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
-        )
-        .WriteTo.Elasticsearch(ConfigureELS(env))
-        .Enrich.FromLogContext()
-        .MinimumLevel.Information()
-        .CreateLogger();
-}
-
-ElasticsearchSinkOptions ConfigureELS(string env)
-{
-    return new ElasticsearchSinkOptions(new Uri(builder.Configuration["ElasticConfiguration:Uri"]))
-    {
-        AutoRegisterTemplate = true,
-        IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name.ToLower()}-{env.ToLower().Replace(".","-")}-{DateTime.UtcNow:yyyy-MM}"
-    };
-}
