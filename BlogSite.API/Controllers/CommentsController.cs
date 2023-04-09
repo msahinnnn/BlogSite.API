@@ -21,7 +21,7 @@ namespace BlogSite.API.Controllers
             _logger = logger;
         }
 
-        //Test Test Test.....
+        //Test Test Test 2.....
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
