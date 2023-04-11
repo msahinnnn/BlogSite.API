@@ -3,15 +3,18 @@ using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
+using BlogSite.Core.Security.JWT;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.DataAccsess.EntitiyFramework.ApplicationContext;
 using BlogSite.DataAccsess.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -19,18 +22,24 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.MSSqlServer;
 using StackExchange.Redis;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//ConfigureLogs();
 
-//var connectionString = builder.Configuration.GetConnectionString("MsSqlConnection");
 var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
 
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+    });
+});
 
 builder.Host.UseSerilog((context, configuration) =>
 {
@@ -60,21 +69,33 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(CommentProfile));
 builder.Services.AddAutoMapper(typeof(PostProfile));
 
-builder.Services.AddSingleton<IUserService, UserService>();
-builder.Services.AddSingleton<IPostService, PostService>();
-builder.Services.AddSingleton<ICommentService, CommentService>();
-builder.Services.AddSingleton<IRedisService, RedisService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IRedisService, RedisService>();
+builder.Services.AddScoped<ITokenHelper, JwtHelper>();
 
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
-builder.Services.AddSingleton<IPostRepository, PostRepository>();
-builder.Services.AddSingleton<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-//var redisConnection = builder.Configuration.GetConnectionString("RedisConnection");
 var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
 builder.Services.AddStackExchangeRedisCache(options => 
     options.Configuration = redisConnection
 );
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mysecretkeymysecretkey")),
+            ValidateAudience = false,
+            ValidateIssuer = false
+        };
+    });
 
 
 var app = builder.Build();
@@ -86,7 +107,9 @@ if (app.Environment.IsDevelopment())
     //app.UseSwaggerUI();
 }
 
+
 app.ExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
+
 
 app.UseSerilogRequestLogging();
 
@@ -95,7 +118,10 @@ app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
+
 
 app.MapControllers();
 

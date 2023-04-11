@@ -4,7 +4,7 @@ using BlogSite.Business.Abstract;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogSite.API.Controllers
@@ -21,7 +21,7 @@ namespace BlogSite.API.Controllers
             _logger = logger;
         }
 
-        //Test Test Test 2.....
+        [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
@@ -30,12 +30,11 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Data);
-                //return Ok(res);
             }
             return BadRequest(res.Message);
-            //return Ok("test");
         }
 
+        [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetCommentByIdAsync([FromQuery] Guid commentId)
         {
@@ -43,11 +42,11 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Data);
-                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
 
+        [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAllCommentsByPostIdAsync([FromQuery] Guid postId)
         {
@@ -59,18 +58,19 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
+        [Authorize(Roles = "Admin, Standard")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCommentVM createCommentVM)
         {
             var res = await _commentService.CreateAsync(createCommentVM);
             if (res.Success == true)
             {
-                // return Ok(res.Message);
                 return Ok(res);
             }
             return BadRequest(res.Message);
         }
 
+        [Authorize(Roles = "Admin, Standard")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
         {
@@ -82,6 +82,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
+        [Authorize(Roles = "Admin, Standard")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid commentId)
         {
@@ -89,84 +90,9 @@ namespace BlogSite.API.Controllers
             if (res.Success == true)
             {
                 return Ok(res.Message);
-                //return Ok(res);
             }
             return BadRequest(res.Message);
         }
-
-
-
-        //[HttpGet("[action]")]
-        //public IActionResult Get()
-        //{
-        //    var res = _commentService.GetAllComments();
-        //    if (res is not null)
-        //    {
-        //        return Ok(res);
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpGet("[action]")]
-        //public IActionResult GetCommentById([FromQuery] Guid commentId)
-        //{
-        //    var res = _commentService.GetCommentById(commentId);
-        //    if (res is not null)
-        //    {
-        //        return Ok(res);
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpGet("[action]")]
-        //public IActionResult GetAllCommentByPostId([FromQuery] Guid postId)
-        //{
-        //    var res = _commentService.GetCommentsByPostId(postId);
-        //    if (res is not null)
-        //    {
-        //        return Ok(res);
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpPost("[action]")]
-        //public IActionResult Create([FromBody] CreateCommentVM createCommentVM)
-        //{
-        //    var res = _commentService.CreateComment(createCommentVM);
-        //    if(res == true)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpPut("[action]")]
-        //public IActionResult Update([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
-        //{
-        //    var res = _commentService.UpdateComment(updateCommentVM, commentId);
-        //    if (res == true)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpDelete("[action]")]
-        //public IActionResult Delete([FromQuery] Guid commentId)
-        //{
-        //    var res = _commentService.DeleteComment(commentId);
-        //    if (res == true)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
 
     }
 }

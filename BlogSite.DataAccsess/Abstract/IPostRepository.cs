@@ -16,18 +16,7 @@ namespace BlogSite.DataAccsess.Abstract
     {
         Task<List<Post>> GetPostsByUserIdAsync(Guid userId);
 
-        //List<Post> GetPostsByUserId(Guid userId);
-        //List<Post> GetAllPosts();
-        //Task<List<Post>> GetAllPostsAsync();     
-        //Post GetPostById(Guid postId);
-        //Task<Post> GetPostByIdAsync(Guid postId);
 
-        //bool CreatePost(Post post);
-        //Task<bool> CreatePostAsync(Post post);
-        //bool UpdatePost(Post post);
-        //Task<bool> UpdatePostAsync(Post post);
-        //bool DeletePost(Guid postId);
-        //Task<bool> DeletePostAsync(Guid postId);
 
 
     }

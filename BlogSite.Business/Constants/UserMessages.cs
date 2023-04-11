@@ -11,7 +11,7 @@ namespace BlogSite.Business.Constants
         public static string UsersListed = "Users successfuly listed from DB.";
         public static string UsersListedError = "Error! Please try again.";
 
-        public static string UserAdded = "Comment successfuly added to DB and CacheDB.";
+        public static string UserAdded = "User successfuly added to DB and CacheDB.";
         public static string UserAldreadyExistsError = "Error! User already exists.";
         public static string UserAddedError = "Error! Please try again.";
 

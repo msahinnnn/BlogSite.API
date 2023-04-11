@@ -7,6 +7,8 @@ using BlogSite.Business.Abstract;
 using BlogSite.Business.Constants;
 using BlogSite.Business.Validations;
 using BlogSite.Core.Entities;
+using BlogSite.Core.Entities.Concrete;
+using BlogSite.Core.Security.Hashing;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
@@ -45,11 +47,11 @@ namespace BlogSite.Business.Concrete
         }
         public async Task<IDataResult<User>> CreateAsync(IVM<User> entityVM)
         {
-            ValidationTool.Validate(new UserValidator(), entityVM);
+            //ValidationTool.Validate(new UserValidator(), entityVM);
             User user = _mapper.Map<User>(entityVM);
             user.Id = Guid.NewGuid();
             var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
-            if (!check)
+            if (check is null)
             {
                 var res = await _userRepository.CreateAsync(user);
                 if (res is not null)
@@ -83,5 +85,14 @@ namespace BlogSite.Business.Concrete
             return new ErrorResult(UserMessages.UserUpdatedError);
         }
 
+        public async Task<List<OperationClaim>> GetClaims(User user)
+        {
+            return await _userRepository.GetClaims(user);
+        }
+
+        public async Task<User> EmailExists(string email)
+        {
+            return await _userRepository.CheckUserEmailExistsAsync(email);
+        }
     }
 }

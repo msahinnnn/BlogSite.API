@@ -2,6 +2,7 @@
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Core.DataAccess;
+using BlogSite.Core.Entities.Concrete;
 using BlogSite.Entities.ViewModels.PostVMs;
 using BlogSite.Entities.ViewModels.UserVMs;
 using System;
@@ -14,20 +15,9 @@ namespace BlogSite.DataAccsess.Abstract
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<bool> CheckUserEmailExistsAsync(string mail);
+        Task<User> CheckUserEmailExistsAsync(string mail);
+        Task<List<OperationClaim>> GetClaims(User user);
 
-        //bool CheckUserEmailExists(string mail);
-        //List<User> GetAllUsers();
-        //Task<List<User>> GetAllUsersAsync();
-        //User GetUserById(Guid userId);
-        //Task<User> GetUserByIdAsync(Guid userId);
-
-        //bool CreateUser(User user);
-        //Task<bool> CreateUserAsync(User user);
-        //bool UpdateUser(User user);
-        //Task<bool> UpdateUserAsync(User user);
-        //bool DeleteUser(Guid userId);
-        //Task<bool> DeleteUserAsync(Guid userId);
 
     }
 }

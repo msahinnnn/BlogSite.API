@@ -9,6 +9,7 @@ using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
 using BlogSite.Entities.ViewModels.UserVMs;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +25,9 @@ namespace BlogSite.API.Controllers
         {
             _userService = userService;
         }
-       
 
+        [AllowAnonymous]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
@@ -37,7 +39,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetUserByIdAsync([FromQuery] Guid userId)
         {
@@ -49,7 +51,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserVM createUserVM)
         {
@@ -61,7 +63,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
         {
@@ -73,7 +75,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid userId)
         {
@@ -84,66 +86,6 @@ namespace BlogSite.API.Controllers
             }
             return BadRequest(res.Message);
         }
-
-
-        //[HttpGet("[action]")]
-        //public IActionResult Get()
-        //{
-        //    var res = _userService.GetAllUsers();
-        //    if (res is not null)
-        //    {
-        //        return Ok(res);
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpGet("[action]")]
-        //public IActionResult GetUserById([FromQuery] Guid userId)
-        //{
-        //    var res = _userService.GetUserById(userId);
-        //    if (res is not null)
-        //    {
-        //        return Ok(res);
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpPost("[action]")]
-        //public IActionResult Create([FromBody] CreateUserVM createUserVM)
-        //{
-        //    var res = _userService.CreateUser(createUserVM);
-        //    if (res == true)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpPut("[action]")]
-        //public IActionResult Update([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
-        //{
-        //    var res = _userService.UpdateUser(updateUserVM, userId);
-        //    if (res == true)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
-
-
-        //[HttpDelete("[action]")]
-        //public IActionResult Delete([FromQuery] Guid userId)
-        //{
-        //    var res = _userService.DeleteUser(userId);
-        //    if (res == true)
-        //    {
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
 
 
     }
