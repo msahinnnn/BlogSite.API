@@ -9,10 +9,10 @@ namespace BlogSite.Business.Constants
     public static class CommentMessages
     {
         public static string CommentsListed = "Comment successfuly listed from CacheDB.";
-        public static string CommentsListedError = "Error! Please try again.";
+        public static string CommentsListedError = "Error! Please try again.(CommentsListedError)";
 
         public static string CommentAdded = "Comment successfuly added to DB and CacheDB.";
-        public static string CommentAddedError = "Error! Please try again.";
+        public static string CommentAddedError = "Error! Please try again.(CommentAddedError)";
         public static string CommentAddedCacheError = "Error! Comment succesfuly added to DB but couldn' t added to CacheDB";
 
         public static string CommentRemoved = "Comment successfuly removed from DB and CacheDB.";

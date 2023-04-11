@@ -10,8 +10,6 @@ namespace BlogSite.Entities.ViewModels.UserVMs
 {
     public class UpdateUserVM : IVM<User>
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
         public string Email { get; set; }
     }
 }

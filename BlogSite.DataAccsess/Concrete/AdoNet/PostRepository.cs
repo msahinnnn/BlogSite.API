@@ -51,7 +51,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             await con.OpenAsync();
-            SqlCommand cmd = new SqlCommand("Select * from Users where Id=@Id", con);
+            SqlCommand cmd = new SqlCommand("Select * from Posts where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", id);
             Post post = new Post();
             SqlDataAdapter adp = new SqlDataAdapter(cmd);

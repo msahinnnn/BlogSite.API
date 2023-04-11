@@ -1,6 +1,5 @@
 ﻿using BlogSite.API.Models;
 using BlogSite.Core.Entities;
-using BlogSite.Core.Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;

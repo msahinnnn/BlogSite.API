@@ -1,5 +1,4 @@
 ﻿using BlogSite.API.Models;
-using BlogSite.Core.Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,8 +10,7 @@ namespace BlogSite.DataAccsess.EntitiyFramework.ApplicationContext
         public DbSet<User>? Users { get; set; }
         public DbSet<Post>? Posts { get; set; }
         public DbSet<Comment>? Comments { get; set; }
-        public DbSet<OperationClaim> OperationClaims { get; set; }
-        public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
+
 
 
         public BlogSiteDbContext(DbContextOptions<BlogSiteDbContext> options) : base(options)

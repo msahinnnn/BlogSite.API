@@ -1,5 +1,4 @@
-﻿using BlogSite.Core.Extensions;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -28,13 +27,6 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetCurrentUserIdentities()
         {
             var id = HttpContext.User.Identities;
-            return Ok(id);
-        }
-
-        [HttpGet("claimroles")]
-        public async Task<IActionResult> GetCurrentClaimRoles()
-        {
-            var id = HttpContext.User.ClaimRoles();
             return Ok(id);
         }
 

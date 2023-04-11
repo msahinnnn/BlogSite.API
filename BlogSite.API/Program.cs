@@ -2,8 +2,8 @@ using BlogSite.API.Controllers;
 using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
 using BlogSite.Business.Abstract;
+using BlogSite.Business.Authentication;
 using BlogSite.Business.Concrete;
-using BlogSite.Core.Security.JWT;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.DataAccsess.EntitiyFramework.ApplicationContext;
@@ -46,7 +46,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.Enrich.FromLogContext()
     .WriteTo.File("logs/logs.txt")
         .WriteTo.MSSqlServer(
-            connectionString: builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"],
+            connectionString: builder.Configuration["ConnectionStrings:MsSqlConnection"],
             sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
         )
     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]))
@@ -71,10 +71,11 @@ builder.Services.AddAutoMapper(typeof(PostProfile));
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped <IAuthService, AuthService>();
+
+builder.Services.AddScoped<ITokenHandler, BlogSite.Business.Authentication.TokenHandler>();
 builder.Services.AddScoped<IRedisService, RedisService>();
-builder.Services.AddScoped<ITokenHelper, JwtHelper>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -85,17 +86,23 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisConnection
 );
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mysecretkeymysecretkey")),
-            ValidateAudience = false,
-            ValidateIssuer = false
-        };
-    });
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
+        ValidateAudience = false,
+        ValidateIssuer = false
+    };
+});
 
 
 var app = builder.Build();
@@ -121,7 +128,6 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
 
 app.MapControllers();
 

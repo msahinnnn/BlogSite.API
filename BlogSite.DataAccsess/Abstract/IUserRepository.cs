@@ -2,7 +2,6 @@
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Core.DataAccess;
-using BlogSite.Core.Entities.Concrete;
 using BlogSite.Entities.ViewModels.PostVMs;
 using BlogSite.Entities.ViewModels.UserVMs;
 using System;
@@ -16,8 +15,7 @@ namespace BlogSite.DataAccsess.Abstract
     public interface IUserRepository : IRepository<User>
     {
         Task<User> CheckUserEmailExistsAsync(string mail);
-        Task<List<OperationClaim>> GetClaims(User user);
-
+        bool CheckUserRefreshTokenExists(string refreshToken);
 
     }
 }

@@ -4,17 +4,17 @@ using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Business.Abstract;
+using BlogSite.Business.Authentication;
 using BlogSite.Business.Constants;
 using BlogSite.Business.Validations;
 using BlogSite.Core.Entities;
-using BlogSite.Core.Entities.Concrete;
-using BlogSite.Core.Security.Hashing;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.PostVMs;
 using BlogSite.Entities.ViewModels.UserVMs;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +27,15 @@ namespace BlogSite.Business.Concrete
     {
         private IUserRepository _userRepository;
         private IMapper _mapper;
+        private ILogger<UserService> _logger;
+        private ITokenHandler _tokenHandler;
 
-        public UserService(IMapper mapper, IUserRepository userRepository)
+        public UserService(IMapper mapper, IUserRepository userRepository, ILogger<UserService> logger, ITokenHandler tokenHandler)
         {
             _mapper = mapper;
             _userRepository = userRepository;
+            _logger = logger;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<IDataResult<List<User>>> GetAllAsync()
@@ -47,19 +51,25 @@ namespace BlogSite.Business.Concrete
         }
         public async Task<IDataResult<User>> CreateAsync(IVM<User> entityVM)
         {
-            //ValidationTool.Validate(new UserValidator(), entityVM);
+            ValidationTool.Validate(new UserValidator(), entityVM);
             User user = _mapper.Map<User>(entityVM);
             user.Id = Guid.NewGuid();
+            user.Token = _tokenHandler.CreateToken(user);
+            user.RefreshToken = _tokenHandler.CreateRefreshToken();
+            user.RefreshTokenExpiryTime = DateTime.Now.AddHours(1);
             var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
             if (check is null)
             {
+       
                 var res = await _userRepository.CreateAsync(user);
                 if (res is not null)
                 {
                     return new SuccessDataResult<User>(user, UserMessages.UserAdded);
                 }
+                _logger.LogError(UserMessages.UserAddedError);
                 return new ErrorDataResult<User>(user, UserMessages.UserAddedError);
             }
+            _logger.LogError(UserMessages.UserAldreadyExistsError);
             return new ErrorDataResult<User>(user, UserMessages.UserAldreadyExistsError);
         }
 
@@ -70,6 +80,7 @@ namespace BlogSite.Business.Concrete
             {
                 return new SuccessResult(RedisMessages.ItemDeleted);
             }
+            _logger.LogError(RedisMessages.ItemDeletedError);
             return new ErrorResult(RedisMessages.ItemDeletedError);
         }
 
@@ -82,13 +93,10 @@ namespace BlogSite.Business.Concrete
             {
                 return new SuccessResult(UserMessages.UserUpdated);
             }
+            _logger.LogError(UserMessages.UserUpdatedError);
             return new ErrorResult(UserMessages.UserUpdatedError);
         }
 
-        public async Task<List<OperationClaim>> GetClaims(User user)
-        {
-            return await _userRepository.GetClaims(user);
-        }
 
         public async Task<User> EmailExists(string email)
         {
