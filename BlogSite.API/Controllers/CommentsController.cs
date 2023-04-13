@@ -25,7 +25,6 @@ namespace BlogSite.API.Controllers
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
-            _logger.LogInformation("TEST LOG TEST LOG TEST LOG TEST LOG", DateTime.UtcNow);
             var res = await _commentService.GetAllAsync();
             if (res.Success == true)
             {
@@ -58,7 +57,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, Standard")]
+        [Authorize(Roles = "Admin, User")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCommentVM createCommentVM)
         {
@@ -70,7 +69,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, Standard")]
+        [Authorize(Roles = "Admin, User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
         {
@@ -82,7 +81,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, Standard")]
+        [Authorize(Roles = "Admin, User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid commentId)
         {

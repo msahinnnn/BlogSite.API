@@ -59,7 +59,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, Standard")]
+        [Authorize(Roles = "Admin, User")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreatePostVM createPostVM)
         {
@@ -71,7 +71,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, Standard")]
+        [Authorize(Roles = "Admin, User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdatePostVM updatePostVM, [FromQuery] Guid postId)
         {
@@ -83,7 +83,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, Standard")]
+        [Authorize(Roles = "Admin, User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid postId)
         {

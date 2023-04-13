@@ -27,7 +27,6 @@ namespace BlogSite.API.Controllers
         }
 
         [AllowAnonymous]
-        //[Authorize(Roles = "Admin")]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
@@ -39,7 +38,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetUserByIdAsync([FromQuery] Guid userId)
         {
@@ -63,7 +62,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
         {
@@ -75,7 +74,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid userId)
         {
