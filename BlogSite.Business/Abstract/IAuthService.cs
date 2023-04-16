@@ -8,6 +8,7 @@ using BlogSite.Entities.ViewModels.UserVMs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,5 +19,8 @@ namespace BlogSite.Business.Abstract
         Task<IDataResult<User>> RegisterAsync(CreateUserVM createUserVM);
         Task<IDataResult<TokenDto>> LoginAsync(LoginUserVM loginUserVM);
         Task<IDataResult<TokenDto>> RefreshAsync(TokenDto tokenDto);
+        string GetCurrentUserId();
+        string GetCurrentUserMail();
+        string GetCurrentUserRole();
     }
 }

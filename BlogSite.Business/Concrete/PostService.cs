@@ -11,6 +11,7 @@ using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -25,11 +26,14 @@ namespace BlogSite.Business.Concrete
         private IPostRepository _postRepository;
         private IMapper _mapper;
         private IRedisService _redisService;
-        public PostService(IPostRepository postRepository, IMapper mapper, IRedisService redisService)
+        private IAuthService _authService;
+
+        public PostService(IPostRepository postRepository, IMapper mapper, IRedisService redisService, IAuthService authService)
         {
             _postRepository = postRepository;
             _mapper = mapper;
             _redisService = redisService;
+            _authService = authService;
         }
 
         public async Task<IDataResult<List<Post>>> GetAllAsync()
@@ -60,6 +64,7 @@ namespace BlogSite.Business.Concrete
             ValidationTool.Validate(new PostValidator(), entityVM);
             Post post = _mapper.Map<Post>(entityVM);
             post.Id = Guid.NewGuid();
+            post.UserId = Guid.Parse(_authService.GetCurrentUserId());
             post.CreatedDate = DateTime.Now;
             var res = await _postRepository.CreateAsync(post);
             if (res is not null)
@@ -76,29 +81,42 @@ namespace BlogSite.Business.Concrete
 
         public async Task<IResult> DeleteAsync(Guid id)
         {
-            var res = await _postRepository.DeleteAsync(id);
-            if (res == true)
+            var check = await _postRepository.GetByIdAsync(id);
+            var userAuth =  Guid.Parse(_authService.GetCurrentUserId());
+            if(check.UserId == userAuth)
             {
-                var cache = await _redisService.DeleteCacheAsync($"post-{id}", id);
-                if (cache.Success == true)
+                var res = await _postRepository.DeleteAsync(id);
+                if (res == true)
                 {
-                    return new SuccessResult(PostMessages.PostRemoved);
+                    var cache = await _redisService.DeleteCacheAsync($"post-{id}", id);
+                    if (cache.Success == true)
+                    {
+                        return new SuccessResult(PostMessages.PostRemoved);
+                    }
+                    return new ErrorResult(PostMessages.PostRemovedCacheError);
                 }
-                return new ErrorResult(PostMessages.PostRemovedCacheError);
+                return new ErrorResult(PostMessages.PostRemovedError);
             }
-            return new ErrorResult(PostMessages.PostRemovedError);
+            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
         }
 
         public async Task<IResult> UpdateAsync(IVM<Post> entityVM, Guid id)
         {
             Post post = _mapper.Map<Post>(entityVM);
+            var check = await _postRepository.GetByIdAsync(id);
+            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
             post.Id = id;
-            var res = await _postRepository.UpdateAsync(post);
-            if (res == true)
+            post.UserId = userAuth;
+            if (check.UserId == userAuth)
             {
-                return new SuccessResult(PostMessages.PostUpdated);
+                var res = await _postRepository.UpdateAsync(post);
+                if (res == true)
+                {
+                    return new SuccessResult(PostMessages.PostUpdated);
+                }
+                return new ErrorResult(PostMessages.PostUpdatedError);
             }
-            return new ErrorResult(PostMessages.PostUpdatedError);
+            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
         }
 
     }

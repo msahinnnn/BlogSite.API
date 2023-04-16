@@ -16,19 +16,20 @@ namespace BlogSite.Business.Authentication
     public class TokenHandler : ITokenHandler
     {
         private readonly IUserRepository _userRepository;
-        public TokenHandler(IUserRepository userRepository)
+        private IConfiguration _configuration;
+        public TokenHandler(IUserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _configuration = configuration;
         }
-
-        public string CreateToken(User user)
+        public string CreateToken(User user, string role)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
-            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes("mysecretkeymysecretkey"));
+            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_configuration["TokenKey"]));
 
             var identity = new ClaimsIdentity(new Claim[] {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.Email, user.Email),
             });
             SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -36,7 +37,7 @@ namespace BlogSite.Business.Authentication
             {
                 Subject = identity,
                 Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = signingCredentials
+                SigningCredentials = signingCredentials,
             };
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             return jwtTokenHandler.WriteToken(token);
@@ -61,7 +62,7 @@ namespace BlogSite.Business.Authentication
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mysecretkeymysecretkey")),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["TokenKey"])),
                 ValidateLifetime = false
             };
             var handler = new JwtSecurityTokenHandler();
@@ -72,5 +73,6 @@ namespace BlogSite.Business.Authentication
                 throw new SecurityTokenException("Invalid token!");
             return principal;
         }
+
     }
 }

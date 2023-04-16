@@ -7,6 +7,7 @@ using BlogSite.Business.Constants;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.UserVMs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,14 +26,17 @@ namespace BlogSite.Business.Concrete
         private IMapper _mapper;
         private ILogger<AuthService> _logger;
         private ITokenHandler _tokenHandler;
+        private IHttpContextAccessor _contextAccessor;
 
-        public AuthService(IUserService userService, IUserRepository userRepository, IMapper mapper, ILogger<AuthService> logger, ITokenHandler tokenHandler)
+
+        public AuthService(IUserService userService, IUserRepository userRepository, IMapper mapper, ILogger<AuthService> logger, ITokenHandler tokenHandler, IHttpContextAccessor contextAccessor)
         {
             _userService = userService;
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _tokenHandler = tokenHandler;
+            _contextAccessor = contextAccessor;
         }
 
         public async Task<IDataResult<User>> RegisterAsync(CreateUserVM createUserVM)
@@ -55,9 +59,7 @@ namespace BlogSite.Business.Concrete
                 bool isPasswordCorrect = BCrypt.Net.BCrypt.Verify(loginUserVM.Password, user.Password);
                 if (user != null && isPasswordCorrect)
                 {
-
-                    //TokenHandler tokenHandler = new TokenHandler(_userRepository);
-                    user.Token = _tokenHandler.CreateToken(user);
+                    user.Token = _tokenHandler.CreateToken(user, UserRoles.User);
 
                     var newAccsessToken = user.Token;
                     var newRefreshToken = _tokenHandler.CreateRefreshToken();
@@ -90,10 +92,8 @@ namespace BlogSite.Business.Concrete
                 
             string accessToken = tokenDto.AccessToken;
             string refreshToken = tokenDto.RefreshToken;
-            TokenHandler tokenHandler = new TokenHandler(_userRepository);
-            ClaimsPrincipal principal = tokenHandler.GetPrincipalFromExpiredToken(accessToken);
+            ClaimsPrincipal principal = _tokenHandler.GetPrincipalFromExpiredToken(accessToken);
             var userEmail = principal.Identity.Name;
-
             var user = await _userService.EmailExists(userEmail);
 
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
@@ -101,10 +101,10 @@ namespace BlogSite.Business.Concrete
                 _logger.LogError(UserAuthMessages.UserLoginError);
                 return new ErrorDataResult<TokenDto>(new TokenDto(), UserAuthMessages.UserLoginError);
             }
-                
 
-            var newAccessToken = tokenHandler.CreateToken(user);
-            var newRefreshToken = tokenHandler.CreateRefreshToken();
+            var role = GetCurrentUserRole();
+            var newAccessToken = _tokenHandler.CreateToken(user, role);
+            var newRefreshToken = _tokenHandler.CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
             await _userRepository.UpdateAsync(user);
 
@@ -115,6 +115,22 @@ namespace BlogSite.Business.Concrete
             };
 
             return new SuccessDataResult<TokenDto>(tok, UserAuthMessages.TokenCreated);
+        }
+
+        public string GetCurrentUserId()
+        {
+            return _contextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier).Value;
+        }
+
+        public string GetCurrentUserMail()
+        {
+            return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Email).Value;
+
+        }
+
+        public string GetCurrentUserRole()
+        {
+            return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Role).Value;
         }
 
     }

@@ -9,5 +9,6 @@ namespace BlogSite.API.Models
         public DateTime CreateTime { get; set; } = DateTime.Now;
         public Guid PostId { get; set; }
         public Post Post { get; set; }
+        public Guid UserId { get; set; }
     }
 }

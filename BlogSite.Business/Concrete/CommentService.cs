@@ -13,6 +13,7 @@ using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,14 @@ namespace BlogSite.Business.Concrete
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
         private IRedisService _redisService;
+        private IAuthService _authService;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper, IRedisService redisService)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper, IRedisService redisService, IAuthService authService)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
             _redisService = redisService;
+            _authService = authService;
         }
 
 
@@ -69,6 +72,7 @@ namespace BlogSite.Business.Concrete
             Comment comment = _mapper.Map<Comment>(entityVM);
             comment.Id = Guid.NewGuid();
             comment.CreateTime = DateTime.Now;
+            comment.UserId = Guid.Parse(_authService.GetCurrentUserId());
             var res = await _commentRepository.CreateAsync(comment);
             if (res is not null)
             {
@@ -84,28 +88,42 @@ namespace BlogSite.Business.Concrete
 
         public async Task<IResult> DeleteAsync(Guid id)
         {
-            var res = await _commentRepository.DeleteAsync(id);
-            if (res == true)
+            var check = await _commentRepository.GetByIdAsync(id);
+            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
+            if(check.UserId == userAuth)
             {
-                var cache = await _redisService.DeleteCacheAsync(CommentCacheKeys.CommentCacheKey, id);
-                if (cache.Success == true)
+                var res = await _commentRepository.DeleteAsync(id);
+                if (res == true)
                 {
-                    return new SuccessResult(CommentMessages.CommentRemoved);
+                    var cache = await _redisService.DeleteCacheAsync(CommentCacheKeys.CommentCacheKey, id);
+                    if (cache.Success == true)
+                    {
+                        return new SuccessResult(CommentMessages.CommentRemoved);
+                    }
+                    return new ErrorResult(CommentMessages.CommentRemovedCacheError);
                 }
-                return new ErrorResult(CommentMessages.CommentRemovedCacheError);
+                return new ErrorResult(CommentMessages.CommentRemovedError);
             }
-            return new ErrorResult(CommentMessages.CommentRemovedError);
+            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
         }
         public async Task<IResult> UpdateAsync(IVM<Comment> entityVM, Guid id)
         {
             Comment comment = _mapper.Map<Comment>(entityVM);
+            var check = await _commentRepository.GetByIdAsync(id);
+            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
             comment.Id = id;
-            var res = await _commentRepository.UpdateAsync(comment);
-            if (res == true)
+            comment.UserId = userAuth;
+            if(check.UserId == userAuth)
             {
-                return new SuccessResult(CommentMessages.CommentUpdated);
+                var res = await _commentRepository.UpdateAsync(comment);
+                if (res == true)
+                {
+                    return new SuccessResult(CommentMessages.CommentUpdated);
+                }
+                return new ErrorResult(CommentMessages.CommentUpdatedError);
             }
-            return new ErrorResult(CommentMessages.CommentUpdatedError);
+            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+
         }
 
     }

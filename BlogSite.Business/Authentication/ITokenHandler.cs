@@ -10,8 +10,9 @@ namespace BlogSite.Business.Authentication
 {
     public interface ITokenHandler
     {
-        public string CreateToken(User user);
+        public string CreateToken(User user, string role);
         public string CreateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
+
     }
 }
