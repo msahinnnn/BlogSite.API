@@ -78,9 +78,10 @@ namespace BlogSite.Business.Concrete
 
         public async Task<IResult> DeleteAsync(Guid id)
         {
+            var check = await _userRepository.GetByIdAsync(id);
             var res = await _userRepository.DeleteAsync(id);
             var userAuth = Guid.Parse(_authService.GetCurrentUserId());
-            if(id  == userAuth)
+            if(check.Id  == userAuth)
             {
                 if (res == true)
                 {
@@ -96,8 +97,9 @@ namespace BlogSite.Business.Concrete
         {
             User user = _mapper.Map<User>(entityVM);
             user.Id = id;
+            var check = await _userRepository.GetByIdAsync(id);
             var userAuth = Guid.Parse(_authService.GetCurrentUserId());
-            if(id == userAuth)
+            if(check.Id == userAuth)
             {
                 var res = await _userRepository.UpdateAsync(user);
                 if (res == true)
@@ -109,7 +111,6 @@ namespace BlogSite.Business.Concrete
             }
             return new ErrorResult(AuthMessages.UnAuthorizationMessage);
         }
-
 
         public async Task<User> EmailExists(string email)
         {
