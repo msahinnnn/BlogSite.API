@@ -85,6 +85,7 @@ namespace BlogSite.Business.Concrete
                     {
                         AccessToken = newAccsessToken,
                         RefreshToken = newRefreshToken,
+                        AccessTokenExpiryTime = DateTime.Now.AddHours(1)
                     };
                     return new SuccessDataResult<TokenDto>(tok, UserAuthMessages.TokenCreated);
                 }
@@ -125,6 +126,7 @@ namespace BlogSite.Business.Concrete
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken,
+                AccessTokenExpiryTime = DateTime.Now.AddHours(1)
             };
 
             return new SuccessDataResult<TokenDto>(tok, UserAuthMessages.TokenCreated);
