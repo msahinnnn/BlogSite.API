@@ -84,7 +84,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
+var redisConnection = builder.Configuration["ConnectionStrings:RedisLocalConnection"];
 builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisConnection
 );

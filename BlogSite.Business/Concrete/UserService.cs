@@ -79,10 +79,10 @@ namespace BlogSite.Business.Concrete
         public async Task<IResult> DeleteAsync(Guid id)
         {
             var check = await _userRepository.GetByIdAsync(id);
-            var res = await _userRepository.DeleteAsync(id);
             var userAuth = Guid.Parse(_authService.GetCurrentUserId());
             if(check.Id  == userAuth)
             {
+                var res = await _userRepository.DeleteAsync(id);
                 if (res == true)
                 {
                     return new SuccessResult(RedisMessages.ItemDeleted);

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
+using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Authentication;
 using BlogSite.Business.Constants;
+using BlogSite.Business.Validations;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.UserVMs;
@@ -21,7 +23,6 @@ namespace BlogSite.Business.Concrete
 {
     public class AuthService : IAuthService
     {
-        private IUserService _userService;
         private IUserRepository _userRepository;
         private IMapper _mapper;
         private ILogger<AuthService> _logger;
@@ -29,9 +30,8 @@ namespace BlogSite.Business.Concrete
         private IHttpContextAccessor _contextAccessor;
 
 
-        public AuthService(IUserService userService, IUserRepository userRepository, IMapper mapper, ILogger<AuthService> logger, ITokenHandler tokenHandler, IHttpContextAccessor contextAccessor)
+        public AuthService(IUserRepository userRepository, IMapper mapper, ILogger<AuthService> logger, ITokenHandler tokenHandler, IHttpContextAccessor contextAccessor)
         {
-            _userService = userService;
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
@@ -41,20 +41,33 @@ namespace BlogSite.Business.Concrete
 
         public async Task<IDataResult<User>> RegisterAsync(CreateUserVM createUserVM)
         {
-            createUserVM.Password =  BCrypt.Net.BCrypt.HashPassword(createUserVM.Password);
-            var res = await _userService.CreateAsync(createUserVM);
-            if (res.Success)
+            ValidationTool.Validate(new UserValidator(), createUserVM);
+            createUserVM.Password = BCrypt.Net.BCrypt.HashPassword(createUserVM.Password);
+            User user = _mapper.Map<User>(createUserVM);
+            user.Id = Guid.NewGuid();
+            user.Token = _tokenHandler.CreateToken(user, UserRoles.User);
+            user.RefreshToken = _tokenHandler.CreateRefreshToken();
+            user.RefreshTokenExpiryTime = DateTime.Now.AddHours(1);
+            var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
+            if (check is null)
             {
-                return new SuccessDataResult<User>(res.Data, res.Message);
+
+                var res = await _userRepository.CreateAsync(user);
+                if (res is not null)
+                {
+                    return new SuccessDataResult<User>(user, UserMessages.UserAdded);
+                }
+                _logger.LogError(UserMessages.UserAddedError);
+                return new ErrorDataResult<User>(user, UserMessages.UserAddedError);
             }
-            _logger.LogError(UserAuthMessages.UserRegisterError);
-            return new ErrorDataResult<User>(res.Data, UserAuthMessages.UserRegisterError);
+            _logger.LogError(UserMessages.UserAldreadyExistsError);
+            return new ErrorDataResult<User>(user, UserMessages.UserAldreadyExistsError);
         }
 
         public async Task<IDataResult<TokenDto>> LoginAsync(LoginUserVM loginUserVM)
         {
-            var user = await _userService.EmailExists(loginUserVM.Email);
-            if(user != null)
+            var user = await _userRepository.CheckUserEmailExistsAsync(loginUserVM.Email);
+            if (user != null)
             {
                 bool isPasswordCorrect = BCrypt.Net.BCrypt.Verify(loginUserVM.Password, user.Password);
                 if (user != null && isPasswordCorrect)
@@ -94,7 +107,7 @@ namespace BlogSite.Business.Concrete
             string refreshToken = tokenDto.RefreshToken;
             ClaimsPrincipal principal = _tokenHandler.GetPrincipalFromExpiredToken(accessToken);
             var userEmail = principal.Identity.Name;
-            var user = await _userService.EmailExists(userEmail);
+            var user = await _userRepository.CheckUserEmailExistsAsync(userEmail);
 
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
