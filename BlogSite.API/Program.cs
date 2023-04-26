@@ -1,7 +1,9 @@
 using BlogSite.API;
+using BlogSite.API.Caching.Consumers;
 using BlogSite.API.Controllers;
 using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
+using BlogSite.API.Models;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Authentication;
 using BlogSite.Business.Concrete;
@@ -11,6 +13,7 @@ using BlogSite.DataAccsess.EntitiyFramework.ApplicationContext;
 using BlogSite.DataAccsess.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,7 +93,23 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisConnection
 );
 
-
+builder.Services.AddMassTransit(x =>
+{
+    //..
+    x.AddConsumer<CommentChangedEventConsumer>();
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["RabbitMQUrl"],"/", host =>
+        {
+            host.Username("guest");
+            host.Password("guest");
+        });
+        cfg.ReceiveEndpoint("comment-changed-event-cache-service", e =>
+        {
+            e.ConfigureConsumer<CommentChangedEventConsumer>(context);
+        });
+    });
+});
 
 builder.Services.AddSwaggerGen(options =>
 {

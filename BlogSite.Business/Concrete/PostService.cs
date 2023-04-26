@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
+using BlogSite.API.Shared.Messages;
 using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
@@ -11,6 +12,7 @@ using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -26,12 +28,15 @@ namespace BlogSite.Business.Concrete
         private IPostRepository _postRepository;
         private IMapper _mapper;
         private IAuthService _authService;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService)
+
+        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService, IPublishEndpoint publishEndpoint)
         {
             _postRepository = postRepository;
             _mapper = mapper;
             _authService = authService;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<IDataResult<List<Post>>> GetAllAsync()
@@ -62,6 +67,14 @@ namespace BlogSite.Business.Concrete
             var res = await _postRepository.CreateAsync(post);
             if (res is not null)
             {
+                await _publishEndpoint.Publish<PostChangedEvent>(new PostChangedEvent()
+                {
+                    Id = post.Id.ToString(),
+                    CreatedDate = post.CreatedDate.ToString(),
+                    Title = post.Title,
+                    Content = post.Content  ,
+                    UserId = post.UserId.ToString()
+                });
                 return new SuccessDataResult<Post>(post, PostMessages.PostAdded);             
             }
             return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
@@ -76,8 +89,15 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.DeleteAsync(id);
                 if (res == true)
                 {
-                        return new SuccessResult(PostMessages.PostRemoved);
-
+                    await _publishEndpoint.Publish<PostChangedEvent>(new PostChangedEvent()
+                    {
+                        Id = check.Id.ToString(),
+                        CreatedDate = check.CreatedDate.ToString(),
+                        Title = check.Title,
+                        Content = check.Content,
+                        UserId = check.UserId.ToString()
+                    });
+                    return new SuccessResult(PostMessages.PostRemoved);
                 }
                 return new ErrorResult(PostMessages.PostRemovedError);
             }
@@ -96,6 +116,14 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.UpdateAsync(post);
                 if (res == true)
                 {
+                    await _publishEndpoint.Publish<PostChangedEvent>(new PostChangedEvent()
+                    {
+                        Id = post.Id.ToString(),
+                        CreatedDate = post.CreatedDate.ToString(),
+                        Title = post.Title,
+                        Content = post.Content,
+                        UserId = post.UserId.ToString()
+                    });
                     return new SuccessResult(PostMessages.PostUpdated);
                 }
                 return new ErrorResult(PostMessages.PostUpdatedError);

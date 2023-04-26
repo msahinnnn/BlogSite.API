@@ -1,21 +1,23 @@
-﻿using BlogSite.API.ViewModels.CommentVMs;
+﻿using BlogSite.API.Models;
+using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogSite.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Default")]
     [ApiController]
     public class CommentsController : ControllerBase
     {
         private ICommentService _commentService;
         private ILogger<CommentsController> _logger;
+        
         public CommentsController(ICommentService commentService, ILogger<CommentsController> logger)
         {
             _commentService = commentService;

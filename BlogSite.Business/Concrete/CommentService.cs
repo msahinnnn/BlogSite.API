@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
+using BlogSite.API.Shared.Messages;
 using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
@@ -13,6 +14,7 @@ using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
@@ -28,12 +30,14 @@ namespace BlogSite.Business.Concrete
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
         private IAuthService _authService;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService, IPublishEndpoint publishEndpoint)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
             _authService = authService;
+            _publishEndpoint = publishEndpoint;
         }
 
 
@@ -65,7 +69,16 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.CreateAsync(comment);
             if (res is not null)
             {
-                    return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
+                await _publishEndpoint.Publish<CommentChangedEvent>(new CommentChangedEvent()
+                {
+                    Id = comment.Id.ToString(),
+                    Content = comment.Content,
+                    CreateTime = comment.CreateTime.ToString(),
+                    UserId = comment.UserId.ToString(),
+                    PostId = comment.PostId.ToString()
+
+                });
+                return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
             }
             return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
         }
@@ -77,8 +90,18 @@ namespace BlogSite.Business.Concrete
             if(check.UserId == userAuth)
             {
                 var res = await _commentRepository.DeleteAsync(id);
+
                 if (res == true)
                 {
+                    await _publishEndpoint.Publish<CommentChangedEvent>(new CommentChangedEvent()
+                    {
+                        Id = check.Id.ToString(),
+                        Content = check.Content,
+                        CreateTime = check.CreateTime.ToString(),
+                        UserId = check.UserId.ToString(),
+                        PostId = check.PostId.ToString()
+
+                    });
                     return new SuccessResult(CommentMessages.CommentRemoved);
                 }
                 return new ErrorResult(CommentMessages.CommentRemovedError);
@@ -97,6 +120,15 @@ namespace BlogSite.Business.Concrete
                 var res = await _commentRepository.UpdateAsync(comment);
                 if (res == true)
                 {
+                    await _publishEndpoint.Publish<CommentChangedEvent>(new CommentChangedEvent()
+                    {
+                        Id = comment.Id.ToString(),
+                        Content = comment.Content,
+                        CreateTime = comment.CreateTime.ToString(),
+                        UserId = comment.UserId.ToString(),
+                        PostId = comment.PostId.ToString()
+
+                    });
                     return new SuccessResult(CommentMessages.CommentUpdated);
                 }
                 return new ErrorResult(CommentMessages.CommentUpdatedError);

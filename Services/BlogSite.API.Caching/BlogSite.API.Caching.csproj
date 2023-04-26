@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BlogSite.API.Shared\BlogSite.API.Shared.csproj" />
     <ProjectReference Include="..\..\BlogSite.Core\BlogSite.Core.csproj" />
     <ProjectReference Include="..\..\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
     <ProjectReference Include="..\..\BlogSite.Entities\BlogSite.Entities.csproj" />

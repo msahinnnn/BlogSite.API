@@ -13,7 +13,6 @@ using System.Security.Claims;
 namespace BlogSite.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = "Default")]
     [ApiController]
     public class AuthsController : ControllerBase
     {
