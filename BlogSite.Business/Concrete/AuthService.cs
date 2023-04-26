@@ -45,7 +45,7 @@ namespace BlogSite.Business.Concrete
             createUserVM.Password = BCrypt.Net.BCrypt.HashPassword(createUserVM.Password);
             User user = _mapper.Map<User>(createUserVM);
             user.Id = Guid.NewGuid();
-            user.Token = _tokenHandler.CreateToken(user, UserRoles.User);
+            user.Token = _tokenHandler.CreateToken(user, UserRoles.User, 1);
             user.RefreshToken = _tokenHandler.CreateRefreshToken();
             user.RefreshTokenExpiryTime = DateTime.Now.AddHours(1);
             var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
@@ -72,7 +72,7 @@ namespace BlogSite.Business.Concrete
                 bool isPasswordCorrect = BCrypt.Net.BCrypt.Verify(loginUserVM.Password, user.Password);
                 if (user != null && isPasswordCorrect)
                 {
-                    user.Token = _tokenHandler.CreateToken(user, UserRoles.User);
+                    user.Token = _tokenHandler.CreateToken(user, UserRoles.User, 1);
 
                     var newAccsessToken = user.Token;
                     var newRefreshToken = _tokenHandler.CreateRefreshToken();
@@ -103,7 +103,7 @@ namespace BlogSite.Business.Concrete
                 _logger.LogError(UserAuthMessages.UserLoginError);
                 return new ErrorDataResult<TokenDto>(new TokenDto(), UserAuthMessages.UserLoginError);
             }
-                
+
             string accessToken = tokenDto.AccessToken;
             string refreshToken = tokenDto.RefreshToken;
             ClaimsPrincipal principal = _tokenHandler.GetPrincipalFromExpiredToken(accessToken);
@@ -117,7 +117,7 @@ namespace BlogSite.Business.Concrete
             }
 
             var role = GetCurrentUserRole();
-            var newAccessToken = _tokenHandler.CreateToken(user, role);
+            var newAccessToken = _tokenHandler.CreateToken(user, role, 1);
             var newRefreshToken = _tokenHandler.CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
             await _userRepository.UpdateAsync(user);
@@ -147,6 +147,7 @@ namespace BlogSite.Business.Concrete
         {
             return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Role).Value;
         }
+
 
     }
 }

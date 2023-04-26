@@ -13,11 +13,9 @@ namespace BlogSite.Business.Constants
 
         public static string PostAdded = "Post successfuly added to DB and CacheDB.";
         public static string PostAddedError = "Error! Please try again.";
-        public static string PostAddedCacheError = "Error! Post succesfuly added to DB but couldn' t added to CacheDB";
 
         public static string PostRemoved = "Post successfuly removed from DB and CacheDB.";
         public static string PostRemovedError = "Error! Post not found.";
-        public static string PostRemovedCacheError = "Error! Post not found.";
 
         public static string PostUpdated = "Post updated from DB .";
         public static string PostUpdatedError = "Error! Post not found.";

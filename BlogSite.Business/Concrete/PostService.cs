@@ -25,32 +25,25 @@ namespace BlogSite.Business.Concrete
     {
         private IPostRepository _postRepository;
         private IMapper _mapper;
-        private IRedisService _redisService;
         private IAuthService _authService;
 
-        public PostService(IPostRepository postRepository, IMapper mapper, IRedisService redisService, IAuthService authService)
+        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService)
         {
             _postRepository = postRepository;
             _mapper = mapper;
-            _redisService = redisService;
             _authService = authService;
         }
 
         public async Task<IDataResult<List<Post>>> GetAllAsync()
         {
-            List<Post> posts = await _postRepository.GetAllAsync();
-            var res = await _redisService.GetAllCacheAsync<Post>(PostCacheKeys.PostCacheKey, posts);
-            return new SuccessDataResult<List<Post>>(res.Data, PostMessages.PostsListed);
+            var posts = await _postRepository.GetAllAsync();
+            return new SuccessDataResult<List<Post>>(posts, PostMessages.PostsListed);
         }
 
         public async Task<IDataResult<Post>> GetByIdAsync(Guid id)
         {
-            var res = await _redisService.GetByIdCacheAsync<Post>(PostCacheKeys.PostCacheKey, id);
-            if (res.Success == true)
-            {
-                return new SuccessDataResult<Post>(res.Data, PostMessages.PostsListed);
-            }
-            return new ErrorDataResult<Post>(res.Data, PostMessages.PostsListedError);
+            var res = await _postRepository.GetByIdAsync(id);
+            return new SuccessDataResult<Post>(res, PostMessages.PostsListed);
         }
 
         public async Task<IDataResult<List<Post>>> GetPostsByUserIdAsync(Guid userId)
@@ -69,12 +62,7 @@ namespace BlogSite.Business.Concrete
             var res = await _postRepository.CreateAsync(post);
             if (res is not null)
             {
-                var cache = await _redisService.CreateCacheAsync<Post>($"post-{post.Id}", post);
-                if (cache.Success == true)
-                {
-                    return new SuccessDataResult<Post>(post, PostMessages.PostAdded);
-                }
-                return new ErrorDataResult<Post>(post, PostMessages.PostAddedCacheError);
+                return new SuccessDataResult<Post>(post, PostMessages.PostAdded);             
             }
             return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
         }
@@ -88,12 +76,8 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.DeleteAsync(id);
                 if (res == true)
                 {
-                    var cache = await _redisService.DeleteCacheAsync($"post-{id}", id);
-                    if (cache.Success == true)
-                    {
                         return new SuccessResult(PostMessages.PostRemoved);
-                    }
-                    return new ErrorResult(PostMessages.PostRemovedCacheError);
+
                 }
                 return new ErrorResult(PostMessages.PostRemovedError);
             }

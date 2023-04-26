@@ -27,37 +27,26 @@ namespace BlogSite.Business.Concrete
     {
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
-        private IRedisService _redisService;
         private IAuthService _authService;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper, IRedisService redisService, IAuthService authService)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
-            _redisService = redisService;
             _authService = authService;
         }
 
 
         public async Task<IDataResult<List<Comment>>> GetAllAsync()
         {
-            List<Comment> comments = await _commentRepository.GetAllAsync();
-            var res = await _redisService.GetAllCacheAsync<Comment>(CommentCacheKeys.CommentCacheKey, comments);
-            if (res.Success == true)
-            {
-                return new SuccessDataResult<List<Comment>>(res.Data, CommentMessages.CommentsListed);
-            }
-            return new ErrorDataResult<List<Comment>>(res.Data, CommentMessages.CommentsListedError);
+            var res = await _commentRepository.GetAllAsync();
+            return new SuccessDataResult<List<Comment>>(res, CommentMessages.CommentsListed);
         }
 
         public async Task<IDataResult<Comment>> GetByIdAsync(Guid id)
         {
-            var res = await _redisService.GetByIdCacheAsync<Comment>(CommentCacheKeys.CommentCacheKey, id);
-            if (res.Success == true)
-            {
-                return new SuccessDataResult<Comment>(res.Data, CommentMessages.CommentsListed);
-            }
-            return new ErrorDataResult<Comment>(res.Data, CommentMessages.CommentsListedError);
+            var res = await _commentRepository.GetByIdAsync(id);
+            return new SuccessDataResult<Comment>(res, CommentMessages.CommentsListed);
         }
 
         public async Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId)
@@ -76,12 +65,7 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.CreateAsync(comment);
             if (res is not null)
             {
-                var cache = await _redisService.CreateCacheAsync<Comment>($"comment-{comment.Id}", comment);
-                if (cache.Success == true)
-                {
                     return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
-                }
-                return new ErrorDataResult<Comment>(comment, CommentMessages.CommentAddedCacheError);
             }
             return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
         }
@@ -95,12 +79,7 @@ namespace BlogSite.Business.Concrete
                 var res = await _commentRepository.DeleteAsync(id);
                 if (res == true)
                 {
-                    var cache = await _redisService.DeleteCacheAsync(CommentCacheKeys.CommentCacheKey, id);
-                    if (cache.Success == true)
-                    {
-                        return new SuccessResult(CommentMessages.CommentRemoved);
-                    }
-                    return new ErrorResult(CommentMessages.CommentRemovedCacheError);
+                    return new SuccessResult(CommentMessages.CommentRemoved);
                 }
                 return new ErrorResult(CommentMessages.CommentRemovedError);
             }

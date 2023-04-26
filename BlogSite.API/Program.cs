@@ -1,3 +1,4 @@
+using BlogSite.API;
 using BlogSite.API.Controllers;
 using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
@@ -24,6 +25,7 @@ using Serilog.Sinks.MSSqlServer;
 using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +34,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
-var con = builder.Configuration["ConnectionStrings:MsSqlLocalConnection"];
+var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
 
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
@@ -49,7 +51,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.Enrich.FromLogContext()
     .WriteTo.File("logs/logs.txt")
         .WriteTo.MSSqlServer(
-            connectionString: builder.Configuration["ConnectionStrings:MsSqlLocalConnection"],
+            connectionString: builder.Configuration["ConnectionStrings:MsSqlConnection"],
             sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
         )
     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]))
@@ -78,16 +80,17 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped <IAuthService, AuthService>();
 
 builder.Services.AddScoped<ITokenHandler, BlogSite.Business.Authentication.TokenHandler>();
-builder.Services.AddScoped<IRedisService, RedisService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-var redisConnection = builder.Configuration["ConnectionStrings:RedisLocalConnection"];
+var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
 builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisConnection
 );
+
+
 
 builder.Services.AddSwaggerGen(options =>
 {

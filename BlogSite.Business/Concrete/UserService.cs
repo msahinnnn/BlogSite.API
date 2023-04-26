@@ -57,7 +57,7 @@ namespace BlogSite.Business.Concrete
             ValidationTool.Validate(new UserValidator(), entityVM);
             User user = _mapper.Map<User>(entityVM);
             user.Id = Guid.NewGuid();
-            user.Token = _tokenHandler.CreateToken(user, UserRoles.User);
+            user.Token = _tokenHandler.CreateToken(user, UserRoles.User, 1);
             user.RefreshToken = _tokenHandler.CreateRefreshToken();
             user.RefreshTokenExpiryTime = DateTime.Now.AddHours(1);
             var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);

@@ -1,0 +1,14 @@
+﻿using BlogSite.API.Models;
+using BlogSite.DataAccsess.Concrete.AdoNet;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BlogSite.API.Caching.Abstract
+{
+    internal interface IPostCacheService : Core.Services.IRedisCacheService<Post, PostRepository>
+    {
+    }
+}

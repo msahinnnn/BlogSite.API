@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlogSite.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = "Default")]
     [ApiController]
     public class UsersController : ControllerBase
     {

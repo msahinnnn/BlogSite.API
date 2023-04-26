@@ -1,6 +1,7 @@
 ﻿using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Authentication;
+using BlogSite.Business.Concrete;
 using BlogSite.Core.Utilities.Results;
 using BlogSite.Entities.ViewModels.UserVMs;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ using System.Security.Claims;
 namespace BlogSite.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = "Default")]
     [ApiController]
     public class AuthsController : ControllerBase
     {

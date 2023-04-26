@@ -26,7 +26,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<List<Post>> GetAllAsync()
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             await con.OpenAsync();
             SqlDataAdapter da = new SqlDataAdapter("Select * from Posts", con);
             DataTable dt = new DataTable();
@@ -49,7 +49,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<Post> GetByIdAsync(Guid id)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             await con.OpenAsync();
             SqlCommand cmd = new SqlCommand("Select * from Posts where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", id);
@@ -69,7 +69,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             await con.OpenAsync();
             SqlDataAdapter da = new SqlDataAdapter("Select * from Posts where UserId=@UserId", con);
             da.SelectCommand.Parameters.AddWithValue("@UserId", userId);
@@ -93,7 +93,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<Post> CreateAsync(Post entity)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Insert into Posts (Id, Title, Content, CreatedDate, UserId) values (@Id, @Title, @Content, @CreatedDate, @UserId)", con);
             cmd.Parameters.AddWithValue("@Id", entity.Id);
             cmd.Parameters.AddWithValue("@Title", entity.Title);
@@ -109,7 +109,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Delete from Posts where Id=@Id", con);
             cmd.Parameters.AddWithValue("Id", id);
             await con.OpenAsync();
@@ -121,7 +121,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<bool> UpdateAsync(Post entity)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
             SqlCommand cmd = new SqlCommand("Update Posts Set Title=@Title, Content=@Content where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", entity.Id);
             cmd.Parameters.AddWithValue("@Title", entity.Title);
