@@ -1,4 +1,5 @@
 ﻿using BlogSite.API.Models;
+using BlogSite.Core.Services;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BlogSite.API.Caching.Abstract
 {
-    internal interface IPostCacheService : Core.Services.IRedisCacheService<Post, PostRepository>
+    public interface IPostCacheService : IRedisCacheService<Post>
     {
     }
 }

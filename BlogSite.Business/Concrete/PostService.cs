@@ -67,13 +67,13 @@ namespace BlogSite.Business.Concrete
             var res = await _postRepository.CreateAsync(post);
             if (res is not null)
             {
-                await _publishEndpoint.Publish<PostChangedEvent>(new PostChangedEvent()
+                await _publishEndpoint.Publish<PostCreatedEvent>(new PostCreatedEvent()
                 {
-                    Id = post.Id.ToString(),
-                    CreatedDate = post.CreatedDate.ToString(),
+                    Id = post.Id,
+                    CreatedDate = post.CreatedDate,
                     Title = post.Title,
                     Content = post.Content  ,
-                    UserId = post.UserId.ToString()
+                    UserId = post.UserId
                 });
                 return new SuccessDataResult<Post>(post, PostMessages.PostAdded);             
             }
@@ -89,13 +89,9 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.DeleteAsync(id);
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<PostChangedEvent>(new PostChangedEvent()
+                    await _publishEndpoint.Publish<PostDeletedEvent>(new PostDeletedEvent()
                     {
-                        Id = check.Id.ToString(),
-                        CreatedDate = check.CreatedDate.ToString(),
-                        Title = check.Title,
-                        Content = check.Content,
-                        UserId = check.UserId.ToString()
+                        Id = check.Id,
                     });
                     return new SuccessResult(PostMessages.PostRemoved);
                 }
@@ -116,13 +112,13 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.UpdateAsync(post);
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<PostChangedEvent>(new PostChangedEvent()
+                    await _publishEndpoint.Publish<PostUpdatedEvent>(new PostUpdatedEvent()
                     {
-                        Id = post.Id.ToString(),
-                        CreatedDate = post.CreatedDate.ToString(),
+                        Id = post.Id,
+                        CreatedDate = post.CreatedDate,
                         Title = post.Title,
                         Content = post.Content,
-                        UserId = post.UserId.ToString()
+                        UserId = post.UserId
                     });
                     return new SuccessResult(PostMessages.PostUpdated);
                 }

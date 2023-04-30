@@ -13,4 +13,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.28.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BlogSite.API.Shared\BlogSite.API.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

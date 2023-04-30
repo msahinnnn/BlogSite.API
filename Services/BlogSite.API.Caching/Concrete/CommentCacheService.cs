@@ -1,9 +1,11 @@
 ﻿using BlogSite.API.Caching.Abstract;
 using BlogSite.API.Models;
+using BlogSite.API.Shared.Messages;
 using BlogSite.Business.Constants;
 using BlogSite.Core.DataAccess;
 using BlogSite.Core.Entities;
 using BlogSite.Core.Utilities.Results;
+using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using Microsoft.Extensions.Configuration;
 using StackExchange.Redis;
@@ -20,6 +22,7 @@ namespace BlogSite.API.Caching.Concrete
     {
         private IDatabase _db;
         private ConnectionMultiplexer _redis;
+        private ICommentRepository _commentRepository;
         public CommentCacheService(IDatabase db)
         {
             _redis = ConnectionMultiplexer.Connect("app_redis");
@@ -32,11 +35,11 @@ namespace BlogSite.API.Caching.Concrete
             return new SuccessResult(RedisMessages.ItemDeleted);
         }
 
-        public async Task<IDataResult<List<Comment>>> GetAsync(CommentRepository repository, string key)
+        public async Task<IDataResult<List<Comment>>> GetAsync(string key)
         {
             if (!await _db.KeyExistsAsync(CommentCacheKeys.CommentKey))
             {
-                var res = await LoadToCacheFromDbAsync(repository);
+                var res = await LoadToCacheFromDbAsync();
                 return new SuccessDataResult<List<Comment>>(res.Data, RedisMessages.ItemsListed);
             }
                 
@@ -53,9 +56,9 @@ namespace BlogSite.API.Caching.Concrete
 
         }
 
-        public async Task<IDataResult<List<Comment>>> LoadToCacheFromDbAsync(CommentRepository repository)
+        public async Task<IDataResult<List<Comment>>> LoadToCacheFromDbAsync( )
         {
-            var comments = await repository.GetAllAsync();
+            var comments = await _commentRepository.GetAllAsync();
             comments.ForEach(c =>
             {
                  _db.HashSetAsync(CommentCacheKeys.CommentKey, c.Id.ToString(), JsonSerializer.Serialize(c));
@@ -63,9 +66,9 @@ namespace BlogSite.API.Caching.Concrete
             return new SuccessDataResult<List<Comment>>(comments, RedisMessages.ItemAdded);
         }
 
-        public async Task<IResult> SaveOrUpdateAsync(CommentRepository repository, IBaseEntity entity)
+        public async Task<IResult> SaveOrUpdateAsync(IMessage entity)
         {
-            var newComment = await repository.CreateAsync((Comment) entity);
+            var newComment = await _commentRepository.CreateAsync((Comment)entity);
             if (await _db.KeyExistsAsync(CommentCacheKeys.CommentKey))
             {
                 await _db.HashSetAsync(CommentCacheKeys.CommentKey, entity.Id.ToString(), JsonSerializer.Serialize(newComment));

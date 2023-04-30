@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BlogSite.API.Caching.Abstract
 {
-    public interface ICommentCacheService : Core.Services.IRedisCacheService<Comment, CommentRepository>
+    public interface ICommentCacheService : IRedisCacheService<Comment>
     {
     }
 }

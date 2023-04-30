@@ -95,19 +95,14 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    //..
-    x.AddConsumer<CommentChangedEventConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(builder.Configuration["RabbitMQUrl"],"/", host =>
+        cfg.Host(builder.Configuration["RabbitMQUrl"], "/", host =>
         {
             host.Username("guest");
             host.Password("guest");
         });
-        cfg.ReceiveEndpoint("comment-changed-event-cache-service", e =>
-        {
-            e.ConfigureConsumer<CommentChangedEventConsumer>(context);
-        });
+
     });
 });
 

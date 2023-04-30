@@ -69,13 +69,13 @@ namespace BlogSite.Business.Concrete
             var res = await _commentRepository.CreateAsync(comment);
             if (res is not null)
             {
-                await _publishEndpoint.Publish<CommentChangedEvent>(new CommentChangedEvent()
+                await _publishEndpoint.Publish<CommentCreatedEvent>(new CommentCreatedEvent()
                 {
-                    Id = comment.Id.ToString(),
+                    Id = comment.Id,
                     Content = comment.Content,
-                    CreateTime = comment.CreateTime.ToString(),
-                    UserId = comment.UserId.ToString(),
-                    PostId = comment.PostId.ToString()
+                    CreateTime = comment.CreateTime,
+                    UserId = comment.UserId,
+                    PostId = comment.PostId,
 
                 });
                 return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
@@ -93,14 +93,9 @@ namespace BlogSite.Business.Concrete
 
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<CommentChangedEvent>(new CommentChangedEvent()
+                    await _publishEndpoint.Publish<CommentDeletedEvent>(new CommentDeletedEvent()
                     {
-                        Id = check.Id.ToString(),
-                        Content = check.Content,
-                        CreateTime = check.CreateTime.ToString(),
-                        UserId = check.UserId.ToString(),
-                        PostId = check.PostId.ToString()
-
+                        Id = check.Id,
                     });
                     return new SuccessResult(CommentMessages.CommentRemoved);
                 }
@@ -120,13 +115,13 @@ namespace BlogSite.Business.Concrete
                 var res = await _commentRepository.UpdateAsync(comment);
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<CommentChangedEvent>(new CommentChangedEvent()
+                    await _publishEndpoint.Publish<CommentUpdatedEvent>(new CommentUpdatedEvent()
                     {
-                        Id = comment.Id.ToString(),
+                        Id = comment.Id,
                         Content = comment.Content,
-                        CreateTime = comment.CreateTime.ToString(),
-                        UserId = comment.UserId.ToString(),
-                        PostId = comment.PostId.ToString()
+                        CreateTime = comment.CreateTime,
+                        UserId = comment.UserId,
+                        PostId = comment.PostId
 
                     });
                     return new SuccessResult(CommentMessages.CommentUpdated);

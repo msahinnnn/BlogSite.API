@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace BlogSite.API.Shared.Messages
 {
-    public class PostChangedEvent
+    public class CommentUpdatedEvent : IMessage
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
+        public Guid Id { get; set; }
         public string Content { get; set; }
-        public string CreatedDate { get; set; }
-        public string UserId { get; set; }
+        public DateTime CreateTime { get; set; }
+        public Guid PostId { get; set; }
+        public Guid UserId { get; set; }
     }
 }
