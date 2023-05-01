@@ -1,4 +1,5 @@
 ﻿using BlogSite.API.Models;
+using BlogSite.API.Shared.Messages;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
@@ -17,11 +18,13 @@ namespace BlogSite.API.Controllers
     {
         private ICommentService _commentService;
         private ILogger<CommentsController> _logger;
-        
-        public CommentsController(ICommentService commentService, ILogger<CommentsController> logger)
+        private IPublishEndpoint _publishEndpoint;
+
+        public CommentsController(ICommentService commentService, ILogger<CommentsController> logger, IPublishEndpoint publishEndpoint)
         {
             _commentService = commentService;
             _logger = logger;
+            _publishEndpoint = publishEndpoint;
         }
 
         [AllowAnonymous]
@@ -60,37 +63,60 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
+        [AllowAnonymous]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCommentVM createCommentVM)
         {
             var res = await _commentService.CreateAsync(createCommentVM);
             if (res.Success == true)
             {
+                await _publishEndpoint.Publish<CommentCreatedEvent>(new CommentCreatedEvent()
+                {
+                    Id = res.Data.Id,
+                    Content = res.Data.Content,
+                    CreateTime = res.Data.CreateTime,
+                    UserId = res.Data.UserId,
+                    PostId = res.Data.PostId,
+
+                });
                 return Ok(res);
             }
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
+        [AllowAnonymous]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
         {
             var res = await _commentService.UpdateAsync(updateCommentVM, commentId);
             if (res.Success == true)
             {
+                await _publishEndpoint.Publish<CommentUpdatedEvent>(new CommentUpdatedEvent()
+                {
+                    Id = commentId,
+                    Content = updateCommentVM.Content,
+                    PostId = updateCommentVM.PostId
+
+                });
                 return Ok(res.Message);
             }
             return BadRequest(res.Message);
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
+        [AllowAnonymous]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid commentId)
         {
             var res = await _commentService.DeleteAsync(commentId);
             if (res.Success == true)
             {
+                await _publishEndpoint.Publish<CommentDeletedEvent>(new CommentDeletedEvent()
+                {
+                    Id = commentId,
+                });
                 return Ok(res.Message);
             }
             return BadRequest(res.Message);

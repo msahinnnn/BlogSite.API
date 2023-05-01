@@ -17,10 +17,12 @@ using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BlogSite.Business.Concrete
@@ -30,19 +32,31 @@ namespace BlogSite.Business.Concrete
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
         private IAuthService _authService;
-        private readonly IPublishEndpoint _publishEndpoint;
+        //private IDatabase _db;
+        //private ConnectionMultiplexer _redis;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService, IPublishEndpoint publishEndpoint)
+        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService /*, IDatabase db, ConnectionMultiplexer redis*/)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
             _authService = authService;
-            _publishEndpoint = publishEndpoint;
+            //_redis = ConnectionMultiplexer.Connect("localhost:1920");
+            //_db = _redis.GetDatabase(0);
         }
 
 
         public async Task<IDataResult<List<Comment>>> GetAllAsync()
         {
+            //var comments = new List<Comment>();
+
+            //var cacheComments = await _db.HashGetAllAsync("comments");
+            //foreach (var item in cacheComments.ToList())
+            //{
+            //    var product = JsonSerializer.Deserialize<Comment>(item.Value);
+            //    comments.Add(product);
+
+            //}
+            //return new SuccessDataResult<List<Comment>>(comments, RedisMessages.ItemsListed);
             var res = await _commentRepository.GetAllAsync();
             return new SuccessDataResult<List<Comment>>(res, CommentMessages.CommentsListed);
         }
@@ -65,22 +79,13 @@ namespace BlogSite.Business.Concrete
             Comment comment = _mapper.Map<Comment>(entityVM);
             comment.Id = Guid.NewGuid();
             comment.CreateTime = DateTime.Now;
-            comment.UserId = Guid.Parse(_authService.GetCurrentUserId());
-            var res = await _commentRepository.CreateAsync(comment);
-            if (res is not null)
-            {
-                await _publishEndpoint.Publish<CommentCreatedEvent>(new CommentCreatedEvent()
-                {
-                    Id = comment.Id,
-                    Content = comment.Content,
-                    CreateTime = comment.CreateTime,
-                    UserId = comment.UserId,
-                    PostId = comment.PostId,
-
-                });
+            //comment.UserId = Guid.Parse(_authService.GetCurrentUserId());
+            //var res = await _commentRepository.CreateAsync(comment);
+            //if (res is not null)
+            //{
                 return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
-            }
-            return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
+            //}
+            //return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
         }
 
         public async Task<IResult> DeleteAsync(Guid id)
@@ -93,10 +98,6 @@ namespace BlogSite.Business.Concrete
 
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<CommentDeletedEvent>(new CommentDeletedEvent()
-                    {
-                        Id = check.Id,
-                    });
                     return new SuccessResult(CommentMessages.CommentRemoved);
                 }
                 return new ErrorResult(CommentMessages.CommentRemovedError);
@@ -115,15 +116,7 @@ namespace BlogSite.Business.Concrete
                 var res = await _commentRepository.UpdateAsync(comment);
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<CommentUpdatedEvent>(new CommentUpdatedEvent()
-                    {
-                        Id = comment.Id,
-                        Content = comment.Content,
-                        CreateTime = comment.CreateTime,
-                        UserId = comment.UserId,
-                        PostId = comment.PostId
-
-                    });
+                    
                     return new SuccessResult(CommentMessages.CommentUpdated);
                 }
                 return new ErrorResult(CommentMessages.CommentUpdatedError);

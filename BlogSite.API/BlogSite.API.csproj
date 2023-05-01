@@ -12,11 +12,12 @@
     <PackageReference Include="FluentValidation" Version="11.5.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="FluentValidation.WebAPI" Version="8.6.1" />
-    <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+    <PackageReference Include="MassTransit" Version="8.0.15" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.14">
+
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -40,7 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BlogSite.Business\BlogSite.Business.csproj" />
     <ProjectReference Include="..\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
-    <ProjectReference Include="..\Services\BlogSite.API.Caching\BlogSite.API.Caching.csproj" />
+    <ProjectReference Include="..\Services\BlogSite.API.Caching\Caching.csproj" />
   </ItemGroup>
 
 </Project>

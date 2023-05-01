@@ -1,9 +1,9 @@
 using BlogSite.API;
-using BlogSite.API.Caching.Consumers;
 using BlogSite.API.Controllers;
 using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
 using BlogSite.API.Models;
+using BlogSite.API.Shared.Messages;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Authentication;
 using BlogSite.Business.Concrete;
@@ -37,7 +37,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
-var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
+var con = builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"];
 
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
@@ -88,13 +88,26 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
+//var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
 builder.Services.AddStackExchangeRedisCache(options =>
-    options.Configuration = redisConnection
+    options.Configuration = "localhost:1920"
 );
+
+//builder.Services.AddHostedService<PublishMessageService>((provider) =>
+//{
+//    using var scope = provider.CreateScope();
+//    var publishEndpoint = scope.ServiceProvider.GetService<MassTransit.IPublishEndpoint>();
+//    return new PublishMessageService(publishEndpoint);
+//});
+
+//builder.Services.AddHostedService<PublishMessageService>(provider =>
+//{
+//    return new PublishMessageService();
+//});
 
 builder.Services.AddMassTransit(x =>
 {
+   
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration["RabbitMQUrl"], "/", host =>
@@ -106,18 +119,18 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+//    {
+//        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
+//        In = ParameterLocation.Header,
+//        Name = "Authorization",
+//        Type = SecuritySchemeType.ApiKey
+//    });
 
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
+//    options.OperationFilter<SecurityRequirementsOperationFilter>();
+//});
 
 
 builder.Services.AddAuthentication(x =>

@@ -14,11 +14,13 @@ using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BlogSite.Business.Concrete
@@ -28,19 +30,31 @@ namespace BlogSite.Business.Concrete
         private IPostRepository _postRepository;
         private IMapper _mapper;
         private IAuthService _authService;
-        private readonly IPublishEndpoint _publishEndpoint;
+        //private IDatabase _db;
+        //private ConnectionMultiplexer _redis;
 
-
-        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService, IPublishEndpoint publishEndpoint)
+        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService/*,  IDatabase db, ConnectionMultiplexer redis*/)
         {
             _postRepository = postRepository;
             _mapper = mapper;
             _authService = authService;
-            _publishEndpoint = publishEndpoint;
+            //_redis = ConnectionMultiplexer.Connect("localhost:1920");
+            //_db = _redis.GetDatabase(0);
+            //_db = db;
+            //_redis = redis;
         }
 
         public async Task<IDataResult<List<Post>>> GetAllAsync()
         {
+            //var posts = new List<Post>();
+            //var cachePosts = await _db.HashGetAllAsync("posts");
+            //foreach (var item in cachePosts.ToList())
+            //{
+            //    var post = JsonSerializer.Deserialize<Post>(item.Value);
+            //    posts.Add(post);
+
+            //}
+            //return new SuccessDataResult<List<Post>>(posts, RedisMessages.ItemsListed);
             var posts = await _postRepository.GetAllAsync();
             return new SuccessDataResult<List<Post>>(posts, PostMessages.PostsListed);
         }
@@ -62,22 +76,15 @@ namespace BlogSite.Business.Concrete
             ValidationTool.Validate(new PostValidator(), entityVM);
             Post post = _mapper.Map<Post>(entityVM);
             post.Id = Guid.NewGuid();
-            post.UserId = Guid.Parse(_authService.GetCurrentUserId());
+            //post.UserId = Guid.Parse(_authService.GetCurrentUserId());
             post.CreatedDate = DateTime.Now;
-            var res = await _postRepository.CreateAsync(post);
-            if (res is not null)
-            {
-                await _publishEndpoint.Publish<PostCreatedEvent>(new PostCreatedEvent()
-                {
-                    Id = post.Id,
-                    CreatedDate = post.CreatedDate,
-                    Title = post.Title,
-                    Content = post.Content  ,
-                    UserId = post.UserId
-                });
+            //var res = await _postRepository.CreateAsync(post);
+            //if (res is not null)
+            //{
+                
                 return new SuccessDataResult<Post>(post, PostMessages.PostAdded);             
-            }
-            return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
+            //}
+            //return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
         }
 
         public async Task<IResult> DeleteAsync(Guid id)
@@ -89,10 +96,7 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.DeleteAsync(id);
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<PostDeletedEvent>(new PostDeletedEvent()
-                    {
-                        Id = check.Id,
-                    });
+                    
                     return new SuccessResult(PostMessages.PostRemoved);
                 }
                 return new ErrorResult(PostMessages.PostRemovedError);
@@ -112,14 +116,7 @@ namespace BlogSite.Business.Concrete
                 var res = await _postRepository.UpdateAsync(post);
                 if (res == true)
                 {
-                    await _publishEndpoint.Publish<PostUpdatedEvent>(new PostUpdatedEvent()
-                    {
-                        Id = post.Id,
-                        CreatedDate = post.CreatedDate,
-                        Title = post.Title,
-                        Content = post.Content,
-                        UserId = post.UserId
-                    });
+                    
                     return new SuccessResult(PostMessages.PostUpdated);
                 }
                 return new ErrorResult(PostMessages.PostUpdatedError);
