@@ -9,6 +9,7 @@ using BlogSite.Business.Authentication;
 using BlogSite.Business.Concrete;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
+using BlogSite.DataAccsess.Concrete.Dapper;
 using BlogSite.DataAccsess.EntitiyFramework.ApplicationContext;
 using BlogSite.DataAccsess.Services;
 using FluentValidation;
@@ -85,25 +86,14 @@ builder.Services.AddScoped <IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenHandler, BlogSite.Business.Authentication.TokenHandler>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IPostRepository, PostDapperRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentDapperRepository>();
 
 //var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
 builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = "localhost:1920"
 );
 
-//builder.Services.AddHostedService<PublishMessageService>((provider) =>
-//{
-//    using var scope = provider.CreateScope();
-//    var publishEndpoint = scope.ServiceProvider.GetService<MassTransit.IPublishEndpoint>();
-//    return new PublishMessageService(publishEndpoint);
-//});
-
-//builder.Services.AddHostedService<PublishMessageService>(provider =>
-//{
-//    return new PublishMessageService();
-//});
 
 builder.Services.AddMassTransit(x =>
 {

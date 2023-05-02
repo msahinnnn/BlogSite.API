@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using BlogSite.API.Models;
 using BlogSite.API.Shared.Messages;
-using BlogSite.API.ViewModels.CommentVMs;
 using Caching.Abstract;
+using Caching.Entities;
 using MassTransit;
 using System;
 using System.Collections.Generic;

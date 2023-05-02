@@ -1,6 +1,4 @@
 ﻿using BlogSite.API.Shared.Messages;
-using BlogSite.Core.Entities;
-using BlogSite.Core.Utilities.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;

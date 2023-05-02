@@ -2,6 +2,7 @@
 
 namespace BlogSite.API.Models
 {
+    [Dapper.Contrib.Extensions.Table("Posts")]
     public class Post : IBaseEntity
     {
         public Guid Id { get; set; }

@@ -17,6 +17,8 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddSingleton<ICommentCacheService, CommentCacheService>();
         services.AddSingleton<IPostCacheService, PostCacheService>();
+        services.AddSingleton<IPostRepository, PostRepository>();
+        services.AddSingleton<ICommentRepository, CommentRepository>();
 
         var multiplexer = ConnectionMultiplexer.Connect("localhost:1920");
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);

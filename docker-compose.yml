@@ -9,19 +9,19 @@ networks:
 
 services:
 
-  # blogsite-api:
-  #   build : .
-  #   ports:
-  #     - "8080:80"
-  #   depends_on:
-  #     - sqldata
-  #     - app_redis
-  #     - elasticsearch
-  #     - kibana
-  #   networks:
-  #     - dev
-  #   links:
-  #     - app_redis
+  blogsite-api:
+    build : .
+    ports:
+      - "8080:80"
+    depends_on:
+      - sqldata
+      - app_redis
+      - elasticsearch
+      - kibana
+    networks:
+      - dev
+    links:
+      - app_redis
 
   # blogsite-caching-console-app:
   #   build:

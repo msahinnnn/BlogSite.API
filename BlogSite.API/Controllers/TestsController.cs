@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BlogSite.API.Models;
+using BlogSite.DataAccsess.Abstract;
+using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace BlogSite.API.Controllers
 {
@@ -9,19 +14,18 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class TestsController : ControllerBase
     {
-        readonly IDistributedCache _distributedCache;
-        public TestsController(IDistributedCache distributedCache)
+        private IPostRepository _postRepository;
+
+        public TestsController(IPostRepository postRepository)
         {
-            _distributedCache = distributedCache;
+            _postRepository = postRepository;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var redis = ConnectionMultiplexer.Connect("app_redis");
-            var db = redis.GetDatabase(0);
-            var x = db.StringSetAsync("mehmet","sahin");
-            return Ok(x);
+            var posts = _postRepository.GetAllAsync();
+            return Ok(posts);
         }
     }
 }

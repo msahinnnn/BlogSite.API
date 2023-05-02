@@ -1,6 +1,6 @@
-﻿using BlogSite.API.Models;
-using BlogSite.API.Shared.Messages;
+﻿using BlogSite.API.Shared.Messages;
 using BlogSite.Core.Services;
+using Caching.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,6 +2,7 @@
 
 namespace BlogSite.API.Models
 {
+    [Dapper.Contrib.Extensions.Table("Comments")]
     public class Comment : IBaseEntity
     {
         public Guid Id { get; set; }
