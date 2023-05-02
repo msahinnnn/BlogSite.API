@@ -1,10 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using BlogSite.API.Caching.Abstract;
-using BlogSite.API.Caching.Concrete;
 using BlogSite.API.Caching.Consumers;
+using BlogSite.Core.Services;
+using Caching.Abstract;
+using Caching.Concrete;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StackExchange.Redis;
 using static System.Net.Mime.MediaTypeNames;
 
 Console.WriteLine("CONSOLE APP TEST");
@@ -12,12 +15,17 @@ Console.WriteLine("CONSOLE APP TEST");
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        //services.AddScoped<IPostCacheService, PostCacheService>();
-        //services.AddScoped<ICommentCacheService, CommentCacheService>();
+        services.AddSingleton<ICommentCacheService, CommentCacheService>();
+        services.AddSingleton<IPostCacheService, PostCacheService>();
 
-        //services.AddStackExchangeRedisCache(options =>
-        //     options.Configuration = "localhost:1920"
-        //);
+        var multiplexer = ConnectionMultiplexer.Connect("localhost:1920");
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
+        services.AddScoped<IDatabase>(cfg =>
+        {
+            IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect("localhost:1920");
+            return multiplexer.GetDatabase();
+        });
 
         services.AddMassTransit(x =>
         {

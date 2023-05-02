@@ -30,31 +30,19 @@ namespace BlogSite.Business.Concrete
         private IPostRepository _postRepository;
         private IMapper _mapper;
         private IAuthService _authService;
-        //private IDatabase _db;
-        //private ConnectionMultiplexer _redis;
 
-        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService/*,  IDatabase db, ConnectionMultiplexer redis*/)
+
+        public PostService(IPostRepository postRepository, IMapper mapper, IAuthService authService)
         {
             _postRepository = postRepository;
             _mapper = mapper;
             _authService = authService;
-            //_redis = ConnectionMultiplexer.Connect("localhost:1920");
-            //_db = _redis.GetDatabase(0);
-            //_db = db;
-            //_redis = redis;
+
         }
 
         public async Task<IDataResult<List<Post>>> GetAllAsync()
         {
-            //var posts = new List<Post>();
-            //var cachePosts = await _db.HashGetAllAsync("posts");
-            //foreach (var item in cachePosts.ToList())
-            //{
-            //    var post = JsonSerializer.Deserialize<Post>(item.Value);
-            //    posts.Add(post);
 
-            //}
-            //return new SuccessDataResult<List<Post>>(posts, RedisMessages.ItemsListed);
             var posts = await _postRepository.GetAllAsync();
             return new SuccessDataResult<List<Post>>(posts, PostMessages.PostsListed);
         }
@@ -76,15 +64,15 @@ namespace BlogSite.Business.Concrete
             ValidationTool.Validate(new PostValidator(), entityVM);
             Post post = _mapper.Map<Post>(entityVM);
             post.Id = Guid.NewGuid();
-            //post.UserId = Guid.Parse(_authService.GetCurrentUserId());
+            post.UserId = Guid.Parse(_authService.GetCurrentUserId());
             post.CreatedDate = DateTime.Now;
-            //var res = await _postRepository.CreateAsync(post);
-            //if (res is not null)
-            //{
-                
-                return new SuccessDataResult<Post>(post, PostMessages.PostAdded);             
-            //}
-            //return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
+            var res = await _postRepository.CreateAsync(post);
+            if (res is not null)
+            {
+
+                return new SuccessDataResult<Post>(post, PostMessages.PostAdded);
+        }
+            return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
         }
 
         public async Task<IResult> DeleteAsync(Guid id)

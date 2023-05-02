@@ -1,5 +1,6 @@
-﻿using BlogSite.API.Caching.Abstract;
+﻿using BlogSite.API.Models;
 using BlogSite.API.Shared.Messages;
+using Caching.Abstract;
 using MassTransit;
 using System;
 using System.Collections.Generic;
@@ -11,17 +12,24 @@ namespace BlogSite.API.Caching.Consumers
 {
     public class PostUpdatedEventConsumer : MassTransit.IConsumer<PostUpdatedEvent>
     {
-        //private IPostCacheService _cacheService;
+        private IPostCacheService _cacheService;
 
-        //public PostUpdatedEventConsumer(IPostCacheService cacheService)
-        //{
-        //    _cacheService = cacheService;
-        //}
+        public PostUpdatedEventConsumer(IPostCacheService cacheService)
+        {
+            _cacheService = cacheService;
+        }
 
         public async Task Consume(ConsumeContext<PostUpdatedEvent> context)
         {
             Console.WriteLine(context.Message);
-            //await _cacheService.SaveOrUpdateAsync(context.Message);
+            var x = await _cacheService.SaveOrUpdateAsync(new Post()
+            {
+                Id = context.Message.Id,
+                Title = context.Message.Title,
+                Content = context.Message.Content,
+                CreatedDate = context.Message.CreatedDate,
+                UserId = context.Message.UserId,
+            });
             Console.WriteLine(nameof(PostUpdatedEventConsumer) + "- worked");
 
         }

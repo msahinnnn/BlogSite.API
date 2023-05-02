@@ -1,6 +1,6 @@
-﻿using BlogSite.API.Caching.Abstract;
-using BlogSite.API.Shared.Messages;
+﻿using BlogSite.API.Shared.Messages;
 using BlogSite.Business.Constants;
+using Caching.Abstract;
 using MassTransit;
 using System;
 using System.Collections.Generic;
@@ -12,17 +12,17 @@ namespace BlogSite.API.Caching.Consumers
 {
     public class CommentDeletedEventConsumer : MassTransit.IConsumer<CommentDeletedEvent>
     {
-        //private ICommentCacheService _cacheService;
+        private ICommentCacheService _cacheService;
 
-        //public CommentDeletedEventConsumer(ICommentCacheService cacheService)
-        //{
-        //    _cacheService = cacheService;
-        //}
+        public CommentDeletedEventConsumer(ICommentCacheService cacheService)
+        {
+            _cacheService = cacheService;
+        }
 
         public async Task Consume(ConsumeContext<CommentDeletedEvent> context)
         {
             Console.WriteLine(context.Message);
-            //await _cacheService.DeleteAsync(CommentCacheKeys.CommentKey, context.Message.Id);
+            var x = await _cacheService.DeleteAsync(CommentCacheKeys.CommentKey, context.Message.Id);
             Console.WriteLine(nameof(CommentDeletedEventConsumer) + "- worked");
 
         }

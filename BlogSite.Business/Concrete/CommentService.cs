@@ -32,31 +32,19 @@ namespace BlogSite.Business.Concrete
         private ICommentRepository _commentRepository;
         private IMapper _mapper;
         private IAuthService _authService;
-        //private IDatabase _db;
-        //private ConnectionMultiplexer _redis;
 
-        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService /*, IDatabase db, ConnectionMultiplexer redis*/)
+
+        public CommentService(ICommentRepository commentRepository, IMapper mapper, IAuthService authService )
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
             _authService = authService;
-            //_redis = ConnectionMultiplexer.Connect("localhost:1920");
-            //_db = _redis.GetDatabase(0);
         }
 
 
         public async Task<IDataResult<List<Comment>>> GetAllAsync()
         {
-            //var comments = new List<Comment>();
 
-            //var cacheComments = await _db.HashGetAllAsync("comments");
-            //foreach (var item in cacheComments.ToList())
-            //{
-            //    var product = JsonSerializer.Deserialize<Comment>(item.Value);
-            //    comments.Add(product);
-
-            //}
-            //return new SuccessDataResult<List<Comment>>(comments, RedisMessages.ItemsListed);
             var res = await _commentRepository.GetAllAsync();
             return new SuccessDataResult<List<Comment>>(res, CommentMessages.CommentsListed);
         }
@@ -79,13 +67,13 @@ namespace BlogSite.Business.Concrete
             Comment comment = _mapper.Map<Comment>(entityVM);
             comment.Id = Guid.NewGuid();
             comment.CreateTime = DateTime.Now;
-            //comment.UserId = Guid.Parse(_authService.GetCurrentUserId());
-            //var res = await _commentRepository.CreateAsync(comment);
-            //if (res is not null)
-            //{
+            comment.UserId = Guid.Parse(_authService.GetCurrentUserId());
+            var res = await _commentRepository.CreateAsync(comment);
+            if (res is not null)
+            {
                 return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
-            //}
-            //return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
+            }
+            return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
         }
 
         public async Task<IResult> DeleteAsync(Guid id)

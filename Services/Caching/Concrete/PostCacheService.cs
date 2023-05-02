@@ -1,11 +1,9 @@
-﻿using BlogSite.API.Caching.Abstract;
-using BlogSite.API.Models;
+﻿using BlogSite.API.Models;
 using BlogSite.API.Shared.Messages;
 using BlogSite.Business.Constants;
-using BlogSite.Core.Entities;
+using BlogSite.Core.DataAccess;
 using BlogSite.Core.Utilities.Results;
-using BlogSite.DataAccsess.Abstract;
-using BlogSite.DataAccsess.Concrete.AdoNet;
+using Caching.Abstract;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -14,66 +12,46 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace BlogSite.API.Caching.Concrete
+namespace Caching.Concrete
 {
-    public class PostCacheService :IPostCacheService
+    public class PostCacheService : IPostCacheService
     {
-        private IDatabase _db;
-        private ConnectionMultiplexer _redis;
-        private IPostRepository _repository;
-        public PostCacheService(IDatabase db)
+        private readonly IConnectionMultiplexer _redisCon;
+        private readonly IDatabase _cache;
+
+        public PostCacheService(IConnectionMultiplexer redisCon, IDatabase cache)
         {
-            //_redis = ConnectionMultiplexer.Connect("app_redis");
-            _redis = ConnectionMultiplexer.Connect("localhost:1920");
-            _db = _redis.GetDatabase(0);
+            _redisCon = redisCon;
+            _cache = redisCon.GetDatabase(0);
         }
 
-        public async Task<IResult> DeleteAsync(string key, Guid id)
+        public async Task<bool> DeleteAsync(string key, Guid id)
         {
-            await _db.HashDeleteAsync(key, id.ToString());
-            return new SuccessResult(RedisMessages.ItemDeleted);
+            await _cache.HashDeleteAsync(key, id.ToString());
+            return true;
         }
 
-        public async Task<IDataResult<List<Post>>> GetAsync(string key)
+        public async Task<List<Post>> GetAsync(string key)
         {
-            if (!await _db.KeyExistsAsync(PostCacheKeys.PostKey))
-            {
-                var res = await LoadToCacheFromDbAsync();
-                return new SuccessDataResult<List<Post>>(res.Data, RedisMessages.ItemsListed);
-            }
-
             var posts = new List<Post>();
 
-            var cachePosts = await _db.HashGetAllAsync(PostCacheKeys.PostKey);
+            var cachePosts = await _cache.HashGetAllAsync(PostCacheKeys.PostKey);
             foreach (var item in cachePosts.ToList())
             {
                 var post = JsonSerializer.Deserialize<Post>(item.Value);
                 posts.Add(post);
-
             }
-            return new SuccessDataResult<List<Post>>(posts, RedisMessages.ItemsListed);
+            return posts;
         }
 
 
-        public async Task<IDataResult<List<Post>>> LoadToCacheFromDbAsync()
+        public async Task<bool> SaveOrUpdateAsync(Post entity)
         {
-            var posts = await _repository.GetAllAsync();
-            posts.ForEach(c =>
-            {
-                _db.HashSetAsync(PostCacheKeys.PostKey, c.Id.ToString(), JsonSerializer.Serialize(c));
-            });
-            return new SuccessDataResult<List<Post>>(posts, RedisMessages.ItemAdded);
-        }
-
-
-        public async Task<IResult> SaveOrUpdateAsync(IMessage entity)
-        {
-            var newPost = await _repository.CreateAsync((Post)entity);
-            if (await _db.KeyExistsAsync(PostCacheKeys.PostKey))
-            {
-                await _db.HashSetAsync(PostCacheKeys.PostKey, entity.Id.ToString(), JsonSerializer.Serialize(newPost));
-            }
-            return new SuccessResult(RedisMessages.ItemAdded);
+            //if (await _cache.KeyExistsAsync(PostCacheKeys.PostKey))
+            //{
+                await _cache.HashSetAsync(PostCacheKeys.PostKey, entity.Id.ToString(), JsonSerializer.Serialize(entity));
+            //}
+            return true;
         }
     }
 }
