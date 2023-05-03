@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BlogSite.API.Shared.Messages;
 using BlogSite.Business.Abstract;
 
 namespace BlogSite.Business.Concrete

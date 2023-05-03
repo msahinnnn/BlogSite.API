@@ -10,7 +10,11 @@ networks:
 services:
 
   blogsite-api:
-    build : .
+    container_name: blogsite.api
+    image: blogsite-api
+    build : 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
     depends_on:
@@ -23,10 +27,15 @@ services:
     links:
       - app_redis
 
-  # blogsite-caching-console-app:
-  #   build:
-  #     context: .
-  #     dockerfile: Services/Caching/Dockerfile
+  blogsite-caching-console-app:
+    container_name: blogsite.caching
+    image: blogsite-caching
+    build:
+      context: .
+      dockerfile: Services/Caching/Dockerfile
+    depends_on:
+      - rabbitmq
+      - sqldata
 
   app_redis:
     container_name: redis

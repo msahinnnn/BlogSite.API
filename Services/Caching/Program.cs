@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using BlogSite.API.Caching.Consumers;
+using BlogSite.Caching.Consumers;
 using BlogSite.Core.Services;
 using Caching.Abstract;
 using Caching.Concrete;
@@ -20,12 +21,12 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IPostRepository, PostRepository>();
         services.AddSingleton<ICommentRepository, CommentRepository>();
 
-        var multiplexer = ConnectionMultiplexer.Connect("localhost:1920");
+        var multiplexer = ConnectionMultiplexer.Connect("localhost:1920, abortConnect=false ");
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
         services.AddScoped<IDatabase>(cfg =>
         {
-            IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect("localhost:1920");
+            IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect("localhost:1920, abortConnect=false ");
             return multiplexer.GetDatabase();
         });
 

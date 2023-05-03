@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BlogSite.API.Models;
-using BlogSite.API.Shared.Messages;
 using BlogSite.API.Validations;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;

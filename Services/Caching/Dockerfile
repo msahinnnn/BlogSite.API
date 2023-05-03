@@ -1,15 +1,14 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
 
-# Copy everything
-COPY . ./
-# Restore as distinct layers
+COPY ../../Shared/BlogSiteShared/*.csproj  ../../Shared/BlogSiteShared/*.csproj
+COPY ./*.csproj ./
 RUN dotnet restore
-# Build and publish a release
+COPY . .
 RUN dotnet publish -c Release -o out
 
-# Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
-COPY --from=build-env /App/out .
-ENTRYPOINT ["dotnet", "BlogSite.API.Services.Caching.dll"]
+COPY --from=build /publish .
+ENTRYPOINT [ "dotnet","Caching.dll" ]

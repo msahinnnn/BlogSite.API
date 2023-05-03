@@ -1,5 +1,4 @@
-﻿using BlogSite.API.Shared.Messages;
-using BlogSite.Business.Constants;
+﻿using BlogSite.Business.Constants;
 using Caching.Abstract;
 using Caching.Entities;
 using StackExchange.Redis;

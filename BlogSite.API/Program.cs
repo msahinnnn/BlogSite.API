@@ -3,7 +3,6 @@ using BlogSite.API.Controllers;
 using BlogSite.API.Extensions;
 using BlogSite.API.Mapping;
 using BlogSite.API.Models;
-using BlogSite.API.Shared.Messages;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Authentication;
 using BlogSite.Business.Concrete;
