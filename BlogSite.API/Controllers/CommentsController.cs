@@ -1,5 +1,4 @@
 ﻿using BlogSite.API.Models;
-using BlogSite.API.Shared.Messages;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
@@ -9,6 +8,7 @@ using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharedMessages.Models;
 
 namespace BlogSite.API.Controllers
 {

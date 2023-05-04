@@ -1,7 +1,7 @@
-﻿using BlogSite.API.Shared.Messages;
-using BlogSite.Business.Constants;
+﻿using BlogSite.Business.Constants;
 using Caching.Abstract;
 using MassTransit;
+using SharedMessages.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using BlogSite.API.Shared.Messages;
 using Caching.Abstract;
 using Caching.Entities;
 using MassTransit;
+using SharedMessages.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

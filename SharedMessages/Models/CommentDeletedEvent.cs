@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogSite.API.Shared.Messages
+namespace SharedMessages.Models
 {
-    public class PostDeletedEvent : IMessage
+    public class CommentDeletedEvent : IMessage
     {
         public Guid Id { get; set; }
+
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogSite.API.Shared.Messages
+namespace SharedMessages.Models
 {
     public interface IMessage
     {

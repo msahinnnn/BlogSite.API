@@ -1,10 +1,10 @@
-﻿using BlogSite.API.Shared.Messages;
-using BlogSite.Business.Constants;
+﻿using BlogSite.Business.Constants;
 using BlogSite.Core.Services;
 using Caching.Abstract;
 using Caching.Concrete;
 using Caching.Entities;
 using MassTransit;
+using SharedMessages.Models;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
