@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
 
-COPY ../../Shared/BlogSiteShared/*.csproj  ../../Shared/BlogSiteShared/*.csproj
+COPY .././SharedMessages/*.csproj .././SharedMessages/
 COPY ./*.csproj ./
 RUN dotnet restore
 COPY . .

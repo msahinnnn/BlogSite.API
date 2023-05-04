@@ -41,9 +41,8 @@
   <ItemGroup>
     <ProjectReference Include="..\BlogSite.Business\BlogSite.Business.csproj" />
     <ProjectReference Include="..\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
+    <ProjectReference Include="..\Messages\Messages.csproj" />
     <ProjectReference Include="..\SharedMessages\SharedMessages.csproj" />
-    <ProjectReference Include="..\Shared\BlogSiteShared\Shared.csproj" />
-    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>

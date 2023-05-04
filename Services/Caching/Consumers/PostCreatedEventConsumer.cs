@@ -4,7 +4,7 @@ using Caching.Abstract;
 using Caching.Concrete;
 using Caching.Entities;
 using MassTransit;
-using SharedMessages.Models;
+using Messages.Models;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;

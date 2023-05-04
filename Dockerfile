@@ -7,7 +7,7 @@ COPY ./BlogSite.Entities/*.csproj ./BlogSite.Entities/
 COPY ./BlogSite.DataAccsess/*.csproj ./BlogSite.DataAccsess/
 COPY ./BlogSite.Core/*.csproj ./BlogSite.Core/
 COPY ./BlogSite.Business/*.csproj ./BlogSite.Business/
-COPY /Shared/BlogSiteShared/*.csproj ./Shared/BlogSiteShared/
+COPY ./BlogSiteShared/SharedMessages/*.csproj ./BlogSiteShared/SharedMessages/
 COPY Services/Caching/*.csproj Services/Caching/
 COPY ./BlogSite.API/*.csproj ./BlogSite.API/
 COPY *.sln .

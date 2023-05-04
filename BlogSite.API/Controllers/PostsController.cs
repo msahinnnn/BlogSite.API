@@ -7,11 +7,10 @@ using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
 using FluentValidation;
 using MassTransit;
+using Messages.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SharedMessages.Models;
-
 namespace BlogSite.API.Controllers
 {
     [Route("api/[controller]")]

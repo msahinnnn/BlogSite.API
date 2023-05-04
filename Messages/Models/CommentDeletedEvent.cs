@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharedMessages.Models
+namespace Messages.Models
 {
     public class CommentDeletedEvent : IMessage
     {

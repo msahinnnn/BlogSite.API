@@ -6,9 +6,9 @@ using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
 using MassTransit;
+using Messages.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SharedMessages.Models;
 
 namespace BlogSite.API.Controllers
 {
