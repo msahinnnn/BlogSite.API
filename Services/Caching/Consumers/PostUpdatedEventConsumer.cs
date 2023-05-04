@@ -1,7 +1,7 @@
 ﻿using Caching.Abstract;
 using Caching.Entities;
+using Caching.Messages;
 using MassTransit;
-using Messages.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

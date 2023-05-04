@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Messages.Models
+namespace Caching.Messages
 {
-    public interface IMessage
+    public class CommentDeletedEvent : IMessage
     {
         public Guid Id { get; set; }
     }

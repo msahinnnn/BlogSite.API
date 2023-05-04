@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Messages.Models
+﻿namespace BlogSite.API.Messages
 {
-    public class PostUpdatedEvent : IMessage
+    public class PostCreatedEvent : IMessage
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

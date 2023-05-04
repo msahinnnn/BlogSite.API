@@ -1,4 +1,5 @@
-﻿using BlogSite.API.Models;
+﻿using BlogSite.API.Messages;
+using BlogSite.API.Models;
 using BlogSite.API.ViewModels.CommentVMs;
 using BlogSite.API.ViewModels.PostVMs;
 using BlogSite.Business.Abstract;
@@ -6,7 +7,6 @@ using BlogSite.DataAccsess.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using FluentValidation;
 using MassTransit;
-using Messages.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

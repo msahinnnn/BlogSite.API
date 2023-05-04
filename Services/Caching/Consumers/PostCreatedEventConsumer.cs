@@ -4,7 +4,6 @@ using Caching.Abstract;
 using Caching.Concrete;
 using Caching.Entities;
 using MassTransit;
-using Messages.Models;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Caching.Messages;
+
 
 namespace BlogSite.Caching.Consumers
 {

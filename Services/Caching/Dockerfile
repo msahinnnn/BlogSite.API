@@ -2,8 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /app
 
-COPY .././SharedMessages/*.csproj .././SharedMessages/
-COPY ./*.csproj ./
+COPY Services/Caching/*.csproj Services/Caching/
 RUN dotnet restore
 COPY . .
 RUN dotnet publish -c Release -o out
