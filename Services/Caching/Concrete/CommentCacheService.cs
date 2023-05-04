@@ -17,6 +17,7 @@ namespace Caching.Concrete
         private readonly IConnectionMultiplexer _redisCon;
         private ICommentRepository _commentRepository;
         private readonly IDatabase _cache;
+      
 
         public CommentCacheService(IConnectionMultiplexer redisCon, IDatabase cache, ICommentRepository commentRepository)
         {

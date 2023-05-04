@@ -15,37 +15,38 @@ namespace Caching.Concrete
     {
         public async Task<bool> CreateAsync(Post entity)
         {
-            var conn = new SqlConnection("Data Source=localhost,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
-            var saveStatus = await conn.ExecuteAsync("INSERT INTO Posts (Id,Content,CreateTime,PostId,Posts,UserId) VALUES(@Id,@Content,@CreateTime,@PostId,@Posts,@UserId)", entity);
+            var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
+            var saveStatus = await conn.ExecuteAsync("INSERT INTO Posts (Id,Content,CreatedDate,PostId,UserId) VALUES(@Id,@Content,@CreatedDate,@PostId,@UserId)", entity);
             return saveStatus > 0 ? true : false;
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var conn = new SqlConnection("Data Source=localhost,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
+            var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
             var status = await conn.ExecuteAsync("Delete from Posts where Id=@Id", new { Id = id });
             return status > 0 ? true : false;
         }
 
         public async Task<List<Post>> GetAllAsync()
         {
-            var conn = new SqlConnection("Data Source=localhost,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
+            var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
             var posts = await conn.QueryAsync<Post>("Select * from Posts");
             return posts.ToList();
         }
 
         public async Task<Post> GetByIdAsync(Guid id)
         {
-            var conn = new SqlConnection("Data Source=localhost,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
+            var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
             var post = (await conn.QueryAsync<Post>("Select * from Posts where Id=@Id", new { Id = id })).SingleOrDefault();
             return post;
         }
 
         public async Task<bool> UpdateAsync(Post entity)
         {
-            var conn = new SqlConnection("Data Source=localhost,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
-            var status = await conn.ExecuteAsync("Update Posts set @Id,@Content,@CreateTime,@PostId,@Posts,@UserId where Id=@Id", entity);
+            var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
+            var status = await conn.ExecuteAsync("Update Posts set @Id,@Content,@CreatedDate,@PostId,@Posts,@UserId where Id=@Id", entity);
             return status > 0 ? true : false;
         }
+
     }
 }

@@ -21,12 +21,14 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IPostRepository, PostRepository>();
         services.AddSingleton<ICommentRepository, CommentRepository>();
 
-        var multiplexer = ConnectionMultiplexer.Connect("localhost:1920, abortConnect=false ");
+        IConfiguration _configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+
+        var multiplexer = ConnectionMultiplexer.Connect(_configuration["RedisConnection"]);
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
         services.AddScoped<IDatabase>(cfg =>
         {
-            IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect("localhost:1920, abortConnect=false ");
+            IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect(_configuration["RedisConnection"]);
             return multiplexer.GetDatabase();
         });
 
@@ -41,7 +43,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             x.AddConsumer<PostDeletedEventConsumer>();
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", host =>
+                cfg.Host(_configuration["RabbitMQ"], "/", host =>
                 {
                     host.Username("guest");
                     host.Password("guest");
@@ -73,6 +75,10 @@ IHost host = Host.CreateDefaultBuilder(args)
                 });
             });
         });
+    }).ConfigureAppConfiguration((context, configuration) =>
+    {
+        configuration.Sources.Clear();
+        configuration.AddJsonFile("appsettings.json");
     }).Build();
 
 

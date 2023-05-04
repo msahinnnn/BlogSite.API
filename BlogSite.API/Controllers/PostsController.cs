@@ -63,28 +63,35 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         [AllowAnonymous]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreatePostVM createPostVM)
         {
-            var res = await _postService.CreateAsync(createPostVM);
-            if (res.Success == true)
-            {
+            //var res = await _postService.CreateAsync(createPostVM);
+            //if (res.Success == true)
+            //{
                 await _publishEndpoint.Publish<PostCreatedEvent>(new PostCreatedEvent()
                 {
-                    Id = res.Data.Id,
-                    CreatedDate = res.Data.CreatedDate,
-                    Title = res.Data.Title,
-                    Content = res.Data.Content,
-                    UserId = res.Data.UserId
+                    //Id = res.Data.Id,
+                    //CreatedDate = res.Data.CreatedDate,
+                    //Title = res.Data.Title,
+                    //Content = res.Data.Content,
+                    //UserId = res.Data.UserId
+
+                    Id = Guid.NewGuid(),
+                    CreatedDate = DateTime.Now,
+                    Title = "aaaaaaaaaaaaaaa",
+                    Content = "fffffffffffff",
+                    UserId = Guid.Parse("aa4e536f-6a54-4956-92a3-71c88ed16c2a")
                 });
-                return Ok(res.Message);
-            }
-            return BadRequest(res.Message);
+            return Ok();
+                //return Ok(res.Message);
+            //}
+            //return BadRequest(res.Message);
         }
 
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         [AllowAnonymous]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdatePostVM updatePostVM, [FromQuery] Guid postId)
@@ -104,7 +111,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         [AllowAnonymous]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid postId)

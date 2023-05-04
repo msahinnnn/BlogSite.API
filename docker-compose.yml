@@ -36,6 +36,10 @@ services:
     depends_on:
       - rabbitmq
       - sqldata
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ=rabbitmq
+      - RedisConnection=app_redis
 
   app_redis:
     container_name: redis
@@ -87,8 +91,8 @@ services:
       - elastic
 
   rabbitmq: 
+    container_name: rabbitmq
     image: rabbitmq:3-management
-    hostname: "rabbitmq"
     ports:
     - "5672:5672"
     - "15672:15672"

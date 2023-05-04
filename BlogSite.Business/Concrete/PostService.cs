@@ -68,7 +68,6 @@ namespace BlogSite.Business.Concrete
             var res = await _postRepository.CreateAsync(post);
             if (res is not null)
             {
-
                 return new SuccessDataResult<Post>(post, PostMessages.PostAdded);
         }
             return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);

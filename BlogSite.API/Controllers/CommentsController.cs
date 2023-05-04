@@ -63,7 +63,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         [AllowAnonymous]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCommentVM createCommentVM)
@@ -85,7 +85,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         [AllowAnonymous]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
@@ -105,7 +105,7 @@ namespace BlogSite.API.Controllers
             return BadRequest(res.Message);
         }
 
-        //[Authorize(Roles = "Admin, User")]
+        [Authorize(Roles = "Admin, User")]
         [AllowAnonymous]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid commentId)

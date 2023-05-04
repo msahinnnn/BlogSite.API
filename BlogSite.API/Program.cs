@@ -10,7 +10,6 @@ using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.DataAccsess.Concrete.Dapper;
 using BlogSite.DataAccsess.EntitiyFramework.ApplicationContext;
-using BlogSite.DataAccsess.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
@@ -37,7 +36,7 @@ var builder = WebApplication.CreateBuilder(args);
 //test commit
 builder.Services.AddHttpContextAccessor();
 
-var con = builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"];
+var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
 
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 
@@ -54,7 +53,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.Enrich.FromLogContext()
     .WriteTo.File("logs/logs.txt")
         .WriteTo.MSSqlServer(
-            connectionString: builder.Configuration["ConnectionStrings:MsSqlConnection"],
+            connectionString: builder.Configuration["ConnectionStrings:MsSqlSerilogConnection"],
             sinkOptions: new MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true }
         )
     .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(context.Configuration["ElasticConfiguration:Uri"]))
@@ -85,12 +84,12 @@ builder.Services.AddScoped <IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenHandler, BlogSite.Business.Authentication.TokenHandler>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IPostRepository, PostDapperRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentDapperRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-//var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
+var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
 builder.Services.AddStackExchangeRedisCache(options =>
-    options.Configuration = "localhost:1920"
+    options.Configuration = redisConnection
 );
 
 
@@ -108,18 +107,18 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-//    {
-//        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
-//        In = ParameterLocation.Header,
-//        Name = "Authorization",
-//        Type = SecuritySchemeType.ApiKey
-//    });
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standard Authorization header using the Bearer scheme (\"bearer {token}\")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
 
-//    options.OperationFilter<SecurityRequirementsOperationFilter>();
-//});
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 
 builder.Services.AddAuthentication(x =>

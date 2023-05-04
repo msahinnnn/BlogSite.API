@@ -1,4 +1,5 @@
 ﻿using BlogSite.API.Models;
+using BlogSite.Business.Abstract;
 using BlogSite.DataAccsess.Abstract;
 using Dapper;
 using Microsoft.AspNetCore.Http;
@@ -14,18 +15,18 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class TestsController : ControllerBase
     {
-        private IPostRepository _postRepository;
+        private IAuthService _authService;
 
-        public TestsController(IPostRepository postRepository)
+        public TestsController(IAuthService authService)
         {
-            _postRepository = postRepository;
+            _authService = authService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var posts = _postRepository.GetAllAsync();
-            return Ok(posts);
+            var x = _authService.GetCurrentUserId();
+            return Ok(x);
         }
     }
 }

@@ -134,21 +134,18 @@ namespace BlogSite.Business.Concrete
 
         public string GetCurrentUserId()
         {
-            //return _contextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier).Value;
-            return "aa4e536f-6a54-4956-92a3-71c88ed16c2a";
+            return _contextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier).Value;
+
         }
-        //test
         public string GetCurrentUserMail()
         {
-            //return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Email).Value;
-            return "mehmet@gmail.com";
+            return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Email).Value;
 
         }
 
         public string GetCurrentUserRole()
         {
-            //return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Role).Value;
-            return "User";
+            return _contextAccessor?.HttpContext?.User?.FindFirst(ClaimTypes.Role).Value;
         }
 
 

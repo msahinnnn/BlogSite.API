@@ -41,7 +41,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BlogSite.Business\BlogSite.Business.csproj" />
     <ProjectReference Include="..\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
-    <ProjectReference Include="..\Messages\Messages.csproj" />
   </ItemGroup>
 
 </Project>
