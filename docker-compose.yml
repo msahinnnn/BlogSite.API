@@ -22,6 +22,7 @@ services:
       - app_redis
       - elasticsearch
       - kibana
+      - rabbitmq
     networks:
       - dev
     links:
@@ -36,10 +37,9 @@ services:
     depends_on:
       - rabbitmq
       - sqldata
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - RabbitMQ=rabbitmq
-      - RedisConnection=app_redis
+    # environment:
+    #   - RabbitMQ=rabbitmq
+    #   - RedisConnection=app_redis, abortConnect=false
 
   app_redis:
     container_name: redis
@@ -92,10 +92,14 @@ services:
 
   rabbitmq: 
     container_name: rabbitmq
+    hostname: rabbitmq
     image: rabbitmq:3-management
     ports:
     - "5672:5672"
     - "15672:15672"
+    networks:
+      - dev
+    
 
 
 

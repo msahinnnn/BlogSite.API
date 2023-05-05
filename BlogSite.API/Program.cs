@@ -14,6 +14,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,8 +27,11 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog.Sinks.MSSqlServer;
 using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
+using System.Net.Security;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Security.Claims;
+using System.ServiceProcess;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -92,13 +96,21 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisConnection
 );
 
+builder.Services.AddOptions<RabbitMqTransportOptions>()
+        .Configure(options =>
+        {
+            options.Port = 5672;
+            options.UseSsl = false;
+            options.Host = "rabbitmq";
+          
+        });
 
 builder.Services.AddMassTransit(x =>
 {
    
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(builder.Configuration["RabbitMQUrl"], "/", host =>
+        cfg.Host(builder.Configuration["RabbitMQUrl"],5672, "/", host =>
         {
             host.Username("guest");
             host.Password("guest");
