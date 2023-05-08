@@ -17,38 +17,35 @@ namespace BlogSite.API.Controllers
     public class CommentsController : ControllerBase
     {
         private ICommentService _commentService;
+        private ICommentCacheService _commentCacheService;
+        private IAuthService _authService;
         private ILogger<CommentsController> _logger;
         private IPublishEndpoint _publishEndpoint;
 
-        public CommentsController(ICommentService commentService, ILogger<CommentsController> logger, IPublishEndpoint publishEndpoint)
+        public CommentsController(ICommentService commentService, ILogger<CommentsController> logger, IPublishEndpoint publishEndpoint, IAuthService authService, ICommentCacheService commentCacheService)
         {
             _commentService = commentService;
             _logger = logger;
             _publishEndpoint = publishEndpoint;
+            _authService = authService;
+            _commentCacheService = commentCacheService;
         }
 
         [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
-            var res = await _commentService.GetAllAsync();
-            if (res.Success == true)
-            {
-                return Ok(res.Data);
-            }
-            return BadRequest(res.Message);
+            var res = await _commentCacheService.GetAsync();
+            return Ok(res);
+            
         }
 
         [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetCommentByIdAsync([FromQuery] Guid commentId)
         {
-            var res = await _commentService.GetByIdAsync(commentId);
-            if (res.Success == true)
-            {
-                return Ok(res.Data);
-            }
-            return BadRequest(res.Message);
+            var res = await _commentCacheService.GetByIdAsync(commentId);
+            return Ok(res);
         }
 
         [AllowAnonymous]
@@ -69,17 +66,11 @@ namespace BlogSite.API.Controllers
         {
             await _publishEndpoint.Publish<CommentCreatedEvent>(new CommentCreatedEvent()
             {
-                //Id = res.Data.Id,
-                //Content = res.Data.Content,
-                //CreateTime = res.Data.CreateTime,
-                //UserId = res.Data.UserId,
-                //PostId = res.Data.PostId,
-
                 Id = Guid.NewGuid(),
                 Content = createCommentVM.Content,
                 CreateTime = DateTime.UtcNow,
-                UserId = Guid.NewGuid(),
-                PostId = Guid.NewGuid(),
+                UserId = Guid.Parse(_authService.GetCurrentUserId()),
+                PostId = createCommentVM.PostId,
 
             });
             return Ok();
@@ -93,8 +84,9 @@ namespace BlogSite.API.Controllers
             await _publishEndpoint.Publish<CommentUpdatedEvent>(new CommentUpdatedEvent()
             {
                 Id = commentId,
-                Content = updateCommentVM.Content,
-                PostId = updateCommentVM.PostId
+                Content = updateCommentVM.Content,              
+                UserId = Guid.Parse(_authService.GetCurrentUserId()),
+                PostId = updateCommentVM.PostId,
 
             });
             return Ok();

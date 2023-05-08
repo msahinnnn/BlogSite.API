@@ -18,38 +18,34 @@ namespace BlogSite.API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
+        private IPostCacheService _postCacheService;
         private IPostService _postService;
         private IPublishEndpoint _publishEndpoint;
+        private IAuthService _authService;
 
 
-        public PostsController(IPostService postService, IPublishEndpoint publishEndpoint)
+        public PostsController(IPostService postService, IPublishEndpoint publishEndpoint, IAuthService authService, IPostCacheService postCacheService)
         {
             _postService = postService;
             _publishEndpoint = publishEndpoint;
+            _authService = authService;
+            _postCacheService = postCacheService;
         }
 
         [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetAsync()
         {
-            var res = await _postService.GetAllAsync();
-            if (res.Success == true)
-            {
-                return Ok(res.Data);
-            }
-            return BadRequest(res.Message);
+            var res = await _postCacheService.GetAsync();
+            return Ok(res);
         }
 
         [AllowAnonymous]
         [HttpGet("[action]Async")]
         public async Task<IActionResult> GetPostByIdAsync([FromQuery] Guid postId)
         {
-            var res = await _postService.GetByIdAsync(postId);
-            if (res.Success == true)
-            {
-                return Ok(res.Data);
-            }
-            return BadRequest(res.Message);
+            var res = await _postCacheService.GetByIdAsync(postId);
+            return Ok(res);
         }
 
         [AllowAnonymous]
@@ -70,17 +66,11 @@ namespace BlogSite.API.Controllers
         {
             await _publishEndpoint.Publish(new PostCreatedEvent()
             {
-                //Id = res.Data.Id,
-                //CreatedDate = res.Data.CreatedDate,
-                //Title = res.Data.Title,
-                //Content = res.Data.Content,
-                //UserId = res.Data.UserId
-
                 Id = Guid.NewGuid(),
                 CreatedDate = DateTime.Now,
                 Title = createPostVM.Title,
                 Content = createPostVM.Content,
-                UserId = Guid.NewGuid()
+                UserId = Guid.Parse(_authService.GetCurrentUserId())
             });
             return Ok();
         }
@@ -94,7 +84,7 @@ namespace BlogSite.API.Controllers
                 Id = postId,
                 Title = updatePostVM.Title,
                 Content = updatePostVM.Content,
-                UserId = updatePostVM.UserId
+                UserId = Guid.Parse(_authService.GetCurrentUserId())
             });
             return Ok();
         }

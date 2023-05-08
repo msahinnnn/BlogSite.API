@@ -84,6 +84,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped <IAuthService, AuthService>();
+builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
+builder.Services.AddScoped<IPostCacheService, PostCacheService>();
 
 builder.Services.AddScoped<ITokenHandler, BlogSite.Business.Authentication.TokenHandler>();
 
@@ -92,9 +94,19 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 var redisConnection = builder.Configuration["ConnectionStrings:RedisConnection"];
-builder.Services.AddStackExchangeRedisCache(options =>
-    options.Configuration = redisConnection
-);
+
+
+var multiplexer = ConnectionMultiplexer.Connect(redisConnection);
+builder.Services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
+
+builder.Services.AddScoped<IDatabase>(cfg =>
+{
+    IConnectionMultiplexer multiplexer = ConnectionMultiplexer.Connect(redisConnection);
+    return multiplexer.GetDatabase();
+});
+
+
 
 builder.Services.AddOptions<RabbitMqTransportOptions>()
         .Configure(options =>
