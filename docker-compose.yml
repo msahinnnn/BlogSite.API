@@ -14,7 +14,7 @@ services:
     image: blogsite-api
     build : 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Services/API/Dockerfile
     ports:
       - "8080:80"
     depends_on:
@@ -33,7 +33,7 @@ services:
     image: blogsite-caching
     build:
       context: .
-      dockerfile: Services/Caching/Dockerfile.Caching
+      dockerfile: Services/Caching/Dockerfile
     depends_on:
       - rabbitmq
       - sqldata
