@@ -18,6 +18,7 @@ namespace Caching.Concrete
         {
             var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
             var saveStatus = await conn.ExecuteAsync("INSERT INTO Comments (Id,Content,CreateTime,PostId,UserId) VALUES(@Id,@Content,@CreateTime,@PostId,@UserId)", entity);
+            Console.WriteLine(saveStatus);
             return saveStatus > 0 ? true : false;
         }
 

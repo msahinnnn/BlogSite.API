@@ -64,40 +64,55 @@ namespace BlogSite.API.Controllers
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreatePostVM createPostVM)
         {
-            await _publishEndpoint.Publish(new PostCreatedEvent()
+            var res = await _postService.CreateAsync(createPostVM);
+            if (res.Success == true)
             {
-                Id = Guid.NewGuid(),
-                CreatedDate = DateTime.Now,
-                Title = createPostVM.Title,
-                Content = createPostVM.Content,
-                UserId = Guid.Parse(_authService.GetCurrentUserId())
-            });
-            return Ok();
+                await _publishEndpoint.Publish(new PostCreatedEvent()
+                {
+                    Id = Guid.NewGuid(),
+                    CreatedDate = DateTime.Now,
+                    Title = createPostVM.Title,
+                    Content = createPostVM.Content,
+                    UserId = Guid.Parse(_authService.GetCurrentUserId())
+                });
+                return Ok();
+            }
+            return BadRequest(res.Message);
         }
 
         [Authorize(Roles = "Admin, User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdatePostVM updatePostVM, [FromQuery] Guid postId)
         {
-            await _publishEndpoint.Publish<PostUpdatedEvent>(new PostUpdatedEvent()
+            var res = await _postService.UpdateAsync(updatePostVM, postId);
+            if (res.Success == true)
             {
-                Id = postId,
-                Title = updatePostVM.Title,
-                Content = updatePostVM.Content,
-                UserId = Guid.Parse(_authService.GetCurrentUserId())
-            });
-            return Ok();
+                await _publishEndpoint.Publish<PostUpdatedEvent>(new PostUpdatedEvent()
+                {
+                    Id = postId,
+                    Title = updatePostVM.Title,
+                    Content = updatePostVM.Content,
+                    UserId = Guid.Parse(_authService.GetCurrentUserId())
+                });
+                return Ok();
+            }
+            return BadRequest(res.Message);
         }
 
         [Authorize(Roles = "Admin, User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid postId)
         {
-            await _publishEndpoint.Publish<PostDeletedEvent>(new PostDeletedEvent()
+            var res = await _postService.DeleteAsync(postId);
+            if (res.Success == true)
             {
-                Id = postId,
-            });
-            return Ok();
+                await _publishEndpoint.Publish<PostDeletedEvent>(new PostDeletedEvent()
+                {
+                    Id = postId,
+                });
+                return Ok();
+            }
+            return BadRequest(res.Message);
         }
 
 

@@ -16,7 +16,6 @@ namespace BlogSite.API.Caching.Consumers
 
         public async Task Consume(ConsumeContext<CommentCreatedEvent> context)
         {
-            Console.WriteLine(context.Message);
             var x = await _cacheService.SaveOrUpdateAsync(new Comment()
             {
                 Id = context.Message.Id,
@@ -25,7 +24,7 @@ namespace BlogSite.API.Caching.Consumers
                 PostId = context.Message.PostId,
                 UserId = context.Message.UserId,
             });
-            Console.WriteLine(nameof(CommentCreatedEventConsumer) + "- worked");
+            Console.WriteLine(x);
         }
     }
 }

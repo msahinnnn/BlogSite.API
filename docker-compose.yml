@@ -37,6 +37,7 @@ services:
     depends_on:
       - rabbitmq
       - sqldata
+      - app_redis
     networks:
       - dev
 
