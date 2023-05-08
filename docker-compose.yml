@@ -14,7 +14,7 @@ services:
     image: blogsite-api
     build : 
       context: .
-      dockerfile: Services/API/Dockerfile
+      dockerfile: Services/API/BlogSite.API/Dockerfile
     ports:
       - "8080:80"
     depends_on:

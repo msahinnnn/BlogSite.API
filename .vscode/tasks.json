@@ -44,14 +44,14 @@
                 "build"
             ],
             "dockerBuild": {
-                "tag": "blogsiteapplication:dev",
+                "tag": "blogsiteapp:dev",
                 "target": "base",
-                "dockerfile": "${workspaceFolder}/Services/Caching/Dockerfile",
+                "dockerfile": "${workspaceFolder}/Services/API/BlogSite.API/Dockerfile",
                 "context": "${workspaceFolder}",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/Services/Caching/Caching.csproj"
+                "appProject": "${workspaceFolder}/Services/API/BlogSite.API/BlogSite.API.csproj"
             }
         },
         {
@@ -61,14 +61,14 @@
                 "build"
             ],
             "dockerBuild": {
-                "tag": "blogsiteapplication:latest",
-                "dockerfile": "${workspaceFolder}/Services/Caching/Dockerfile",
+                "tag": "blogsiteapp:latest",
+                "dockerfile": "${workspaceFolder}/Services/API/BlogSite.API/Dockerfile",
                 "context": "${workspaceFolder}",
                 "platform": "linux/amd64",
                 "pull": true
             },
             "netCore": {
-                "appProject": "${workspaceFolder}/Services/Caching/Caching.csproj"
+                "appProject": "${workspaceFolder}/Services/API/BlogSite.API/BlogSite.API.csproj"
             }
         },
         {
@@ -79,7 +79,7 @@
             ],
             "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/Services/Caching/Caching.csproj",
+                "appProject": "${workspaceFolder}/Services/API/BlogSite.API/BlogSite.API.csproj",
                 "enableDebugging": true
             }
         },
@@ -91,7 +91,7 @@
             ],
             "dockerRun": {},
             "netCore": {
-                "appProject": "${workspaceFolder}/Services/Caching/Caching.csproj"
+                "appProject": "${workspaceFolder}/Services/API/BlogSite.API/BlogSite.API.csproj"
             }
         }
     ]

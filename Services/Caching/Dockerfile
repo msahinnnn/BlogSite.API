@@ -1,40 +1,14 @@
-# FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
-# WORKDIR /app
-# EXPOSE 80
-# #EXPOSE 443
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
+WORKDIR /app
 
-# COPY ./BlogSite.Entities/*.csproj ./BlogSite.Entities/
-# COPY ./BlogSite.DataAccsess/*.csproj ./BlogSite.DataAccsess/
-# COPY ./BlogSite.Core/*.csproj ./BlogSite.Core/
-# COPY ./BlogSite.Business/*.csproj ./BlogSite.Business/
-# COPY Services/Caching/*.csproj Services/Caching/
-# COPY SharedMessages/*.csproj SharedMessages/
-# COPY ./BlogSite.API/*.csproj ./BlogSite.API/
-# COPY *.sln .
-# RUN dotnet restore
-# COPY . .
-# RUN dotnet publish ./BlogSite.API/*.csproj -o /publish/
+COPY Services/Caching/*.csproj Services/Caching/
+COPY Shared/Messages/BlogSite.Messages/*.csproj Shared/Messages/BlogSite.Messages/
+RUN dotnet restore Services/Caching/*.csproj 
+COPY . .
 
-# FROM mcr.microsoft.com/dotnet/aspnet:6.0
-# WORKDIR /app
-# COPY --from=build /publish .
-# #ENV ASPNETCORE_URLS="http://*:5174"
-#ENTRYPOINT [ "dotnet","BlogSite.API.dll" ]
+RUN dotnet publish Services/Caching/*.csproj -c Release -o out
 
-
-
-#FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
-#WORKDIR /app
-#
-#COPY ./*.csproj ./
-#COPY ../../../SharedMessages/*.csproj ../../../SharedMessages/
-#COPY *.sln .
-#RUN dotnet restore
-#COPY . .
-#RUN dotnet publish ./*.csproj -o /publish/
-#
-## Build runtime image
-#FROM mcr.microsoft.com/dotnet/aspnet:6.0
-#WORKDIR /app
-#COPY --from=build /publish .
-#ENTRYPOINT ["dotnet", "Caching.dll"]
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as runtime
+WORKDIR /app
+COPY --from=build /app/out .
+ENTRYPOINT ["dotnet", "Caching.dll"]
