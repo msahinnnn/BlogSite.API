@@ -1,13 +1,7 @@
-﻿using AutoMapper;
-using Caching.Abstract;
+﻿using Caching.Abstract;
 using Caching.Entities;
-using Caching.Messages;
 using MassTransit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SharedMessages;
 
 namespace BlogSite.API.Caching.Consumers
 {

@@ -33,13 +33,13 @@ services:
     image: blogsite-caching
     build:
       context: .
-      dockerfile: Services/Caching/Dockerfile
+      dockerfile: Services/Caching/Dockerfile.Caching
     depends_on:
       - rabbitmq
       - sqldata
-    # environment:
-    #   - RabbitMQ=rabbitmq
-    #   - RedisConnection=app_redis, abortConnect=false
+    networks:
+      - dev
+
 
   app_redis:
     container_name: redis
@@ -92,7 +92,7 @@ services:
 
   rabbitmq: 
     container_name: rabbitmq
-    hostname: rabbitmq
+    #hostname: localhost
     image: rabbitmq:3-management
     ports:
     - "5672:5672"

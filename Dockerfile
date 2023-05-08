@@ -8,6 +8,7 @@ COPY ./BlogSite.DataAccsess/*.csproj ./BlogSite.DataAccsess/
 COPY ./BlogSite.Core/*.csproj ./BlogSite.Core/
 COPY ./BlogSite.Business/*.csproj ./BlogSite.Business/
 COPY Services/Caching/*.csproj Services/Caching/
+COPY SharedMessages/*.csproj SharedMessages/
 COPY ./BlogSite.API/*.csproj ./BlogSite.API/
 COPY *.sln .
 RUN dotnet restore

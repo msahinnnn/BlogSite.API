@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Caching": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

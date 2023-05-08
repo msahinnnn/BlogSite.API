@@ -1,22 +1,11 @@
-﻿using BlogSite.Business.Constants;
-using BlogSite.Core.Services;
-using Caching.Abstract;
-using Caching.Concrete;
+﻿using Caching.Abstract;
 using Caching.Entities;
 using MassTransit;
-using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Caching.Messages;
+using SharedMessages;
 
-
-namespace BlogSite.Caching.Consumers
+namespace BlogSite.API.Caching.Consumers
 {
-    public class PostCreatedEventConsumer : MassTransit.IConsumer<PostCreatedEvent>
+    public class PostCreatedEventConsumer : IConsumer<PostCreatedEvent>
     {
         private IPostCacheService _cacheService;
 

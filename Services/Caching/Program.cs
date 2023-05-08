@@ -1,17 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using BlogSite.API.Caching.Consumers;
-using BlogSite.Caching.Consumers;
-using BlogSite.Core.Services;
 using Caching.Abstract;
 using Caching.Concrete;
 using MassTransit;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StackExchange.Redis;
-using System.Net.Security;
-using System.Security.Authentication;
-using static System.Net.Mime.MediaTypeNames;
+
 
 Console.WriteLine("CONSOLE APP TEST");
 
@@ -35,7 +30,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             return multiplexer.GetDatabase();
         });
 
-        
+
 
         services.AddOptions<RabbitMqTransportOptions>()
         .Configure(options =>
@@ -56,7 +51,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             x.AddConsumer<PostDeletedEventConsumer>();
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("rabbitmq", 5672, "/", host =>
+                cfg.Host("rabbitmq", "/", host =>
                 {            
                     host.Username("guest");
                     host.Password("guest");
@@ -87,12 +82,10 @@ IHost host = Host.CreateDefaultBuilder(args)
                 {
                     e.ConfigureConsumer<PostDeletedEventConsumer>(context);
                 });
+
+                cfg.ConfigureEndpoints(context);
             });
         });
-    }).ConfigureAppConfiguration((context, configuration) =>
-    {
-        configuration.Sources.Clear();
-        configuration.AddJsonFile("appsettings.json");
     }).Build();
 
 
