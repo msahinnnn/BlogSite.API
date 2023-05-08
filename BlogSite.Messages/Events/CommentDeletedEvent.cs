@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharedMessages
+namespace BlogSite.Messages.Events
 {
-    public class PostDeletedEvent
+    public class CommentDeletedEvent
     {
         public Guid Id { get; set; }
     }

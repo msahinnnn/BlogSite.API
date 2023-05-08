@@ -1,11 +1,11 @@
-﻿using Caching.Abstract;
+﻿using BlogSite.Messages.Events;
+using Caching.Abstract;
 using Caching.Entities;
 using MassTransit;
-using SharedMessages;
 
 namespace BlogSite.API.Caching.Consumers
 {
-    public class PostCreatedEventConsumer : IConsumer<PostCreatedEvent>
+    public class PostCreatedEventConsumer : MassTransit.IConsumer<PostCreatedEvent>
     {
         private IPostCacheService _cacheService;
 

@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\BlogSite.Messages\BlogSite.Messages.csproj" />
     <ProjectReference Include="..\..\..\SharedMessages\SharedMessages.csproj" />
     <ProjectReference Include="..\BlogSite.Business\BlogSite.Business.csproj" />
   </ItemGroup>

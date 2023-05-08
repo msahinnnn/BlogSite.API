@@ -5,12 +5,12 @@ using BlogSite.API.ViewModels.UserVMs;
 using BlogSite.Business.Abstract;
 using BlogSite.Entities.ViewModels.CommentVMs;
 using BlogSite.Entities.ViewModels.PostVMs;
+using BlogSite.Messages.Events;
 using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SharedMessages;
 
 namespace BlogSite.API.Controllers
 {

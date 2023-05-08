@@ -1,7 +1,7 @@
-﻿using Caching.Abstract;
+﻿using BlogSite.Messages.Events;
+using Caching.Abstract;
 using Caching.Entities;
 using MassTransit;
-using SharedMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
