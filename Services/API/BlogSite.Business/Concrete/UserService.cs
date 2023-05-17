@@ -41,18 +41,18 @@ namespace BlogSite.Business.Concrete
             _authService = authService;
         }
 
-        public async Task<IDataResult<List<User>>> GetAllAsync()
+        public async Task<List<User>> GetAllAsync()
         {
             var res = await _userRepository.GetAllAsync();
-            return new SuccessDataResult<List<User>>(res, UserMessages.UsersListed);
+            return res;
         }
 
-        public async Task<IDataResult<User>> GetByIdAsync(Guid id)
+        public async Task<User> GetByIdAsync(Guid id)
         {
             var res = await _userRepository.GetByIdAsync(id);
-            return new SuccessDataResult<User>(res, UserMessages.UsersListed);
+            return res;
         }
-        public async Task<IDataResult<User>> CreateAsync(IVM<User> entityVM)
+        public async Task<User> CreateAsync(IVM<User> entityVM)
         {
             ValidationTool.Validate(new UserValidator(), entityVM);
             User user = _mapper.Map<User>(entityVM);
@@ -67,49 +67,45 @@ namespace BlogSite.Business.Concrete
                 var res = await _userRepository.CreateAsync(user);
                 if (res is not null)
                 {
-                    return new SuccessDataResult<User>(user, UserMessages.UserAdded);
+                    return user;
                 }
-                _logger.LogError(UserMessages.UserAddedError);
-                return new ErrorDataResult<User>(user, UserMessages.UserAddedError);
+                return null;
             }
-            _logger.LogError(UserMessages.UserAldreadyExistsError);
-            return new ErrorDataResult<User>(user, UserMessages.UserAldreadyExistsError);
+            return null;
         }
 
-        public async Task<IResult> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            var check = await _userRepository.GetByIdAsync(id);
-            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
-            if(check.Id  == userAuth)
-            {
+            //var check = await _userRepository.GetByIdAsync(id);
+            //var userAuth = Guid.Parse(_authService.GetCurrentUserId());
+            //if(check.Id  == userAuth)
+            //{
                 var res = await _userRepository.DeleteAsync(id);
                 if (res == true)
                 {
-                    return new SuccessResult(RedisMessages.ItemDeleted);
+                    return true;
                 }
-                _logger.LogError(RedisMessages.ItemDeletedError);
-                return new ErrorResult(RedisMessages.ItemDeletedError);
-            }
-            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+                return false;
+            //}
+            //return false;
         }
 
-        public async Task<IResult> UpdateAsync(IVM<User> entityVM, Guid id)
+        public async Task<bool> UpdateAsync(IVM<User> entityVM, Guid id)
         {
             User user = _mapper.Map<User>(entityVM);
             user.Id = id;
-            var check = await _userRepository.GetByIdAsync(id);
-            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
-            if(check.Id == userAuth)
-            {
+            //var check = await _userRepository.GetByIdAsync(id);
+            //var userAuth = Guid.Parse(_authService.GetCurrentUserId());
+            //if(check.Id == userAuth)
+            //{
                 var res = await _userRepository.UpdateAsync(user);
                 if (res == true)
                 {
-                    return new SuccessResult(UserMessages.UserUpdated);
+                    return true;
                 }
-                _logger.LogError(UserMessages.UserUpdatedError);
-                return new ErrorResult(UserMessages.UserUpdatedError);
-            }
-            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+                return false;
+            //}
+            //return false;
         }
 
         public async Task<User> EmailExists(string email)

@@ -24,7 +24,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<List<Comment>> GetAllAsync()
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlDataAdapter da = new SqlDataAdapter("Select * from Comments", con);
             DataTable dt = new DataTable();
@@ -45,7 +45,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<Comment> GetByIdAsync(Guid id)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlCommand cmd = new SqlCommand("Select * from Comments where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", id);
@@ -64,7 +64,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlDataAdapter da = new SqlDataAdapter($"Select * from Comments where PostId=@PostId", con);
             da.SelectCommand.Parameters.AddWithValue("@PostId", postId);
@@ -86,7 +86,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<Comment> CreateAsync(Comment entity)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             SqlCommand cmd = new SqlCommand("Insert into Comments (Id, Content, CreateTime, PostId) values (@Id, @Content, @CreateTime, @PostId)", con);
             cmd.Parameters.AddWithValue("@Id", entity.Id);
             cmd.Parameters.AddWithValue("@Content", entity.Content);
@@ -101,7 +101,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             SqlCommand cmd = new SqlCommand("Delete from Comments where Id=@Id", con);
             cmd.Parameters.AddWithValue("Id", id);
             await con.OpenAsync();
@@ -113,7 +113,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<bool> UpdateAsync(Comment entity)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             SqlCommand cmd = new SqlCommand("Update Comments Set Content=@Content where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Content", entity.Content);
             cmd.Parameters.AddWithValue("@Id", entity.Id);

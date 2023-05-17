@@ -32,15 +32,19 @@ namespace Caching.Concrete
         public async Task<List<Comment>> GetAllAsync()
         {
             var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
-            var comments = await conn.QueryAsync<Comment>("Select * from Comments");
-            return comments.ToList();
+            IEnumerable<Comment> res = await conn.QueryAsync<Comment>("sp_get_comments");
+            return res.ToList();
+            //var comments = await conn.QueryAsync<Comment>("Select * from Comments");
+            //return comments.ToList();
         }
 
         public async Task<Comment> GetByIdAsync(Guid id)
         {
             var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
-            var comment = (await conn.QueryAsync<Comment>("Select * from Comments where Id=@Id", new { Id = id })).SingleOrDefault();
-            return comment;
+            IEnumerable<Comment> res = await conn.QueryAsync<Comment>("sp_get_comment", new { Id = id });
+            return res.FirstOrDefault();
+            //var comment = (await conn.QueryAsync<Comment>("Select * from Comments where Id=@Id", new { Id = id })).SingleOrDefault();
+            //return comment;
         }
 
         public async Task<bool> UpdateAsync(Comment entity)

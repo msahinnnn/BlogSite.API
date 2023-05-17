@@ -17,9 +17,9 @@ namespace BlogSite.Business.Abstract
 {
     public interface IAuthService 
     {
-        Task<IDataResult<User>> RegisterAsync(CreateUserVM createUserVM);
-        Task<IDataResult<TokenDto>> LoginAsync(LoginUserVM loginUserVM);
-        Task<IDataResult<TokenDto>> RefreshAsync(TokenDto tokenDto);
+        Task<User> RegisterAsync(CreateUserVM createUserVM);
+        Task<TokenDto> LoginAsync(LoginUserVM loginUserVM);
+        Task<TokenDto> RefreshAsync(TokenDto tokenDto);
         string GetCurrentUserId();
         string GetCurrentUserMail();
         string GetCurrentUserRole();

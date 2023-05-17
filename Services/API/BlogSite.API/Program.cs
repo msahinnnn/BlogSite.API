@@ -40,7 +40,7 @@ var builder = WebApplication.CreateBuilder(args);
 //test commit
 builder.Services.AddHttpContextAccessor();
 
-var con = builder.Configuration["ConnectionStrings:MsSqlConnection"];
+var con = builder.Configuration["ConnectionStrings:MsSqlLocalConnection"];
 
 builder.Services.AddDbContext<BlogSiteDbContext>(opt => opt.UseSqlServer(con));
 

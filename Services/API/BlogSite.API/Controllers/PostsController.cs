@@ -21,9 +21,7 @@ namespace BlogSite.API.Controllers
         private IPostCacheService _postCacheService;
         private IPostService _postService;
         private IPublishEndpoint _publishEndpoint;
-        private IAuthService _authService;
-
-
+        
         public PostsController(IPostService postService, IPublishEndpoint publishEndpoint, IAuthService authService, IPostCacheService postCacheService)
         {
             _postService = postService;
@@ -37,7 +35,11 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetAsync()
         {
             var res = await _postCacheService.GetAsync();
-            return Ok(res);
+            if(res != null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
         }
 
         [AllowAnonymous]
@@ -45,7 +47,11 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetPostByIdAsync([FromQuery] Guid postId)
         {
             var res = await _postCacheService.GetByIdAsync(postId);
-            return Ok(res);
+            if (res != null)
+            {
+                return Ok(res);
+            }
+            return BadRequest();
         }
 
         [AllowAnonymous]
@@ -53,19 +59,19 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetAllPostsByUserIdAsync([FromQuery] Guid userId)
         {
             var res = await _postService.GetPostsByUserIdAsync(userId);
-            if (res.Success == true)
+            if (res != null)
             {
-                return Ok(res.Data);
+                return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreatePostVM createPostVM)
         {
             var res = await _postService.CreateAsync(createPostVM);
-            if (res.Success == true)
+            if (res != null)
             {
                 await _publishEndpoint.Publish(new PostCreatedEvent()
                 {
@@ -73,38 +79,37 @@ namespace BlogSite.API.Controllers
                     CreatedDate = DateTime.Now,
                     Title = createPostVM.Title,
                     Content = createPostVM.Content,
-                    UserId = Guid.Parse(_authService.GetCurrentUserId())
+                    UserId = res.UserId
                 });
                 return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdatePostVM updatePostVM, [FromQuery] Guid postId)
         {
             var res = await _postService.UpdateAsync(updatePostVM, postId);
-            if (res.Success == true)
+            if (res == true)
             {
                 await _publishEndpoint.Publish<PostUpdatedEvent>(new PostUpdatedEvent()
                 {
                     Id = postId,
                     Title = updatePostVM.Title,
                     Content = updatePostVM.Content,
-                    UserId = Guid.Parse(_authService.GetCurrentUserId())
                 });
                 return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid postId)
         {
             var res = await _postService.DeleteAsync(postId);
-            if (res.Success == true)
+            if (res == true)
             {
                 await _publishEndpoint.Publish<PostDeletedEvent>(new PostDeletedEvent()
                 {
@@ -112,7 +117,7 @@ namespace BlogSite.API.Controllers
                 });
                 return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
 

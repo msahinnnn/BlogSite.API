@@ -40,26 +40,26 @@ namespace BlogSite.Business.Concrete
         }
 
 
-        public async Task<IDataResult<List<Comment>>> GetAllAsync()
+        public async Task<List<Comment>> GetAllAsync()
         {
 
             var res = await _commentRepository.GetAllAsync();
-            return new SuccessDataResult<List<Comment>>(res, CommentMessages.CommentsListed);
+            return res;
         }
 
-        public async Task<IDataResult<Comment>> GetByIdAsync(Guid id)
+        public async Task<Comment> GetByIdAsync(Guid id)
         {
             var res = await _commentRepository.GetByIdAsync(id);
-            return new SuccessDataResult<Comment>(res, CommentMessages.CommentsListed);
+            return res;
         }
 
-        public async Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId)
+        public async Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId)
         {
             var res = await _commentRepository.GetCommentsByPostIdAsync(postId);
-            return new SuccessDataResult<List<Comment>>(res, CommentMessages.CommentsListedError);
+            return res;
         }
 
-        public async Task<IDataResult<Comment>> CreateAsync(IVM<Comment> entityVM)
+        public async Task<Comment> CreateAsync(IVM<Comment> entityVM)
         {
             ValidationTool.Validate(new CommentValidator(), entityVM);
             Comment comment = _mapper.Map<Comment>(entityVM);
@@ -67,30 +67,26 @@ namespace BlogSite.Business.Concrete
             comment.CreateTime = DateTime.Now;
             comment.UserId = Guid.Parse(_authService.GetCurrentUserId());
             var res = await _commentRepository.CreateAsync(comment);
-            if (res is not null)
-            {
-                return new SuccessDataResult<Comment>(comment, CommentMessages.CommentAdded);
-            }
-            return new ErrorDataResult<Comment>(null, CommentMessages.CommentAddedError);
+            return res;
         }
 
-        public async Task<IResult> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            var check = await _commentRepository.GetByIdAsync(id);
-            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
-            if(check.UserId == userAuth)
-            {
+            //var check = await _commentRepository.GetByIdAsync(id);
+            //var userAuth = Guid.Parse(_authService.GetCurrentUserId());
+            //if(check.UserId == userAuth)
+            //{
                 var res = await _commentRepository.DeleteAsync(id);
 
                 if (res == true)
                 {
-                    return new SuccessResult(CommentMessages.CommentRemoved);
+                    return true;
                 }
-                return new ErrorResult(CommentMessages.CommentRemovedError);
-            }
-            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+                return false;
+            //}
+            //return false;
         }
-        public async Task<IResult> UpdateAsync(IVM<Comment> entityVM, Guid id)
+        public async Task<bool> UpdateAsync(IVM<Comment> entityVM, Guid id)
         {
             Comment comment = _mapper.Map<Comment>(entityVM);
             var check = await _commentRepository.GetByIdAsync(id);
@@ -102,12 +98,11 @@ namespace BlogSite.Business.Concrete
                 var res = await _commentRepository.UpdateAsync(comment);
                 if (res == true)
                 {
-                    
-                    return new SuccessResult(CommentMessages.CommentUpdated);
+                    return true;
                 }
-                return new ErrorResult(CommentMessages.CommentUpdatedError);
+                return false;
             }
-            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+            return false;
 
         }
 

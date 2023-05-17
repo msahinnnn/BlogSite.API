@@ -39,7 +39,7 @@ namespace BlogSite.Business.Concrete
             _contextAccessor = contextAccessor;
         }
 
-        public async Task<IDataResult<User>> RegisterAsync(CreateUserVM createUserVM)
+        public async Task<User> RegisterAsync(CreateUserVM createUserVM)
         {
             ValidationTool.Validate(new UserValidator(), createUserVM);
             createUserVM.Password = BCrypt.Net.BCrypt.HashPassword(createUserVM.Password);
@@ -55,16 +55,16 @@ namespace BlogSite.Business.Concrete
                 var res = await _userRepository.CreateAsync(user);
                 if (res is not null)
                 {
-                    return new SuccessDataResult<User>(user, UserMessages.UserAdded);
+                    return user;
                 }
                 _logger.LogError(UserMessages.UserAddedError);
-                return new ErrorDataResult<User>(user, UserMessages.UserAddedError);
+                return null;
             }
             _logger.LogError(UserMessages.UserAldreadyExistsError);
-            return new ErrorDataResult<User>(user, UserMessages.UserAldreadyExistsError);
+            return null;
         }
 
-        public async Task<IDataResult<TokenDto>> LoginAsync(LoginUserVM loginUserVM)
+        public async Task<TokenDto> LoginAsync(LoginUserVM loginUserVM)
         {
             var user = await _userRepository.CheckUserEmailExistsAsync(loginUserVM.Email);
             if (user != null)
@@ -87,21 +87,21 @@ namespace BlogSite.Business.Concrete
                         RefreshToken = newRefreshToken,
                         AccessTokenExpiryTime = DateTime.Now.AddHours(1)
                     };
-                    return new SuccessDataResult<TokenDto>(tok, UserAuthMessages.TokenCreated);
+                    return tok;
                 }
                 _logger.LogError(UserAuthMessages.UserLoginError);
-                return new ErrorDataResult<TokenDto>(new TokenDto(), UserAuthMessages.UserLoginError);
+                return new TokenDto();
             }
             _logger.LogError(UserAuthMessages.UserLoginError);
-            return new ErrorDataResult<TokenDto>(new TokenDto(), UserAuthMessages.UserLoginError);
+            return new TokenDto();
         }
 
-        public async Task<IDataResult<TokenDto>> RefreshAsync(TokenDto tokenDto)
+        public async Task<TokenDto> RefreshAsync(TokenDto tokenDto)
         {
             if (tokenDto is null)
             {
                 _logger.LogError(UserAuthMessages.UserLoginError);
-                return new ErrorDataResult<TokenDto>(new TokenDto(), UserAuthMessages.UserLoginError);
+                new TokenDto();
             }
 
             string accessToken = tokenDto.AccessToken;
@@ -113,7 +113,7 @@ namespace BlogSite.Business.Concrete
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 _logger.LogError(UserAuthMessages.UserLoginError);
-                return new ErrorDataResult<TokenDto>(new TokenDto(), UserAuthMessages.UserLoginError);
+                return new TokenDto();
             }
 
             var role = GetCurrentUserRole();
@@ -129,7 +129,7 @@ namespace BlogSite.Business.Concrete
                 AccessTokenExpiryTime = DateTime.Now.AddHours(1)
             };
 
-            return new SuccessDataResult<TokenDto>(tok, UserAuthMessages.TokenCreated);
+            return tok;
         }
 
         public string GetCurrentUserId()

@@ -17,12 +17,10 @@ namespace BlogSite.API.Controllers
     public class AuthsController : ControllerBase
     {
         private IAuthService _authService;
-        private ILogger<AuthsController> _logger;
         private ITokenHandler _tokenHandler;
-        public AuthsController(IAuthService authService, ILogger<AuthsController> logger, ITokenHandler tokenHandler)
+        public AuthsController(IAuthService authService, ITokenHandler tokenHandler)
         {
             _authService = authService;
-            _logger = logger;
             _tokenHandler = tokenHandler;
         }
 
@@ -30,39 +28,33 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> Register([FromBody] CreateUserVM createUserVM)
         {
             var res = await _authService.RegisterAsync(createUserVM);
-            if (res.Success)
+            if (res != null)
             {
-                _logger.LogInformation(res.Message, res);
-                return Ok(res.Data);
+                return Ok(res);
             }
-            _logger.LogError(res.Message, res);
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginUserVM loginUserVM)
         {
             var res = await _authService.LoginAsync(loginUserVM);
-            if (res.Success)
+            if (res != null)
             {
-                _logger.LogInformation(res.Message, res);
-                return Ok(res.Data);
+                return Ok(res);
             }
-            _logger.LogError(res.Message, res);
-            return BadRequest(res.Message);
+            return BadRequest(res);
         }
 
         [HttpPost("Refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenDto tokenDto)
         {
             var res = await _authService.RefreshAsync(tokenDto);
-            if (res.Success)
+            if (res != null)
             {
-                _logger.LogInformation(res.Message, res);
-                return Ok(res.Data);
+                return Ok(res);
             }
-            _logger.LogError(res.Message, res);
-            return BadRequest(res.Message);
+            return BadRequest(res);
         }
 
         [HttpGet("[action]")]

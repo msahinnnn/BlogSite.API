@@ -30,15 +30,19 @@ namespace Caching.Concrete
         public async Task<List<Post>> GetAllAsync()
         {
             var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
-            var posts = await conn.QueryAsync<Post>("Select * from Posts");
-            return posts.ToList();
+            IEnumerable<Post> res = await conn.QueryAsync<Post>("sp_get_posts");
+            return res.ToList();
+            //var posts = await conn.QueryAsync<Post>("Select * from Posts");
+            //return posts.ToList();
         }
 
         public async Task<Post> GetByIdAsync(Guid id)
         {
             var conn = new SqlConnection("Data Source=mssql,1450; Initial Catalog=BlogSiteAppDB; Persist Security Info=True;User ID=SA; Password=mrMehmet123#; TrustServerCertificate=True;");
-            var post = (await conn.QueryAsync<Post>("Select * from Posts where Id=@Id", new { Id = id })).SingleOrDefault();
-            return post;
+            IEnumerable<Post> res = await conn.QueryAsync<Post>("sp_get_post", new { Id = id });
+            return res.FirstOrDefault();
+            //var post = (await conn.QueryAsync<Post>("Select * from Posts where Id=@Id", new { Id = id })).SingleOrDefault();
+            //return post;
         }
 
         public async Task<bool> UpdateAsync(Post entity)

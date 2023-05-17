@@ -13,7 +13,7 @@ namespace BlogSite.Business.Abstract
 {
     public interface ICommentService : IEntityService<Comment>
     {
-        Task<IDataResult<List<Comment>>> GetCommentsByPostIdAsync(Guid postId);
+        Task<List<Comment>> GetCommentsByPostIdAsync(Guid postId);
 
     }
 }

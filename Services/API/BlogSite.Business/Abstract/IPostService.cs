@@ -13,7 +13,7 @@ namespace BlogSite.Business.Abstract
 {
     public interface IPostService : IEntityService<Post>
     {
-        Task<IDataResult<List<Post>>> GetPostsByUserIdAsync(Guid userId);
+        Task<List<Post>> GetPostsByUserIdAsync(Guid userId);
 
 
 

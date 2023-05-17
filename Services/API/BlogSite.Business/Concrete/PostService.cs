@@ -38,26 +38,26 @@ namespace BlogSite.Business.Concrete
 
         }
 
-        public async Task<IDataResult<List<Post>>> GetAllAsync()
+        public async Task<List<Post>> GetAllAsync()
         {
 
             var posts = await _postRepository.GetAllAsync();
-            return new SuccessDataResult<List<Post>>(posts, PostMessages.PostsListed);
+            return posts;
         }
 
-        public async Task<IDataResult<Post>> GetByIdAsync(Guid id)
+        public async Task<Post> GetByIdAsync(Guid id)
         {
             var res = await _postRepository.GetByIdAsync(id);
-            return new SuccessDataResult<Post>(res, PostMessages.PostsListed);
+            return res;
         }
 
-        public async Task<IDataResult<List<Post>>> GetPostsByUserIdAsync(Guid userId)
+        public async Task<List<Post>> GetPostsByUserIdAsync(Guid userId)
         {
             var res = await _postRepository.GetPostsByUserIdAsync(userId);
-            return new SuccessDataResult<List<Post>>(res, PostMessages.PostsListed);
+            return res;
         }
 
-        public async Task<IDataResult<Post>> CreateAsync(IVM<Post> entityVM)
+        public async Task<Post> CreateAsync(IVM<Post> entityVM)
         {
             ValidationTool.Validate(new PostValidator(), entityVM);
             Post post = _mapper.Map<Post>(entityVM);
@@ -65,48 +65,38 @@ namespace BlogSite.Business.Concrete
             post.UserId = Guid.Parse(_authService.GetCurrentUserId());
             post.CreatedDate = DateTime.Now;
             var res = await _postRepository.CreateAsync(post);
-            if (res is not null)
-            {
-                return new SuccessDataResult<Post>(post, PostMessages.PostAdded);
-        }
-            return new ErrorDataResult<Post>(res, PostMessages.PostAddedError);
+            return res;
         }
 
-        public async Task<IResult> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            var check = await _postRepository.GetByIdAsync(id);
-            var userAuth =  Guid.Parse(_authService.GetCurrentUserId());
-            if(check.UserId == userAuth)
-            {
+            //var check = await _postRepository.GetByIdAsync(id);
+            //var userAuth =  Guid.Parse(_authService.GetCurrentUserId());
+            //if(check.UserId == userAuth)
+            //{
                 var res = await _postRepository.DeleteAsync(id);
-                if (res == true)
-                {
-                    
-                    return new SuccessResult(PostMessages.PostRemoved);
-                }
-                return new ErrorResult(PostMessages.PostRemovedError);
-            }
-            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+                return true;
+            //}
+            //return false;
         }
 
-        public async Task<IResult> UpdateAsync(IVM<Post> entityVM, Guid id)
+        public async Task<bool> UpdateAsync(IVM<Post> entityVM, Guid id)
         {
             Post post = _mapper.Map<Post>(entityVM);
             var check = await _postRepository.GetByIdAsync(id);
             var userAuth = Guid.Parse(_authService.GetCurrentUserId());
             post.Id = id;
             post.UserId = userAuth;
-            if (check.UserId == userAuth)
-            {
-                var res = await _postRepository.UpdateAsync(post);
+                //if (check.UserId == userAuth)
+                //{
+                    var res = await _postRepository.UpdateAsync(post);
                 if (res == true)
                 {
-                    
-                    return new SuccessResult(PostMessages.PostUpdated);
+                    return true;
                 }
-                return new ErrorResult(PostMessages.PostUpdatedError);
-            }
-            return new ErrorResult(AuthMessages.UnAuthorizationMessage);
+                return false;
+            //}
+            //return false;
         }
 
     }

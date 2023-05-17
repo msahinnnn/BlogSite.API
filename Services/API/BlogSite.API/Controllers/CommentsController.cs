@@ -21,13 +21,11 @@ namespace BlogSite.API.Controllers
         private ICommentService _commentService;
         private ICommentCacheService _commentCacheService;
         private IAuthService _authService;
-        private ILogger<CommentsController> _logger;
         private IPublishEndpoint _publishEndpoint;
 
-        public CommentsController(ICommentService commentService, ILogger<CommentsController> logger, IPublishEndpoint publishEndpoint, IAuthService authService, ICommentCacheService commentCacheService)
+        public CommentsController(ICommentService commentService, IPublishEndpoint publishEndpoint, IAuthService authService, ICommentCacheService commentCacheService)
         {
             _commentService = commentService;
-            _logger = logger;
             _publishEndpoint = publishEndpoint;
             _authService = authService;
             _commentCacheService = commentCacheService;
@@ -55,19 +53,19 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetAllCommentsByPostIdAsync([FromQuery] Guid postId)
         {
             var res = await _commentService.GetCommentsByPostIdAsync(postId);
-            if (res.Success == true)
+            if (res != null)
             {
-                return Ok(res.Data);
+                return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCommentVM createCommentVM)
         {
             var res = await _commentService.CreateAsync(createCommentVM);
-            if (res.Success == true)
+            if (res != null)
             {
                 await _publishEndpoint.Publish<CommentCreatedEvent>(new CommentCreatedEvent()
                 {
@@ -78,19 +76,19 @@ namespace BlogSite.API.Controllers
                     PostId = createCommentVM.PostId,
 
                 });
-                return Ok(res.Message);
+                return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest();
 
 
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCommentVM updateCommentVM, [FromQuery] Guid commentId)
         {
             var res = await _commentService.UpdateAsync(updateCommentVM, commentId);
-            if (res.Success == true)
+            if (res == true)
             {
                 await _publishEndpoint.Publish<CommentUpdatedEvent>(new CommentUpdatedEvent()
                 {
@@ -102,15 +100,15 @@ namespace BlogSite.API.Controllers
                 });
                 return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "Admin, User")]
+        //[Authorize(Roles = "Admin, User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid commentId)
         {
             var res = await _commentService.DeleteAsync(commentId);
-            if (res.Success == true)
+            if (res == true)
             {
                 await _publishEndpoint.Publish<CommentDeletedEvent>(new CommentDeletedEvent()
                 {
@@ -118,7 +116,7 @@ namespace BlogSite.API.Controllers
                 });
                 return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest(res);
         }
 
     }

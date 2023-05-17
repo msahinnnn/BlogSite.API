@@ -31,11 +31,11 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetAsync()
         {
             var res = await _userService.GetAllAsync();
-            if (res.Success == true)
+            if (res != null)
             {
-                return Ok(res.Data);
+                return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
         [AllowAnonymous]
@@ -43,47 +43,47 @@ namespace BlogSite.API.Controllers
         public async Task<IActionResult> GetUserByIdAsync([FromQuery] Guid userId)
         {
             var res = await _userService.GetByIdAsync(userId);
-            if (res.Success == true)
+            if (res != null)
             {
-                return Ok(res.Data);
+                return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPost("[action]Async")]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserVM createUserVM)
         {
             var res = await _userService.CreateAsync(createUserVM);
-            if (res.Success == true)
+            if (res != null)
             {
-                return Ok(res.Message);
+                return Ok(res);
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "User")]
+        //[Authorize(Roles = "User")]
         [HttpPut("[action]Async")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserVM updateUserVM, [FromQuery] Guid userId)
         {
             var res = await _userService.UpdateAsync(updateUserVM, userId);
-            if (res.Success == true)
+            if (res == true)
             {
-                return Ok(res.Message);
+                return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
-        [Authorize(Roles = "User")]
+        //[Authorize(Roles = "User")]
         [HttpDelete("[action]Async")]
         public async Task<IActionResult> DeleteAsync([FromQuery] Guid userId)
         {
             var res = await _userService.DeleteAsync(userId);
-            if (res.Success == true)
+            if (res == true)
             {
-                return Ok(res.Message);
+                return Ok();
             }
-            return BadRequest(res.Message);
+            return BadRequest();
         }
 
 

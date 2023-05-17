@@ -10,10 +10,10 @@ namespace BlogSite.Core.Business
 {
     public interface IEntityService<T> where T : class, IBaseEntity, new()
     {
-        Task<IDataResult<List<T>>> GetAllAsync();
-        Task<IDataResult<T>> GetByIdAsync(Guid id);
-        Task<IDataResult<T>> CreateAsync(IVM<T> entityVM);
-        Task<IResult> UpdateAsync(IVM<T> entityVM, Guid id);
-        Task<IResult> DeleteAsync(Guid id);
+        Task<List<T>> GetAllAsync();
+        Task<T> GetByIdAsync(Guid id);
+        Task<T> CreateAsync(IVM<T> entityVM);
+        Task<bool> UpdateAsync(IVM<T> entityVM, Guid id);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

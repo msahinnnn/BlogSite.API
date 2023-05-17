@@ -30,7 +30,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<List<User>> GetAllAsync()
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlDataAdapter da = new SqlDataAdapter("Select * from Users", con);
             DataTable dt = new DataTable();
@@ -50,7 +50,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<User> GetByIdAsync(Guid id)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlCommand cmd = new SqlCommand("Select * from Users where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", id);
@@ -67,7 +67,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<User> CreateAsync(User entity)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlCommand cmd = new SqlCommand("Insert into Users (Id, Email, Password, Token, RefreshToken, RefreshTokenExpiryTime) values (@Id, @Email, @Password, @Token, @RefreshToken, @RefreshTokenExpiryTime)", con);
             cmd.Parameters.AddWithValue("@Id", entity.Id);
@@ -84,7 +84,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlCommand cmd = new SqlCommand("Delete from Users where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", id);
@@ -95,7 +95,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
         }
         public async Task<bool> UpdateAsync(User entity)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlCommand cmd = new SqlCommand("Update Users Set Password=@Password, Email=@Email, Token=@Token, RefreshToken=@RefreshToken, RefreshTokenExpiryTime=@RefreshTokenExpiryTime where Id=@Id", con);
             cmd.Parameters.AddWithValue("@Id", entity.Id);
@@ -112,7 +112,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public async Task<User> CheckUserEmailExistsAsync(string mail)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             await con.OpenAsync();
             SqlDataAdapter da = new SqlDataAdapter("Select * from Users", con);
             DataTable dt = new DataTable();
@@ -138,7 +138,7 @@ namespace BlogSite.DataAccsess.Concrete.AdoNet
 
         public bool CheckUserRefreshTokenExists(string refreshToken)
         {
-            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlConnection"));
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("MsSqlLocalConnection"));
             con.Open();
             SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Users WHERE RefreshToken=@RefreshToken", con);
             cmd.Parameters.AddWithValue("@RefreshToken", refreshToken);
