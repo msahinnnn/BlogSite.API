@@ -62,7 +62,7 @@ namespace BlogSite.Business.Concrete
             ValidationTool.Validate(new PostValidator(), entityVM);
             Post post = _mapper.Map<Post>(entityVM);
             post.Id = Guid.NewGuid();
-            post.UserId = Guid.Parse(_authService.GetCurrentUserId());
+            //post.UserId = Guid.Parse(_authService.GetCurrentUserId());
             post.CreatedDate = DateTime.Now;
             var res = await _postRepository.CreateAsync(post);
             return res;
@@ -84,9 +84,9 @@ namespace BlogSite.Business.Concrete
         {
             Post post = _mapper.Map<Post>(entityVM);
             var check = await _postRepository.GetByIdAsync(id);
-            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
+//            var userAuth = Guid.Parse(_authService.GetCurrentUserId());
             post.Id = id;
-            post.UserId = userAuth;
+            //post.UserId = userAuth;
                 //if (check.UserId == userAuth)
                 //{
                     var res = await _postRepository.UpdateAsync(post);

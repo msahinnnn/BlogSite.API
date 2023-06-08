@@ -58,7 +58,7 @@ namespace BlogSite.Business.Test
         }
 
         [Fact]
-        public async void PostUser_ReturnsUser()
+        public async void CreateUser_ReturnsUser()
         {
             var id = Guid.NewGuid();
             var userVM = new CreateUserVM()
