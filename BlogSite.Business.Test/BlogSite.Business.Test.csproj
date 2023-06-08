@@ -10,8 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="FakeItEasy" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,9 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Services\API\BlogSite.API\BlogSite.API.csproj" />
     <ProjectReference Include="..\Services\API\BlogSite.Business\BlogSite.Business.csproj" />
-    <ProjectReference Include="..\Shared\Messages\BlogSite.Messages\BlogSite.Messages.csproj" />
+    <ProjectReference Include="..\Services\API\BlogSite.DataAccsess\BlogSite.DataAccsess.csproj" />
   </ItemGroup>
 
 </Project>

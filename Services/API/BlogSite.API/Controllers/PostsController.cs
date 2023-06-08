@@ -21,6 +21,9 @@ namespace BlogSite.API.Controllers
         private IPostCacheService _postCacheService;
         private IPostService _postService;
         private IPublishEndpoint _publishEndpoint;
+        private IAuthService _authService;
+
+
         
         public PostsController(IPostService postService, IPublishEndpoint publishEndpoint, IAuthService authService, IPostCacheService postCacheService)
         {
@@ -73,13 +76,13 @@ namespace BlogSite.API.Controllers
             var res = await _postService.CreateAsync(createPostVM);
             if (res != null)
             {
-                await _publishEndpoint.Publish(new PostCreatedEvent()
+               await _publishEndpoint.Publish(new PostCreatedEvent()
                 {
                     Id = Guid.NewGuid(),
                     CreatedDate = DateTime.Now,
                     Title = createPostVM.Title,
                     Content = createPostVM.Content,
-                    UserId = res.UserId
+                    UserId = Guid.Parse(_authService.GetCurrentUserId())
                 });
                 return Ok();
             }
@@ -98,6 +101,7 @@ namespace BlogSite.API.Controllers
                     Id = postId,
                     Title = updatePostVM.Title,
                     Content = updatePostVM.Content,
+                    UserId = Guid.Parse(_authService.GetCurrentUserId())
                 });
                 return Ok();
             }

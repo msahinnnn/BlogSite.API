@@ -63,7 +63,6 @@ namespace BlogSite.Business.Concrete
             var check = await _userRepository.CheckUserEmailExistsAsync(user.Email);
             if (check is null)
             {
-       
                 var res = await _userRepository.CreateAsync(user);
                 if (res is not null)
                 {
