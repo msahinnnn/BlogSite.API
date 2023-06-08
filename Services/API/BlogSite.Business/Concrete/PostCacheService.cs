@@ -1,6 +1,8 @@
 ﻿using BlogSite.API.Models;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Constants;
+using BlogSite.Core.Entities;
+using BlogSite.Core.Services;
 using BlogSite.DataAccsess.Abstract;
 using StackExchange.Redis;
 using System;
@@ -14,67 +16,85 @@ namespace BlogSite.Business.Concrete
 {
     public class PostCacheService : IPostCacheService
     {
-        private readonly IConnectionMultiplexer _redisCon;
-        private IPostRepository _postRepository;
-        private readonly IDatabase _cache;
+        private ICacheService _cacheService;
 
-        public PostCacheService(IConnectionMultiplexer redisCon, IDatabase cache, IPostRepository postRepository)
+        public PostCacheService(ICacheService cacheService)
         {
-            _redisCon = redisCon;
-            _cache = redisCon.GetDatabase(0);
-            _postRepository = postRepository;
+            _cacheService = cacheService;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<List<IBaseEntity>> GetAsync(string key)
         {
-            await _cache.HashDeleteAsync(PostCacheKeys.PostKey, id.ToString());
-            return true;
+            return await _cacheService.GetAsync(key);
         }
 
-        public async Task<List<Post>> GetAsync()
+        public async Task<IBaseEntity> GetByIdAsync(Guid id, string key)
         {
-            if (!await _cache.KeyExistsAsync(PostCacheKeys.PostKey))
-                return await LoadToCacheFromDbAsync();
+            return await _cacheService.GetByIdAsync(id, key);
+        }
 
-            var posts = new List<Post>();
+        public async Task<bool> SaveOrUpdateAsync(IBaseEntity entity, string key)
+        {
+            return await _cacheService.SaveOrUpdateAsync(entity, key);
+        }
 
-            var cachePosts = await _cache.HashGetAllAsync(PostCacheKeys.PostKey);
-            foreach (var item in cachePosts.ToList())
-            {
-                var post = JsonSerializer.Deserialize<Post>(item.Value);
-                posts.Add(post);
-            }
-            return posts;
+        public async Task<bool> DeleteAsync(Guid id, string key)
+        {
+            return await _cacheService.DeleteAsync(id, key);
         }
 
 
-        public async Task<bool> SaveOrUpdateAsync(Post entity)
-        {
-            await _cache.HashSetAsync(PostCacheKeys.PostKey, entity.Id.ToString(), JsonSerializer.Serialize(entity));
-            return true;
-        }
 
-        private async Task<List<Post>> LoadToCacheFromDbAsync()
-        {
-            var posts = await _postRepository.GetAllAsync();
-            posts.ForEach(p =>
-            {
-                _cache.HashSetAsync(PostCacheKeys.PostKey, p.Id.ToString(), JsonSerializer.Serialize(p));
+        //public async Task<bool> DeleteAsync(Guid id)
+        //{
+        //    await _cache.HashDeleteAsync(PostCacheKeys.PostKey, id.ToString());
+        //    return true;
+        //}
 
-            });
-            return posts;
-        }
+        //public async Task<List<Post>> GetAsync()
+        //{
+        //    if (!await _cache.KeyExistsAsync(PostCacheKeys.PostKey))
+        //        return await LoadToCacheFromDbAsync();
 
-        public async Task<Post> GetByIdAsync(Guid id)
-        {
-            if (_cache.KeyExists(PostCacheKeys.PostKey))
-            {
-                var post = await _cache.HashGetAsync(PostCacheKeys.PostKey, id.ToString());
-                return post.HasValue ? JsonSerializer.Deserialize<Post>(post) : null;
-            }
+        //    var posts = new List<Post>();
 
-            var posts = await LoadToCacheFromDbAsync();
-            return posts.FirstOrDefault(x => x.Id == id);
-        }
+        //    var cachePosts = await _cache.HashGetAllAsync(PostCacheKeys.PostKey);
+        //    foreach (var item in cachePosts.ToList())
+        //    {
+        //        var post = JsonSerializer.Deserialize<Post>(item.Value);
+        //        posts.Add(post);
+        //    }
+        //    return posts;
+        //}
+
+
+        //public async Task<bool> SaveOrUpdateAsync(Post entity)
+        //{
+        //    await _cache.HashSetAsync(PostCacheKeys.PostKey, entity.Id.ToString(), JsonSerializer.Serialize(entity));
+        //    return true;
+        //}
+
+        //private async Task<List<Post>> LoadToCacheFromDbAsync()
+        //{
+        //    var posts = await _postRepository.GetAllAsync();
+        //    posts.ForEach(p =>
+        //    {
+        //        _cache.HashSetAsync(PostCacheKeys.PostKey, p.Id.ToString(), JsonSerializer.Serialize(p));
+
+        //    });
+        //    return posts;
+        //}
+
+        //public async Task<Post> GetByIdAsync(Guid id)
+        //{
+        //    if (_cache.KeyExists(PostCacheKeys.PostKey))
+        //    {
+        //        var post = await _cache.HashGetAsync(PostCacheKeys.PostKey, id.ToString());
+        //        return post.HasValue ? JsonSerializer.Deserialize<Post>(post) : null;
+        //    }
+
+        //    var posts = await LoadToCacheFromDbAsync();
+        //    return posts.FirstOrDefault(x => x.Id == id);
+        //}
     }
 }

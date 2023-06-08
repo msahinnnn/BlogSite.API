@@ -6,6 +6,7 @@ using BlogSite.API.Models;
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Authentication;
 using BlogSite.Business.Concrete;
+using BlogSite.Core.Services;
 using BlogSite.DataAccsess.Abstract;
 using BlogSite.DataAccsess.Concrete.AdoNet;
 using BlogSite.DataAccsess.Concrete.Dapper;
@@ -86,6 +87,7 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped <IAuthService, AuthService>();
 builder.Services.AddScoped<ICommentCacheService, CommentCacheService>();
 builder.Services.AddScoped<IPostCacheService, PostCacheService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.AddScoped<ITokenHandler, BlogSite.Business.Authentication.TokenHandler>();
 
