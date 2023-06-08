@@ -2,7 +2,6 @@
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Constants;
 using BlogSite.Core.Entities;
-using BlogSite.Core.Services;
 using BlogSite.DataAccsess.Abstract;
 using StackExchange.Redis;
 using System;
@@ -16,34 +15,33 @@ namespace BlogSite.Business.Concrete
 {
     public class PostCacheService : IPostCacheService
     {
-        private ICacheService _cacheService;
+        private IPostRedisService _redisCacheService;
 
-        public PostCacheService(ICacheService cacheService)
+        public PostCacheService(IPostRedisService redisCacheService)
         {
-            _cacheService = cacheService;
+            _redisCacheService = redisCacheService;
         }
 
-        public async Task<List<IBaseEntity>> GetAsync( )
+        public async Task<List<Post>> GetAsync()
         {
-            return await _cacheService.GetAsync(PostCacheKeys.PostKey);
+            return await _redisCacheService.GetAsync();
         }
 
-        public async Task<IBaseEntity> GetByIdAsync(Guid id)
+        public async Task<Post> GetByIdAsync(Guid id)
         {
-            return await _cacheService.GetByIdAsync(id, PostCacheKeys.PostKey);
-        }
-
-        public async Task<bool> SaveOrUpdateAsync(IBaseEntity entity)
-        {
-            return await _cacheService.SaveOrUpdateAsync(entity, PostCacheKeys.PostKey);
+            return await _redisCacheService.GetByIdAsync(id);
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _cacheService.DeleteAsync(id, PostCacheKeys.PostKey);
+            return await _redisCacheService.DeleteAsync(id);
         }
 
 
+        public async Task<bool> SaveOrUpdateAsync(Post entity)
+        {
+            return await _redisCacheService.SaveOrUpdateAsync(entity);
+        }
 
         //public async Task<bool> DeleteAsync(Guid id)
         //{
@@ -96,5 +94,6 @@ namespace BlogSite.Business.Concrete
         //    var posts = await LoadToCacheFromDbAsync();
         //    return posts.FirstOrDefault(x => x.Id == id);
         //}
+
     }
 }

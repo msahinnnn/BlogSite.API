@@ -2,7 +2,6 @@
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Constants;
 using BlogSite.Core.Entities;
-using BlogSite.Core.Services;
 using BlogSite.DataAccsess.Abstract;
 using StackExchange.Redis;
 using System;
@@ -16,32 +15,32 @@ namespace BlogSite.Business.Concrete
 {
     public class CommentCacheService : ICommentCacheService
     {
-        private ICacheService _cacheService;
+        private ICommentRedisService _cacheRedisService;
 
-        public CommentCacheService(ICacheService cacheService)
+        public CommentCacheService(ICommentRedisService cacheRedisService)
         {
-            _cacheService = cacheService;
+            _cacheRedisService = cacheRedisService;
         }
-
-        public async Task<List<IBaseEntity>> GetAsync( )
-        {
-            return await _cacheService.GetAsync(CommentCacheKeys.CommentKey);
-        }
-
-        public async Task<IBaseEntity> GetByIdAsync(Guid id )
-        {
-            return await _cacheService.GetByIdAsync(id, CommentCacheKeys.CommentKey);
-        }
-
-        public async Task<bool> SaveOrUpdateAsync(IBaseEntity entity)
-        {
-            return await _cacheService.SaveOrUpdateAsync(entity, CommentCacheKeys.CommentKey);
-        }
-
         public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _cacheService.DeleteAsync(id, CommentCacheKeys.CommentKey);
+            return await _cacheRedisService.DeleteAsync(id);
         }
+
+        public async Task<List<Comment>> GetAsync()
+        {
+            return await _cacheRedisService.GetAsync();
+        }
+
+        public async Task<Comment> GetByIdAsync(Guid id)
+        {
+            return await _cacheRedisService.GetByIdAsync(id);
+        }
+
+        public async Task<bool> SaveOrUpdateAsync(Comment entity)
+        {
+            return await _cacheRedisService.SaveOrUpdateAsync(entity);
+        }
+
 
 
 

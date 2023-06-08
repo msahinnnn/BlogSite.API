@@ -2,11 +2,7 @@
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
 using BlogSite.Business.Constants;
-using BlogSite.Core.Services;
-using BlogSite.DataAccsess.Abstract;
 using FakeItEasy;
-using Moq;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,48 +11,22 @@ using System.Threading.Tasks;
 
 namespace BlogSite.Business.Test
 {
-    public class PostCacheServiceTest
+    public class PostCacheServiceTest : IClassFixture<PostCacheService>
     {
+        private IPostRedisService _postRedisService;
         private IPostCacheService _postCacheService;
-        private ICacheService _cacheService;
-        public PostCacheServiceTest(IPostCacheService postCacheService, ICacheService cacheService)
-        {
-            _cacheService = A.Fake<ICacheService>();
-            _postCacheService = new PostCacheService(_cacheService);
-        }
 
-
-        [Fact]
-        public async void GetAsync()
+        public PostCacheServiceTest(IPostRedisService postRedisService, IPostCacheService postCacheService)
         {
-            var cachePosts = A.CallTo(() => _cacheService.GetAsync(A<string>._));
-            Assert.NotNull(cachePosts);
+            _postRedisService = A.Fake<IPostRedisService>();
+            _postCacheService = new PostCacheService(_postRedisService);
         }
 
         [Fact]
-        public async void GetByIdAsync()
+        public async void GetPosts_ReturnsPostsFromCache()
         {
-
+            var x = A.CallTo(() => _postRedisService.GetAsync());
         }
-
-        [Fact]
-        public async void SaveOrUpdateAsync()
-        {
-
-        }
-
-        [Fact]
-        public async void DeleteAsync()
-        {
-
-        }
-
-        [Fact]
-        public async void LoadToCacheFromDbAsync()
-        {
-
-        }
-
-
+        
     }
 }
