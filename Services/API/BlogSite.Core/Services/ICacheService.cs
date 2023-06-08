@@ -14,7 +14,6 @@ namespace BlogSite.Core.Services
         Task<IBaseEntity> GetByIdAsync(Guid id, string key);
         Task<bool> SaveOrUpdateAsync(IBaseEntity entity, string key);
         Task<bool> DeleteAsync(Guid id, string key);
-        Task<List<T>> LoadToCacheFromDbAsync<T>(List<T> entities, string key);
 
     }
 }

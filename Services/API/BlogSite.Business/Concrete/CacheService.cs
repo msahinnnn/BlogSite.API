@@ -63,16 +63,7 @@ namespace BlogSite.Business.Concrete
             return true;
         }
 
-        public async Task<List<T>> LoadToCacheFromDbAsync<T>(List<T> entities, string key)
-        {
-            entities.ForEach(p =>
-            {
-                _cache.HashSetAsync(key, p.Id.ToString(), JsonSerializer.Serialize(p));
 
-            });
-            return entities;
-
-        }
 
     }
 }

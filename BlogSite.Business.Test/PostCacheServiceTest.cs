@@ -2,6 +2,7 @@
 using BlogSite.Business.Abstract;
 using BlogSite.Business.Concrete;
 using BlogSite.Business.Constants;
+using BlogSite.Core.Services;
 using BlogSite.DataAccsess.Abstract;
 using FakeItEasy;
 using Moq;
@@ -16,59 +17,41 @@ namespace BlogSite.Business.Test
 {
     public class PostCacheServiceTest
     {
-        private  Mock<IConnectionMultiplexer> _redisCon;
-        private IPostRepository _postRepository;
-        private  Mock<IDatabase> _cache;
         private IPostCacheService _postCacheService;
-        //private IConnectionMultiplexer _redisCon;
-        //private IDatabase _cache;
-        public PostCacheServiceTest()
+        private ICacheService _cacheService;
+        public PostCacheServiceTest(IPostCacheService postCacheService, ICacheService cacheService)
         {
-            _postRepository = A.Fake<IPostRepository>();
-            //_redisCon = A.Fake<IConnectionMultiplexer>();
-            //_cache = A.Fake<IDatabase>();
-            _redisCon = new Mock<IConnectionMultiplexer>();
-            _cache = new Mock<IDatabase>();
-            //_postCacheService = new PostCacheService(_redisCon.Object, _cache.Object, _postRepository);
+            _cacheService = A.Fake<ICacheService>();
+            _postCacheService = new PostCacheService(_cacheService);
         }
 
+
+        [Fact]
         public async void GetAsync()
         {
-            //if (!await _cache.KeyExistsAsync(PostCacheKeys.PostKey))
-            //    return await LoadToCacheFromDbAsync();
-
-            //var posts = new List<Post>();
-
-            //var cachePosts = await _cache.HashGetAllAsync(PostCacheKeys.PostKey);
-            //foreach (var item in cachePosts.ToList())
-            //{
-            //    var post = JsonSerializer.Deserialize<Post>(item.Value);
-            //    posts.Add(post);
-            //}
-            //return posts;
-
-            //_redisCon.Setup(_ => _.GetDatabase(It.IsAny<int>(), It.IsAny<object>())).Returns(_cache.Object);
-            //var posts = A.Fake<List<Post>>();
-            //_redisCon.
-            //var x = _cache.Setup(x => x.HashGetAllAsync((It.IsAny<string>())));
-
+            var cachePosts = A.CallTo(() => _cacheService.GetAsync(A<string>._));
+            Assert.NotNull(cachePosts);
         }
 
+        [Fact]
         public async void GetByIdAsync()
         {
 
         }
 
+        [Fact]
         public async void SaveOrUpdateAsync()
         {
 
         }
 
+        [Fact]
         public async void DeleteAsync()
         {
 
         }
 
+        [Fact]
         public async void LoadToCacheFromDbAsync()
         {
 

@@ -23,24 +23,24 @@ namespace BlogSite.Business.Concrete
             _cacheService = cacheService;
         }
 
-        public async Task<List<IBaseEntity>> GetAsync(string key)
+        public async Task<List<IBaseEntity>> GetAsync( )
         {
-            return await _cacheService.GetAsync(key);
+            return await _cacheService.GetAsync(CommentCacheKeys.CommentKey);
         }
 
-        public async Task<IBaseEntity> GetByIdAsync(Guid id, string key)
+        public async Task<IBaseEntity> GetByIdAsync(Guid id )
         {
-            return await _cacheService.GetByIdAsync(id, key);
+            return await _cacheService.GetByIdAsync(id, CommentCacheKeys.CommentKey);
         }
 
-        public async Task<bool> SaveOrUpdateAsync(IBaseEntity entity, string key)
+        public async Task<bool> SaveOrUpdateAsync(IBaseEntity entity)
         {
-            return await _cacheService.SaveOrUpdateAsync(entity, key);
+            return await _cacheService.SaveOrUpdateAsync(entity, CommentCacheKeys.CommentKey);
         }
 
-        public async Task<bool> DeleteAsync(Guid id, string key)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _cacheService.DeleteAsync(id,key);
+            return await _cacheService.DeleteAsync(id, CommentCacheKeys.CommentKey);
         }
 
 

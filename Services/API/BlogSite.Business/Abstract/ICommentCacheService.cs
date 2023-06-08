@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BlogSite.Business.Abstract
 {
-    public interface ICommentCacheService : ICacheService
+    public interface ICommentCacheService : IRedisService
     {
     }
 }
