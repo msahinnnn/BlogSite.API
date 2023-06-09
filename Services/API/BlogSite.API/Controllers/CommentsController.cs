@@ -20,14 +20,12 @@ namespace BlogSite.API.Controllers
     {
         private ICommentService _commentService;
         private ICommentCacheService _commentCacheService;
-        private IAuthService _authService;
         private IPublishEndpoint _publishEndpoint;
 
-        public CommentsController(ICommentService commentService, IPublishEndpoint publishEndpoint, IAuthService authService, ICommentCacheService commentCacheService)
+        public CommentsController(ICommentService commentService, IPublishEndpoint publishEndpoint, ICommentCacheService commentCacheService)
         {
             _commentService = commentService;
             _publishEndpoint = publishEndpoint;
-            _authService = authService;
             _commentCacheService = commentCacheService;
         }
 
@@ -72,7 +70,7 @@ namespace BlogSite.API.Controllers
                     Id = Guid.NewGuid(),
                     Content = createCommentVM.Content,
                     CreateTime = DateTime.UtcNow,
-                    UserId = Guid.Parse(_authService.GetCurrentUserId()),
+                    UserId = res.UserId,
                     PostId = createCommentVM.PostId,
 
                 });
@@ -94,7 +92,7 @@ namespace BlogSite.API.Controllers
                 {
                     Id = commentId,
                     Content = updateCommentVM.Content,
-                    UserId = Guid.Parse(_authService.GetCurrentUserId()),
+                    UserId = updateCommentVM.UserId,
                     PostId = updateCommentVM.PostId,
 
                 });

@@ -10,6 +10,7 @@ namespace BlogSite.Entities.ViewModels.CommentVMs
 {
     public class UpdateCommentVM : IVM<Comment>
     {
+        public Guid UserId { get; set; }
         public Guid PostId { get; set; }
         public string Content { get; set; }
     }

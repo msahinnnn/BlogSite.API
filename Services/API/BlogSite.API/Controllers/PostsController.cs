@@ -81,7 +81,7 @@ namespace BlogSite.API.Controllers
                     CreatedDate = res.CreatedDate,
                     Title = res.Title,
                     Content = res.Content,
-                    UserId = res.UserId
+                    UserId = createPostVM.UserId
                 });
                 return Ok();
             }
