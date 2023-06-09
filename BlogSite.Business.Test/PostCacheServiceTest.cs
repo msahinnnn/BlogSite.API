@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace BlogSite.Business.Test
 {
-    public class PostCacheServiceTest : IClassFixture<PostCacheService>
+    public class PostCacheServiceTest 
     {
         private IPostRedisService _postRedisService;
         private IPostCacheService _postCacheService;
 
-        public PostCacheServiceTest(IPostRedisService postRedisService, IPostCacheService postCacheService)
+        public PostCacheServiceTest()
         {
             _postRedisService = A.Fake<IPostRedisService>();
             _postCacheService = new PostCacheService(_postRedisService);
@@ -25,8 +25,41 @@ namespace BlogSite.Business.Test
         [Fact]
         public async void GetPosts_ReturnsPostsFromCache()
         {
-            var x = A.CallTo(() => _postRedisService.GetAsync());
+            var posts = A.Fake<List<Post>>();
+            var x = A.CallTo(() => _postRedisService.GetAsync()).Returns(posts);
+
+            var result = await _postCacheService.GetAsync();
+            Assert.NotNull(result);
         }
-        
+
+        [Fact]
+        public async void GetPostById_ReturnsPostFromCache()
+        {
+            var post = A.Fake<Post>();
+            A.CallTo(() => _postRedisService.GetByIdAsync(post.Id)).Returns(post);
+
+            var result = await _postCacheService.GetByIdAsync(post.Id);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async void DeletePost_ReturnsTrue()
+        {
+            var post = A.Fake<Post>();
+            var x = A.CallTo(() => _postRedisService.DeleteAsync(post.Id)).Returns(true);
+
+            var result = await _postCacheService.DeleteAsync(post.Id);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async void SaveOrUpdatePost_ReturnsTrue()
+        {
+            var post = A.Fake<Post>();
+            A.CallTo(() => _postRedisService.SaveOrUpdateAsync(post)).Returns(true);
+            
+            var result = await _postCacheService.SaveOrUpdateAsync(post);
+            Assert.True(result);
+        }
     }
 }
