@@ -35,7 +35,7 @@ namespace BlogSite.API.Test
         }
 
         [Fact]
-        public async void GetPost_ReturnsOK()
+        public async void GetComment_ReturnsOK()
         {
             var comments = A.Fake<List<Comment>>();
             A.CallTo(() => _commentCacheService.GetAsync()).Returns(comments);
@@ -46,7 +46,7 @@ namespace BlogSite.API.Test
         }
 
         [Fact]
-        public async void GetPostByIdPost_ReturnsOK()
+        public async void GetCommentByIdComment_ReturnsOK()
         {
             var comment = A.Fake<Comment>();
             A.CallTo(() => _commentCacheService.GetByIdAsync(comment.Id)).Returns(comment);
@@ -57,7 +57,7 @@ namespace BlogSite.API.Test
         }
 
         [Fact]
-        public async void GetAllPostsByUserIdPost_ReturnsOK()
+        public async void GetAllCommentsByPostIdComment_ReturnsOK()
         {
             var post = A.Fake<Post>();
             var comment = A.Fake<List<Comment>>();
@@ -69,7 +69,7 @@ namespace BlogSite.API.Test
         }
 
         [Fact]
-        public async void CreatePost_ReturnsOK()
+        public async void CreateComment_ReturnsOK()
         {
             var commentVM = new CreateCommentVM()
             {
@@ -90,7 +90,7 @@ namespace BlogSite.API.Test
         }
 
         [Fact]
-        public async void UpdatePost_ReturnsOK()
+        public async void UpdateComment_ReturnsOK()
         {
             var commentVM = new UpdateCommentVM()
             {
@@ -108,7 +108,7 @@ namespace BlogSite.API.Test
         }
 
         [Fact]
-        public async void DeletePost_ReturnsOK()
+        public async void DeleteComment_ReturnsOK()
         {
             var comment = A.Fake<Comment>();
 

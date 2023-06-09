@@ -20,12 +20,12 @@ namespace Caching.Concrete
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _commentCacheService.DeleteAsync(CommentCacheKeys.CommentKey, id);
+            return await _commentCacheService.DeleteAsync(id);
         }
 
         public async Task<List<Comment>> GetAsync()
         {
-            return await _commentCacheService.GetAsync(CommentCacheKeys.CommentKey);
+            return await _commentCacheService.GetAsync();
         }
 
         public async Task<bool> SaveOrUpdateAsync(Comment entity)

@@ -8,8 +8,8 @@ namespace BlogSite.Core.Services
 {
     public interface IRedisCacheService<T>
     {
-        Task<List<T>> GetAsync(string key);
+        Task<List<T>> GetAsync();
         Task<bool> SaveOrUpdateAsync(T entity);
-        Task<bool> DeleteAsync(string key, Guid id);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

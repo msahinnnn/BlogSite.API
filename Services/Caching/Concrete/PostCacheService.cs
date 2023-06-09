@@ -24,13 +24,13 @@ namespace Caching.Concrete
             _postRepository = postRepository;
         }
 
-        public async Task<bool> DeleteAsync(string key, Guid id)
+        public async Task<bool> DeleteAsync( Guid id)
         {
-            await _cache.HashDeleteAsync(key, id.ToString());
+            await _cache.HashDeleteAsync(CommentCacheKeys.CommentKey, id.ToString());
             return true;
         }
 
-        public async Task<List<Post>> GetAsync(string key)
+        public async Task<List<Post>> GetAsync()
         {
             if (!await _cache.KeyExistsAsync(PostCacheKeys.PostKey))
                 return await LoadToCacheFromDbAsync();

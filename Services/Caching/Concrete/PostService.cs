@@ -20,12 +20,12 @@ namespace Caching.Concrete
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _postCacheService.DeleteAsync(PostCacheKeys.PostKey ,id);
+            return await _postCacheService.DeleteAsync(id);
         }
 
         public async Task<List<Post>> GetAsync()
         {
-            return await _postCacheService.GetAsync(PostCacheKeys.PostKey);
+            return await _postCacheService.GetAsync();
         }
 
         public async Task<bool> SaveOrUpdateAsync(Post entity)
