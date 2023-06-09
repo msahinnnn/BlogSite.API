@@ -17,6 +17,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IPostCacheService, PostCacheService>();
         services.AddSingleton<IPostRepository, PostRepository>();
         services.AddSingleton<ICommentRepository, CommentRepository>();
+        services.AddSingleton<ICommentService, CommentService>();
+        services.AddSingleton<IPostService, PostService>();
 
         //IConfiguration _configuration = services.BuildServiceProvider().GetService<IConfiguration>();
 

@@ -7,17 +7,18 @@ namespace BlogSite.API.Caching.Consumers
 {
     public class PostUpdatedEventConsumer : MassTransit.IConsumer<PostUpdatedEvent>
     {
-        private IPostCacheService _cacheService;
+        private IPostService _postService;
 
-        public PostUpdatedEventConsumer(IPostCacheService cacheService)
+        public PostUpdatedEventConsumer(IPostService postService)
         {
-            _cacheService = cacheService;
+            _postService = postService;
         }
+
 
         public async Task Consume(ConsumeContext<PostUpdatedEvent> context)
         {
             Console.WriteLine(context.Message);
-            var x = await _cacheService.SaveOrUpdateAsync(new Post()
+            var x = await _postService.SaveOrUpdateAsync(new Post()
             {
                 Id = context.Message.Id,
                 Title = context.Message.Title,

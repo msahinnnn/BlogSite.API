@@ -12,17 +12,18 @@ namespace BlogSite.API.Caching.Consumers
 {
     public class PostDeletedEventConsumer : MassTransit.IConsumer<PostDeletedEvent>
     {
-        private IPostCacheService _cacheService;
+        private IPostService _postService;
 
-        public PostDeletedEventConsumer(IPostCacheService cacheService)
+        public PostDeletedEventConsumer(IPostService postService)
         {
-            _cacheService = cacheService;
+            _postService = postService;
         }
+
 
         public async Task Consume(ConsumeContext<PostDeletedEvent> context)
         {
             Console.WriteLine(context.Message);
-            var x = await _cacheService.DeleteAsync(PostCacheKeys.PostKey, context.Message.Id);
+            var x = await _postService.DeleteAsync(context.Message.Id);
             Console.WriteLine(nameof(PostDeletedEventConsumer) + "- worked");
 
         }

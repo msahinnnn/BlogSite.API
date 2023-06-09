@@ -12,17 +12,17 @@ namespace BlogSite.API.Caching.Consumers
 {
     public class CommentUpdatedEventConsumer : MassTransit.IConsumer<CommentUpdatedEvent>
     {
-        private ICommentCacheService _cacheService;
+        private ICommentService _commentService;
 
-        public CommentUpdatedEventConsumer(ICommentCacheService cacheService)
+        public CommentUpdatedEventConsumer(ICommentService commentService)
         {
-            _cacheService = cacheService;
+            _commentService = commentService;
         }
 
         public async Task Consume(ConsumeContext<CommentUpdatedEvent> context)
         {
             Console.WriteLine(context.Message);
-            var x = await _cacheService.SaveOrUpdateAsync(new Comment()
+            var x = await _commentService.SaveOrUpdateAsync(new Comment()
             {
                 Id = context.Message.Id,
                 Content = context.Message.Content,
