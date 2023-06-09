@@ -17,11 +17,9 @@ namespace BlogSite.API.Controllers
     public class AuthsController : ControllerBase
     {
         private IAuthService _authService;
-        private ITokenHandler _tokenHandler;
-        public AuthsController(IAuthService authService, ITokenHandler tokenHandler)
+        public AuthsController(IAuthService authService )
         {
             _authService = authService;
-            _tokenHandler = tokenHandler;
         }
 
         [HttpPost("Register")]
@@ -57,36 +55,6 @@ namespace BlogSite.API.Controllers
             return BadRequest(res);
         }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetClaimTypes(string accessToken)
-        {
-            ClaimsPrincipal principal = _tokenHandler.GetPrincipalFromExpiredToken(accessToken);
-            var res = principal?.FindAll(ClaimTypes.NameIdentifier)?.Select(x => x.Value).ToList();
-            return Ok(res);
-        }
 
-        [HttpGet("[action]")]
-        [Authorize(Roles = "User")]
-        public async Task<IActionResult> GetId()
-        {
-            var res = _authService.GetCurrentUserId();
-            return Ok(res);
-        }
-
-        [HttpGet("[action]")]
-        [Authorize(Roles = "User")]
-        public async Task<IActionResult> GetEmail()
-        {
-            var res = _authService.GetCurrentUserMail();
-            return Ok(res);
-        }
-
-        [HttpGet("[action]")]
-        [Authorize(Roles = "User")]
-        public async Task<IActionResult> GetRole()
-        {
-            var res = _authService.GetCurrentUserRole();
-            return Ok(res);
-        }
     }
 }
