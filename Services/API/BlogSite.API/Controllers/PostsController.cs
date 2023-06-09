@@ -11,6 +11,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BlogSite.API.Controllers
 {
@@ -21,15 +22,13 @@ namespace BlogSite.API.Controllers
         private IPostCacheService _postCacheService;
         private IPostService _postService;
         private IPublishEndpoint _publishEndpoint;
-        private IAuthService _authService;
 
 
         
-        public PostsController(IPostService postService, IPublishEndpoint publishEndpoint, IAuthService authService, IPostCacheService postCacheService)
+        public PostsController(IPostService postService, IPublishEndpoint publishEndpoint, IPostCacheService postCacheService)
         {
             _postService = postService;
             _publishEndpoint = publishEndpoint;
-            _authService = authService;
             _postCacheService = postCacheService;
         }
 
@@ -78,11 +77,11 @@ namespace BlogSite.API.Controllers
             {
                await _publishEndpoint.Publish(new PostCreatedEvent()
                 {
-                    Id = Guid.NewGuid(),
-                    CreatedDate = DateTime.Now,
-                    Title = createPostVM.Title,
-                    Content = createPostVM.Content,
-                    UserId = Guid.Parse(_authService.GetCurrentUserId())
+                    Id = res.Id,
+                    CreatedDate = res.CreatedDate,
+                    Title = res.Title,
+                    Content = res.Content,
+                    UserId = res.UserId
                 });
                 return Ok();
             }
@@ -101,8 +100,8 @@ namespace BlogSite.API.Controllers
                     Id = postId,
                     Title = updatePostVM.Title,
                     Content = updatePostVM.Content,
-                    UserId = Guid.Parse(_authService.GetCurrentUserId())
-                });
+                    UserId = updatePostVM.UserId
+                }) ;
                 return Ok();
             }
             return BadRequest();
