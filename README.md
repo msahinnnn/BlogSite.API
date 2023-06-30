@@ -36,3 +36,6 @@ Caching Microservice:
 - With the RabbitMQ system, Create, Update and Delete requests from WebAPI were distributed to Consumers with MassTransit.
 - Generic cache services and generic repository using Dapper were used.
 - Incoming requests were handled with services made in MassTransit consumers.
+
+Test:
+- Unit tests were written using XUnit Framework and FakeItEasy.Test:
