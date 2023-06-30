@@ -39,3 +39,6 @@ Caching Microservice:
 
 Test:
 - Unit tests were written using XUnit Framework and FakeItEasy.Test:
+
+Note:
+- The whole project and the tools used are run on Docker.
